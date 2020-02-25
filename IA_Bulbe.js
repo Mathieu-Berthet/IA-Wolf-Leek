@@ -6,7 +6,7 @@ include("Ciblage");
 include("Resistance");
 include("Communication");
 //include("Deplacements");
-include("Booster");
+include("Boost");
 	
 
 	

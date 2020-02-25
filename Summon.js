@@ -1,7 +1,7 @@
 // dernière mise à jour le 29/04/18 par Yama et Caneton
 include("GLOBALS");
 include("getCellToUse");
-include("IABulbes");
+include("IA_Bulbe");
 include("MapDangerV1");
 
 

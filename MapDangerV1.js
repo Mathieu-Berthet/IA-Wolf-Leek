@@ -1,6 +1,6 @@
 // dernière mise à jour le : 8/03/2018 par : LeekWizard
 
-include("CacheCache");
+include("Deplacements");
 //===============================
 // getDangerMap : renvoie un tableau associatif de la forme [cell_accessible : danger]
 // A ameliorer pour le comportement d'equipe ( rajouter un parametre distance par rapport au centre de gravité... )

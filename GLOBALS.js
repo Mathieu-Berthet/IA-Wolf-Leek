@@ -147,7 +147,7 @@ global MOYEN = 3;
 
 global MIN_RANGE = (function () {
 	var min_range = [];
-	for (var i=1; i<111; i++) {
+	for (var i=1; i<123; i++) {
 		min_range[i] = (isChip(i)) ? getChipMinRange(i) : getWeaponMinRange(i);
 	}
 	min_range[CHIP_TRANQUILIZER] = 2;

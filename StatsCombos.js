@@ -1,4 +1,4 @@
-include("Globales");
+include("GLOBALS");
 
 // Memorise sous la forme : {combo : nb_reps}
 function Memorise(combo)

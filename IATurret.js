@@ -1,13 +1,13 @@
 include("Ordonnanceur");
 include("Attaque");
 include("Heal");
-include("CacheCache");
+include("Deplacements");
 include("Ciblage");
 include("Communication");
 include("Resistance");
 include("Summon");
 include("Tactics");
-include("Booster");
+include("Boost");
 
 
 getOpponent(getAliveEnemies());
