@@ -10,37 +10,101 @@ dangerousEnnemis = null;
  
 function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax) {
     var nb_action = count(actions);
-    for(var chip in ShieldTools) {
-        if (isChip(chip) && getCooldown(chip) == 0 && TPmax >= getChipCost(chip)) {
-            var effect = getChipEffects(chip);
-			var tir = proteger(chip, Allies, cellsAccessible);
-			if ((tir != [] || tir != null) && tir[VALEUR] > 15) 
+    for(var tool in ShieldTools) {
+        if ( (isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool)) ) {
+            var effect = getChipEffects(tool);
+			if ((effect[0][0] == EFFECT_ABSOLUTE_SHIELD || effect[0][0] == EFFECT_RELATIVE_SHIELD || effect[0][0] == EFFECT_DAMAGE_RETURN) || tool == WEAPON_J_LASER)
 			{
-				tir[CHIP_WEAPON] = chip;
-				var coutPT;
-				var valeur = tir[VALEUR];
-				var n;
-				var change_weapon = 0;
-				coutPT = getChipCost(tir[CHIP_WEAPON]);
-				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) {
-					n = 1;
-				} else {
-					n = 1;
+				var tir;
+				if(tool == WEAPON_J_LASER)
+				{
+					var cellToCheck = getCellsToCheckForLaser(cellsAccessible, Allies + getAliveEnemies());
+					tir = shieldTypeLigne(tool, cellToCheck, cellsAccessible);
 				}
-				//ajouter le bon nombre de fois dans les actions
-				for (var o = 1; o <= n; o++) {
-					tir[NB_TIR] = o;
-					tir[PT_USE] = o * coutPT + change_weapon;
-					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = getChipEffects(chip)[0][0];
-					actions[nb_action] = tir;
-					nb_action++;
+				else
+				{
+					tir = proteger(tool, Allies, cellsAccessible);
 				}
-            }
+			
+				if ((tir != [] || tir != null) && tir[VALEUR] > 15) 
+				{
+					tir[CHIP_WEAPON] = tool;
+					var coutPT;
+					var valeur = tir[VALEUR];
+					var n;
+					var change_weapon = 0;
+					coutPT = getChipCost(tir[CHIP_WEAPON]);
+					if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) {
+						n = 1;
+					} else {
+						n = 1;
+					}
+					//ajouter le bon nombre de fois dans les actions
+					for (var o = 1; o <= n; o++) {
+						tir[NB_TIR] = o;
+						tir[PT_USE] = o * coutPT + change_weapon;
+						tir[VALEUR] = o * valeur;
+						tir[EFFECT] = getChipEffects(tool)[0][0];
+						actions[nb_action] = tir;
+						nb_action++;
+					}
+				}
+			}
         }
     }
 }
- 
+
+function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
+{
+	var ope = getOperations();
+	var from = 0;
+	var withOrientation = 1;
+
+	var orientation = [-17, 17, -18, 18];
+	
+	var absoluteVulne = 0;
+	var absoluteShield = 0;
+
+	var valeurMax = 0;
+	var distanceBestAction = 100;
+	var bestAction = [];
+	
+	for (var cell in cellToCheck) 
+	{
+		if (lineOfSight(cell[from], cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], ME)) 
+		{
+			var cell_affecter = getAreaLine(tool,cell[from], cell[withOrientation]);
+			var sommeShield = 0;
+			for (var i in cell_affecter) 
+			{
+				if (getCellContent(i) == 1) 
+				{
+					var leek = getLeekOnCell(i);
+					if (leek != getLeek()) 
+					{
+						ResistVal(tool, leek);
+						var team = (isAlly(leek)) ? 0.5 : 1;
+						absoluteVulne += team * SCORE[leek];
+					}
+				}
+			}
+			if ((absoluteVulne > valeurMax || absoluteVulne == valeurMax && cellsAccessible[cell[from]] < distanceBestAction)) 
+			{
+				bestAction[CELL_DEPLACE] = cell[from];
+				bestAction[CELL_VISE] = cell[from] + MIN_RANGE[tool]* orientation[cell[withOrientation]];
+				bestAction[VALEUR] = absoluteVulne;
+				valeurMax = absoluteVulne;
+				distanceBestAction = cellsAccessible[cell[from]];
+			}
+		}
+	}
+	debug(getWeaponName(tool) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	return @bestAction;
+}
+
+
+
+
 function haveffect(leek,tool) {
     var effs = getEffects(leek);
     for (var eff in effs) {
@@ -128,6 +192,10 @@ function ResistVal(tool, leek){
             var renvois = valMoyen*(1+agility/100) * effect[TURNS];
             return 3*renvois;
         }
+		if(effect[TYPE] == EFFECT_STEAL_ABSOLUTE_SHIELD)
+		{
+			var stealShield = (effect[MIN] + effect[MAX]) / 2;
+		}
     }
 }
  
@@ -162,3 +230,9 @@ function getBestWeapon(leek) {
     }
     return best;
 }
+
+
+//[Lightning] [[27, 20, 20, 2, 31, 1], [29, 20, 20, 2, 31, 5]] (Retour debug J_Laser)
+// 31 = Toutes les cibles sauf soit meme
+// 1 = Cumulable (effet de vol)
+// 5 == cumulable et sur soi (récupération du bouclier absolu)
