@@ -63,7 +63,7 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
 	var orientation = [-17, 17, -18, 18];
 	
 	var absoluteVulne = 0;
-	var absoluteShield = 0;
+	//var absoluteShield = 0;
 
 	var valeurMax = 0;
 	var distanceBestAction = 100;
@@ -82,7 +82,7 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
 					var leek = getLeekOnCell(i);
 					if (leek != getLeek()) 
 					{
-						ResistVal(tool, leek);
+						ResistVal(tool, leek, absoluteVulne);
 						var team = (isAlly(leek)) ? 0.5 : 1;
 						absoluteVulne += team * SCORE[leek];
 					}
@@ -134,7 +134,8 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
                         cellAllie = getCell(allie);
                         cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
                         if (cell_deplace != -2) { //la cellule doit être atteignable
-                            var resist = ResistVal(tool, allie);
+							var absoluteVulne;
+                            var resist = ResistVal(tool, allie, absoluteVulne);
                             valeur = SCORE_RESISTANCE[allie]*(resist);
                        		debug("Value : "+valeur);
                             if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
@@ -159,7 +160,7 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
     return @bestAction;
 }
  
-function ResistVal(tool, leek){
+function ResistVal(tool, leek, @absoluteVulne){
     var effects = getChipEffects(tool);
     var resistance = getResistance();
     var agility = getAgility();
@@ -194,7 +195,8 @@ function ResistVal(tool, leek){
         }
 		if(effect[TYPE] == EFFECT_STEAL_ABSOLUTE_SHIELD)
 		{
-			var stealShield = (effect[MIN] + effect[MAX]) / 2;
+			absoluteVulne = valMoyen * effect[TURNS];
+			//return 3*stealShield;
 		}
     }
 }
