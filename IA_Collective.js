@@ -20,9 +20,9 @@ while (continu) {// Pour l'instant on ne fait qu'une action
 	var toutAllies = getAliveAllies();
 	
 	getAttackAction(actions, cellsAccessible, toutEnnemis);
-	getHealAction(actions, cellsAccessible, toutAllies);
+	getHealAction(actions, cellsAccessible, toutAllies, toutEnnemis);
 	getResistanceAction(actions, cellsAccessible, toutAllies, getTP());
-	getBoostAction(actions, cellsAccessible, toutAllies);
+	getBoostAction(actions, cellsAccessible, toutAllies, toutEnnemis);
 	getSummonAction(actions, cellsAccessible);
 	getTacticAction(actions, cellsAccessible, toutAllies, toutEnnemis);
 	
