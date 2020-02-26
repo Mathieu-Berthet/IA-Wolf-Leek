@@ -11,7 +11,7 @@ include("getArea");
 */
 
 
-function getHealAction(@actions, @cellsAccessible, Allies) 
+function getHealAction(@actions, @cellsAccessible, Allies, Ennemies) 
 {
 	var nb_action = count(actions);
 	for (var chip in HealTools) 
@@ -29,7 +29,7 @@ function getHealAction(@actions, @cellsAccessible, Allies)
 				} 
 				else 
 				{
-					tir = soigner(chip, Allies, cellsAccessible);
+					tir = soigner(chip, Allies, cellsAccessible, Ennemies);
 				}
 				if ((tir != [] || tir != null) && tir[VALEUR] > 15) // au moins 15 de dégats (en moyenne)
 				{
@@ -80,7 +80,7 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 	var valeurMax = 0;
 	var distanceBestAction = 100;
 	var bestAction = [];
-
+	var area = [];
 	for (var cell in cellToCheck) {
 		if (lineOfSight(cell[from], cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], ME)) {
 			var cell_affecter = getAreaLine(tool,cell[from], cell[withOrientation]);
@@ -90,7 +90,7 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 				if (getCellContent(i) == 1) {
 					var leek = getLeekOnCell(i);
 					if (leek != getLeek()) {
-						healVal(tool, leek, null, heal, boostMaxLife, degat);
+						healVal(tool, leek, null, heal, boostMaxLife, degat, area);
 						var team = (isAlly(leek)) ? 1 : -1;
 						heal = heal - degat;
 						sommeHeal += team * SCORE[leek] * heal;
@@ -112,25 +112,77 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 }
 
 
-function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sans AOE
+function soigner(tool, allies, @cellsAccessible, ennemies) { // pour les puces de soins sans AOE
 	var ope = getOperations();
 	var cell_deplace;
 	var cellAllie;
+	var cellEnnemie;
 	var bestAction = [];
 	var action;
 	var valeur;
 	var bestValeur = 0;
 	var distanceBestAction = 0;
+	var area = [];
+	for(var ennemie in ennemies)
+	{
+		var eff = getChipEffects(tool)[0];
+		var targets = eff[TARGETS];
+		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(ennemie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(ennemie))) 
+		{
+      		if(!(MIN_RANGE[tool] != 0)) 
+			{
+				cellEnnemie = getCell(ennemie);
+				cell_deplace = getCellToUseToolsOnCell(tool, cellEnnemie, cellsAccessible);
+				if(tool == CHIP_VAMPIRIZATION)
+				{
+					area = getChipEffectiveArea(tool, cellAllie);
+				}
+				if (cell_deplace != -2) 
+				{ //la cellule doit être atteignable
+					var heal, boostMaxLife, dammage;
+					healVal(tool, ennemie, null, heal, boostMaxLife, dammage, area);
+					var coeff = SCORE_BOOST[ennemie][eff[TYPE]];
+					if(coeff===null) 
+					{
+						debugE("["+getChipName(tool)+"]Pas de valeur pour : "+ eff[TYPE]);
+					}
+					valeur = coeff*(heal);
+					if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) 
+					{
+						if(getLeekOnCell(cellEnnemie)!=ME) 
+						{
+						  bestAction[CELL_DEPLACE] = -1;
+						  bestAction[CELL_VISE] = -1;
+						} 
+						else 
+						{
+						  bestAction[CELL_DEPLACE] = cell_deplace;
+						  bestAction[CELL_VISE] = cellEnnemie;
+						}
+						bestAction[VALEUR] = valeur;
+						distanceBestAction = cellsAccessible[cell_deplace];
+						bestValeur = valeur;
+					}
+				}
+			}
+		}
+	}
+	
+	
+	
 	for (var allie in allies) {
 		var targets = getChipEffects(tool)[0][TARGETS];
-		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(allie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(allie))) {
-			if (!(MIN_RANGE[tool] != 0 && allie == ME)) {
-				if(!NOT_USE_ON[tool][allie]) {
+		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(allie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(allie))) 
+		{
+			if (!(MIN_RANGE[tool] != 0 && allie == ME)) 
+			{
+				if(!NOT_USE_ON[tool][allie]) 
+				{
 					cellAllie = getCell(allie);
 					cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
 					if (cell_deplace != -2) { //la cellule doit être atteignable
 						var heal, boostMaxLife, dammage;
-						healVal(tool, allie, null, heal, boostMaxLife, dammage);
+						healVal(tool, allie, null, heal, boostMaxLife, dammage, area);
 						
 						if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= heal) {
 							valeur = SCORE_HEAL[allie] * (boostMaxLife + heal);
@@ -156,7 +208,7 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 	return @bestAction;
 }
 
-function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife,@dammage){
+function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife,@dammage, area){
 	heal = 0; boostMaxLife = 0; dammage = 0;
 	var effects = isChip(tool) ? getChipEffects(tool) : getWeaponEffects(tool);
 	var sagesse = getWisdom();
@@ -164,8 +216,31 @@ function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife,@dammage){
 	
 	for (var effect in effects) {
 		var valMoyen = (effect[MIN] + effect[MAX]) / 2;
-		if(effect[TYPE]==EFFECT_HEAL) {
-			heal = min(coeffReduction*valMoyen*(1+sagesse/100),(getTotalLife(leek)-getLife(leek)));
+		if(effect[TYPE]==EFFECT_HEAL) 
+		{
+			if(tool == CHIP_VAMPIRIZATION)
+			{
+				var nbCibles = 0;
+				if(area != [])
+				{
+					for(var cell in area)
+					{
+						if(getCellContent(cell) == 1)
+						{
+							var leekCible = getLeekOnCell(cell);
+							if(isEnemy(leekCible))
+							{
+								nbCibles++;
+							}
+						}
+					}
+				}
+				heal = min(coeffReduction*valMoyen*nbCibles, coeffReduction*valMoyen);
+			}
+			else
+			{
+				heal = min(coeffReduction*valMoyen*(1+sagesse/100),(getTotalLife(leek)-getLife(leek)));
+			}
 			
 		} if(effect[TYPE]==EFFECT_DAMAGE) {
 			dammage = max(0,effect[MAX]*(1+getStrength()/100)*(1-getRelativeShield(leek))-getAbsoluteShield(leek));

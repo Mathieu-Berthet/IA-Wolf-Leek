@@ -11,13 +11,13 @@ include("getCellToUse");
  * */
 
 
-function getBoostAction(@actions, @cellsAccessible, Allies) {
+function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies) {
 	var nb_action = count(actions); 
 	for(var chip in BoostsTools) 
 	{
 		if (getCooldown(chip) == 0 && getTP() >= getChipCost(chip)) 
 		{
-			var tir = Booster(chip, Allies, cellsAccessible);
+			var tir = Booster(chip, Allies, cellsAccessible, Ennemies);
 
 			if ((tir != [] || tir != null) && tir[VALEUR] > 3) // au moins 3 de boost (en moyenne)
 			{
@@ -60,17 +60,67 @@ function haveEffect(leek,tool) {
   return false;
 }
 
-function Booster(tool, allies, @cellsAccessible) 
+function Booster(tool, allies, @cellsAccessible, ennemies) 
 {
 	// pour les puces de soins sans AOE.   De boost*
 	var ope = getOperations();
 	var cell_deplace;
 	var cellAllie;
+	var cellEnnemie;
 	var bestAction = [];
 	var action;
 	var valeur;
 	var bestValeur = 0;
 	var distanceBestAction = 0;
+	var area = [];
+	for(var ennemie in ennemies)
+	{
+		var eff = getChipEffects(tool)[0];
+		var targets = eff[TARGETS];
+		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(ennemie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(ennemie))) 
+		{
+      		if(!(MIN_RANGE[tool] != 0)) 
+			{
+				cellEnnemie = getCell(ennemie);
+				cell_deplace = getCellToUseToolsOnCell(tool, cellEnnemie, cellsAccessible);
+				if(tool == CHIP_COVETOUSNESS)
+				{
+					area = getChipEffectiveArea(CHIP_COVETOUSNESS, cellEnnemie);
+				}
+				else if(tool == CHIP_PRECIPITATION)
+				{
+					area = getChipEffectiveArea(CHIP_PRECIPITATION, cellEnnemie);
+				}
+				if (cell_deplace != -2) 
+				{ //la cellule doit être atteignable
+					var boost;
+					boostVal(tool, ennemie, null, boost, area);
+					var coeff = SCORE_BOOST[ennemie][eff[TYPE]];
+					if(coeff===null) 
+					{
+						debugE("["+getChipName(tool)+"]Pas de valeur pour : "+ eff[TYPE]);
+					}
+					valeur = coeff*(boost);
+					if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) 
+					{
+						if(getLeekOnCell(cellEnnemie)!=ME) 
+						{
+						  bestAction[CELL_DEPLACE] = -1;
+						  bestAction[CELL_VISE] = -1;
+						} 
+						else 
+						{
+						  bestAction[CELL_DEPLACE] = cell_deplace;
+						  bestAction[CELL_VISE] = cellEnnemie;
+						}
+						bestAction[VALEUR] = valeur;
+						distanceBestAction = cellsAccessible[cell_deplace];
+						bestValeur = valeur;
+					}
+				}
+			}
+		}
+	}
 	for (var allie in allies) 
 	{
 		var eff = getChipEffects(tool)[0];
@@ -86,7 +136,7 @@ function Booster(tool, allies, @cellsAccessible)
           			if (cell_deplace != -2) 
 					{ //la cellule doit être atteignable
             			var boost;
-            			boostVal(tool, allie, null, boost);
+            			boostVal(tool, allie, null, boost, area);
             			var coeff = SCORE_BOOST[allie][eff[TYPE]];
 						if(coeff===null) 
 						{
@@ -118,7 +168,7 @@ function Booster(tool, allies, @cellsAccessible)
 	return @bestAction;
 }
 
-function boostVal(tool, leek, coeffReduction, @boost)
+function boostVal(tool, leek, coeffReduction, @boost, area)
 {
 	boost = 0;
 	var effects = getChipEffects(tool);
@@ -128,7 +178,29 @@ function boostVal(tool, leek, coeffReduction, @boost)
 		var valMoyen = (effect[MIN] + effect[MAX]) / 2;
 		if(effect[TYPE] == EFFECT_BUFF_TP)
 		{
-			boost = valMoyen*(1+science/100) * 80;
+			if(tool == CHIP_COVETOUSNESS)
+			{
+				var nbCibles = 0;
+				if(area != [])
+				{
+					for(var cell in area)
+					{
+						if(getCellContent(cell) == 1)
+						{
+							var leekCible = getLeekOnCell(cell);
+							if(isEnemy(leekCible))
+							{
+								nbCibles++;
+							}
+						}
+					}
+				}
+				boost = valMoyen*nbCibles * 80;
+			}
+			else
+			{
+				boost = valMoyen*(1+science/100) * 80;
+			}
 		}
 		if(effect[TYPE] == EFFECT_BUFF_MP)
 		{
@@ -166,3 +238,8 @@ function boostVal(tool, leek, coeffReduction, @boost)
 		}		
 	}
 }
+
+
+//[test] [[32, 1, 1, 2, 29, 6]] --> Convoitise
+//[test] [[2, 38, 40, 0, 29, 6]] --> Vampirisme
+//[test] [[31, 1, 1, 1, 29, 6]] --> Precipitation
