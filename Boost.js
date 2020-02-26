@@ -135,9 +135,20 @@ function boostVal(tool, leek, coeffReduction, @boost)
 			boost = valMoyen*(1+science/100) * 60;
 		}
 
-		if(effect[TYPE] == EFFECT_BUFF_STRENGTH)
+		if(effect[TYPE] == EFFECT_BUFF_STRENGTH || effect[TYPE] == EFFECT_AFTEREFFECT)
 		{
-			boost = valMoyen*(1+science/100) * 1;
+			if(effect[TYPE] == EFFECT_BUFF_STRENGTH)
+			{
+				boost = valMoyen*(1+science/100) * 1;
+			}
+			if(effect[TYPE] == EFFECT_AFTEREFFECT)
+			{
+				var degat = valMoyen*(1+science/100) *1;
+				if(degat >= getLife(leek))
+				{
+					boost = 0;
+				}
+			}
 		}
 
 		if(effect[TYPE]== EFFECT_BUFF_AGILITY)
