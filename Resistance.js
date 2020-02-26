@@ -195,8 +195,7 @@ function ResistVal(tool, leek, @absoluteVulne){
         }
 		if(effect[TYPE] == EFFECT_STEAL_ABSOLUTE_SHIELD)
 		{
-			absoluteVulne = valMoyen * effect[TURNS];
-			//return 3*stealShield;
+			absoluteVulne = valMoyen * effect[TURNS] *3;
 		}
     }
 }
