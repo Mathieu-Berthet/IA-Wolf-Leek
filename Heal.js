@@ -14,48 +14,53 @@ include("getArea");
 function getHealAction(@actions, @cellsAccessible, Allies, Ennemies) 
 {
 	var nb_action = count(actions);
-	for (var chip in HealTools) 
+	var toutPoireau = Allies + Ennemies;
+	for (var tool in HealTools) 
 	{
-		if ((isWeapon(chip) && (getTP() >= getWeaponCost(chip) + 1 || getTP() == getWeaponCost(chip) && getWeapon() == chip)) || (isChip(chip) && getCooldown(chip) == 0 && getTP() >= getChipCost(chip))) 
+		var tir = [];
+		if ((isWeapon(tool) && (getTP() >= getWeaponCost(tool) + 1 || getTP() == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && getTP() >= getChipCost(tool))) 
 		{
-			var effect = getChipEffects(chip);
-			if ((effect[0][0] == EFFECT_HEAL || effect[0][0] == EFFECT_BOOST_MAX_LIFE) || chip == WEAPON_B_LASER) 
+			var area = (isChip(tool)) ? getChipArea(tool) : getWeaponArea(tool);
+			if(area == AREA_POINT)
 			{
-				var tir;
-				if(chip==WEAPON_B_LASER) 
+				tir = soigner(tool, Allies, cellsAccessible);
+			}
+			else
+			{
+				if (tool == WEAPON_B_LASER) 
 				{
 					var cellToCheck = getCellsToCheckForLaser(cellsAccessible, getAliveAllies());
-			 		tir = healTypeLigne(chip, cellToCheck, cellsAccessible);
+					tir = healTypeLigne(tool, cellToCheck, cellsAccessible);
 				} 
 				else 
 				{
-					tir = soigner(chip, Allies, cellsAccessible, Ennemies);
+					tir = healTypeAOE(toutPoireau, tool, cellsAccessible);
 				}
-				if ((tir != [] || tir != null) && tir[VALEUR] > 15) // au moins 15 de dégats (en moyenne)
-				{
-					tir[CHIP_WEAPON] = chip;
-					var coutPT;
-					var valeur = tir[VALEUR];
-					var n;
-					var change_weapon = 0;
-					if (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon()) {
-						change_weapon = 1;
-					}
-					coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON]) : getChipCost(tir[CHIP_WEAPON]);
-					if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) {
-						n = 1;
-					} else {
-						n = 1 /*floor(getTP() / coutPT)*/;
-					}
-					//ajouter le bon nombre de fois dans les actions 
-					for (var o = 1; o <= n; o++) {
-						tir[NB_TIR] = o;
-						tir[PT_USE] = o * coutPT + change_weapon;
-						tir[VALEUR] = o * valeur;
-						tir[EFFECT] = isChip(chip) ? getChipEffects(chip)[0][0] : EFFECT_HEAL;
-						actions[nb_action] = tir;
-						nb_action++;
-					}
+			}
+			if ((tir != [] || tir != null) && tir[VALEUR] > 15) // au moins 15 de dégats (en moyenne)
+			{
+				tir[CHIP_WEAPON] = tool;
+				var coutPT;
+				var valeur = tir[VALEUR];
+				var n;
+				var change_weapon = 0;
+				if (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon()) {
+					change_weapon = 1;
+				}
+				coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON]) : getChipCost(tir[CHIP_WEAPON]);
+				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) {
+					n = 1;
+				} else {
+					n = 1 /*floor(getTP() / coutPT)*/;
+				}
+				//ajouter le bon nombre de fois dans les actions 
+				for (var o = 1; o <= n; o++) {
+					tir[NB_TIR] = o;
+					tir[PT_USE] = o * coutPT + change_weapon;
+					tir[VALEUR] = o * valeur;
+					tir[EFFECT] = isChip(tool) ? getChipEffects(tool)[0][0] : EFFECT_HEAL;
+					actions[nb_action] = tir;
+					nb_action++;
 				}
 			}
 		}
@@ -85,12 +90,13 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 		if (lineOfSight(cell[from], cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], ME)) {
 			var cell_affecter = getAreaLine(tool,cell[from], cell[withOrientation]);
 			var sommeHeal = 0;
+			var nbCibles = 0;
 			var killAllie = false;
 			for (var i in cell_affecter) {
 				if (getCellContent(i) == 1) {
 					var leek = getLeekOnCell(i);
 					if (leek != getLeek()) {
-						healVal(tool, leek, null, heal, boostMaxLife, degat, area);
+						healVal(tool, leek, null, heal, boostMaxLife, degat, nbCibles);
 						var team = (isAlly(leek)) ? 1 : -1;
 						heal = heal - degat;
 						sommeHeal += team * SCORE[leek] * heal;
@@ -111,8 +117,74 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 	return @bestAction;
 }
 
+function getTarget(tool, cell) {
+	return (isChip(tool)) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
+}
 
-function soigner(tool, allies, @cellsAccessible, ennemies) { // pour les puces de soins sans AOE
+function healTypeAOE(toutPoireau, tool, @cellsAccessible)
+{
+	var oper = getOperations();
+	var bestAction = [];
+	var distanceBestAction = 0;
+	
+	var heal = 0;
+	var degat = 0;
+	var boostMaxLife = 0;
+	
+	var cell_deplace;
+	var valeurMax = 0;
+	var maxRange = (isChip(tool)) ? getChipMaxRange(tool) : getWeaponMaxRange(tool);
+	var deja_fait = [];
+	for (var poireau in toutPoireau) {
+		var distance = getDistance(getCell(), getCell(poireau));
+		if (distance <= maxRange + getMP())
+		{
+			var zone = getEffectiveArea(tool, getCell(poireau));
+			if (zone != null) 
+			{
+				for (var cell in zone) 
+				{
+					if (!deja_fait[cell]) 
+					{
+						deja_fait[cell] = true;
+						cell_deplace = getCellToUseToolsOnCell(tool, cell, cellsAccessible);
+						var sommeHeal = 0;
+						if (cell_deplace != -2) 
+						{
+							var cibles = getTarget(tool, cell);
+							if (cibles != []) 
+							{
+								var nbCibles = count(cibles);
+								for (var leek in cibles) 
+								{
+									if (leek != getLeek()) 
+									{
+										healVal(tool,  leek,  null,  heal,  boostMaxLife, degat, nbCibles);
+										sommeHeal += heal;
+									}
+								}
+							}
+							var valeur = sommeHeal;
+							if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
+								bestAction[CELL_DEPLACE] = cell_deplace;
+								bestAction[CELL_VISE] = cell;
+								bestAction[VALEUR] = valeur;
+								valeurMax = valeur;
+								distanceBestAction = cellsAccessible[cell_deplace];
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (isChip(tool)) debug(getChipName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	else debug(getWeaponName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	return @bestAction;
+}
+
+
+function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sans AOE
 	var ope = getOperations();
 	var cell_deplace;
 	var cellAllie;
@@ -122,54 +194,6 @@ function soigner(tool, allies, @cellsAccessible, ennemies) { // pour les puces d
 	var valeur;
 	var bestValeur = 0;
 	var distanceBestAction = 0;
-	var area = [];
-	for(var ennemie in ennemies)
-	{
-		var eff = getChipEffects(tool)[0];
-		var targets = eff[TARGETS];
-		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(ennemie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(ennemie))) 
-		{
-      		if(!(MIN_RANGE[tool] != 0)) 
-			{
-				cellEnnemie = getCell(ennemie);
-				cell_deplace = getCellToUseToolsOnCell(tool, cellEnnemie, cellsAccessible);
-				if(tool == CHIP_VAMPIRIZATION)
-				{
-					area = getChipEffectiveArea(tool, cellAllie);
-				}
-				if (cell_deplace != -2) 
-				{ //la cellule doit être atteignable
-					var heal, boostMaxLife, dammage;
-					healVal(tool, ennemie, null, heal, boostMaxLife, dammage, area);
-					var coeff = SCORE_BOOST[ennemie][eff[TYPE]];
-					if(coeff===null) 
-					{
-						debugE("["+getChipName(tool)+"]Pas de valeur pour : "+ eff[TYPE]);
-					}
-					valeur = coeff*(heal);
-					if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) 
-					{
-						if(getLeekOnCell(cellEnnemie)!=ME) 
-						{
-						  bestAction[CELL_DEPLACE] = -1;
-						  bestAction[CELL_VISE] = -1;
-						} 
-						else 
-						{
-						  bestAction[CELL_DEPLACE] = cell_deplace;
-						  bestAction[CELL_VISE] = cellEnnemie;
-						}
-						bestAction[VALEUR] = valeur;
-						distanceBestAction = cellsAccessible[cell_deplace];
-						bestValeur = valeur;
-					}
-				}
-			}
-		}
-	}
-	
-	
-	
 	for (var allie in allies) {
 		var targets = getChipEffects(tool)[0][TARGETS];
 		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(allie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(allie))) 
@@ -182,7 +206,8 @@ function soigner(tool, allies, @cellsAccessible, ennemies) { // pour les puces d
 					cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
 					if (cell_deplace != -2) { //la cellule doit être atteignable
 						var heal, boostMaxLife, dammage;
-						healVal(tool, allie, null, heal, boostMaxLife, dammage, area);
+						var nbCibles = 0;
+						healVal(tool, allie, null, heal, boostMaxLife, dammage, nbCibles);
 						
 						if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= heal) {
 							valeur = SCORE_HEAL[allie] * (boostMaxLife + heal);
@@ -208,7 +233,8 @@ function soigner(tool, allies, @cellsAccessible, ennemies) { // pour les puces d
 	return @bestAction;
 }
 
-function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife,@dammage, area){
+function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife,@dammage, nbCibles)
+{
 	heal = 0; boostMaxLife = 0; dammage = 0;
 	var effects = isChip(tool) ? getChipEffects(tool) : getWeaponEffects(tool);
 	var sagesse = getWisdom();
@@ -220,31 +246,19 @@ function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife,@dammage, area
 		{
 			if(tool == CHIP_VAMPIRIZATION)
 			{
-				var nbCibles = 0;
-				if(area != [])
-				{
-					for(var cell in area)
-					{
-						if(getCellContent(cell) == 1)
-						{
-							var leekCible = getLeekOnCell(cell);
-							if(isEnemy(leekCible))
-							{
-								nbCibles++;
-							}
-						}
-					}
-				}
 				heal = min(coeffReduction*valMoyen*nbCibles, coeffReduction*valMoyen);
 			}
 			else
 			{
 				heal = min(coeffReduction*valMoyen*(1+sagesse/100),(getTotalLife(leek)-getLife(leek)));
 			}
-			
-		} if(effect[TYPE]==EFFECT_DAMAGE) {
+		} 
+		if(effect[TYPE]==EFFECT_DAMAGE) 
+		{
 			dammage = max(0,effect[MAX]*(1+getStrength()/100)*(1-getRelativeShield(leek))-getAbsoluteShield(leek));
-		} if(effect[TYPE]==EFFECT_BOOST_MAX_LIFE) {
+		}
+		if(effect[TYPE]==EFFECT_BOOST_MAX_LIFE) 
+		{
 			boostMaxLife = valMoyen*(1+sagesse/100);
 		}
 	}

@@ -1,5 +1,6 @@
 // dernière mise à jour le 25/02/18 par Rayman
 include("GLOBALS");
+include("getArea");
 include("getCellToUse");
 
 /*
@@ -12,16 +13,25 @@ include("getCellToUse");
 
 
 function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies) {
-	var nb_action = count(actions); 
-	for(var chip in BoostsTools) 
+	var nb_action = count(actions);
+	var toutPoireau = Allies + Ennemies;
+	for(var tool in BoostsTools) 
 	{
-		if (getCooldown(chip) == 0 && getTP() >= getChipCost(chip)) 
+		var tir = [];
+		if (getCooldown(tool) == 0 && getTP() >= getChipCost(tool)) 
 		{
-			var tir = Booster(chip, Allies, cellsAccessible, Ennemies);
-
+			var area = (isChip(tool) ? getChipArea(tool) : getWeaponArea(tool));
+			if(area == AREA_POINT)
+			{
+				tir = Booster(tool, Allies, cellsAccessible);
+			}
+			else
+			{
+				tir = boostTypeAOE(toutPoireau,  tool,  @cellsAccessible);
+			}
 			if ((tir != [] || tir != null) && tir[VALEUR] > 3) // au moins 3 de boost (en moyenne)
 			{
-				tir[CHIP_WEAPON] = chip;
+				tir[CHIP_WEAPON] = tool;
 				var coutPT; 
 				var valeur = tir[VALEUR];
 				var n;
@@ -41,7 +51,7 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies) {
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = getChipEffects(chip)[0][0];
+					tir[EFFECT] = getChipEffects(tool)[0][0];
 					actions[nb_action] = tir;
 					nb_action++;
 				}
@@ -60,7 +70,7 @@ function haveEffect(leek,tool) {
   return false;
 }
 
-function Booster(tool, allies, @cellsAccessible, ennemies) 
+function Booster(tool, allies, @cellsAccessible) 
 {
 	// pour les puces de soins sans AOE.   De boost*
 	var ope = getOperations();
@@ -72,55 +82,7 @@ function Booster(tool, allies, @cellsAccessible, ennemies)
 	var valeur;
 	var bestValeur = 0;
 	var distanceBestAction = 0;
-	var area = [];
-	for(var ennemie in ennemies)
-	{
-		var eff = getChipEffects(tool)[0];
-		var targets = eff[TARGETS];
-		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(ennemie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(ennemie))) 
-		{
-      		if(!(MIN_RANGE[tool] != 0)) 
-			{
-				cellEnnemie = getCell(ennemie);
-				cell_deplace = getCellToUseToolsOnCell(tool, cellEnnemie, cellsAccessible);
-				if(tool == CHIP_COVETOUSNESS)
-				{
-					area = getChipEffectiveArea(CHIP_COVETOUSNESS, cellEnnemie);
-				}
-				else if(tool == CHIP_PRECIPITATION)
-				{
-					area = getChipEffectiveArea(CHIP_PRECIPITATION, cellEnnemie);
-				}
-				if (cell_deplace != -2) 
-				{ //la cellule doit être atteignable
-					var boost;
-					boostVal(tool, ennemie, null, boost, area);
-					var coeff = SCORE_BOOST[ennemie][eff[TYPE]];
-					if(coeff===null) 
-					{
-						debugE("["+getChipName(tool)+"]Pas de valeur pour : "+ eff[TYPE]);
-					}
-					valeur = coeff*(boost);
-					if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) 
-					{
-						if(getLeekOnCell(cellEnnemie)!=ME) 
-						{
-						  bestAction[CELL_DEPLACE] = -1;
-						  bestAction[CELL_VISE] = -1;
-						} 
-						else 
-						{
-						  bestAction[CELL_DEPLACE] = cell_deplace;
-						  bestAction[CELL_VISE] = cellEnnemie;
-						}
-						bestAction[VALEUR] = valeur;
-						distanceBestAction = cellsAccessible[cell_deplace];
-						bestValeur = valeur;
-					}
-				}
-			}
-		}
-	}
+	//var area = [];
 	for (var allie in allies) 
 	{
 		var eff = getChipEffects(tool)[0];
@@ -136,7 +98,8 @@ function Booster(tool, allies, @cellsAccessible, ennemies)
           			if (cell_deplace != -2) 
 					{ //la cellule doit être atteignable
             			var boost;
-            			boostVal(tool, allie, null, boost, area);
+						var nbCibles = 0;
+            			boostVal(tool, allie, null, boost, nbCibles);
             			var coeff = SCORE_BOOST[allie][eff[TYPE]];
 						if(coeff===null) 
 						{
@@ -168,7 +131,73 @@ function Booster(tool, allies, @cellsAccessible, ennemies)
 	return @bestAction;
 }
 
-function boostVal(tool, leek, coeffReduction, @boost, area)
+function getTarget(tool, cell) {
+	return (isChip(tool)) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
+}
+
+function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
+{
+	var oper = getOperations();
+	var bestAction = [];
+	var distanceBestAction = 0;
+	var cell_deplace;
+	var valeurMax = 0;
+	var maxRange = (isChip(tool)) ? getChipMaxRange(tool) : getWeaponMaxRange(tool);
+	var deja_fait = [];
+	for (var poireau in toutPoireau) {
+		var distance = getDistance(getCell(), getCell(poireau));
+		if (distance <= maxRange + getMP())
+		{
+			var zone = getEffectiveArea(tool, getCell(poireau));
+			if (zone != null) 
+			{
+				for (var cell in zone) 
+				{
+					if (!deja_fait[cell]) 
+					{
+						deja_fait[cell] = true;
+						cell_deplace = getCellToUseToolsOnCell(tool, cell, cellsAccessible);
+						var sommeBoostTP = 0;
+						var sommeBoostMP = 0;
+						var boost;
+						if (cell_deplace != -2) 
+						{
+							var cibles = getTarget(tool, cell);
+							if (cibles != []) 
+							{
+								var nbCibles = count(cibles);
+								for (var leek in cibles) 
+								{
+									if (leek != getLeek()) 
+									{
+										boostVal(tool,  leek,  null,  boost, nbCibles);
+										sommeBoostTP += boost;
+										sommeBoostMP += boost;
+									}
+								}
+							}
+							var valeur = sommeBoostTP + sommeBoostMP;
+							if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
+								bestAction[CELL_DEPLACE] = cell_deplace;
+								bestAction[CELL_VISE] = cell;
+								bestAction[VALEUR] = valeur;
+								valeurMax = valeur;
+								distanceBestAction = cellsAccessible[cell_deplace];
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (isChip(tool)) debug(getChipName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	else debug(getWeaponName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	return @bestAction;
+}
+
+
+
+function boostVal(tool, leek, coeffReduction, @boost, nbCibles)
 {
 	boost = 0;
 	var effects = getChipEffects(tool);
@@ -180,21 +209,6 @@ function boostVal(tool, leek, coeffReduction, @boost, area)
 		{
 			if(tool == CHIP_COVETOUSNESS)
 			{
-				var nbCibles = 0;
-				if(area != [])
-				{
-					for(var cell in area)
-					{
-						if(getCellContent(cell) == 1)
-						{
-							var leekCible = getLeekOnCell(cell);
-							if(isEnemy(leekCible))
-							{
-								nbCibles++;
-							}
-						}
-					}
-				}
 				boost = valMoyen*nbCibles * 80;
 			}
 			else
@@ -204,7 +218,14 @@ function boostVal(tool, leek, coeffReduction, @boost, area)
 		}
 		if(effect[TYPE] == EFFECT_BUFF_MP)
 		{
-			boost = valMoyen*(1+science/100) * 60;
+			if(tool == CHIP_PRECIPITATION)
+			{
+				boost = valMoyen*nbCibles * 60;
+			}
+			else
+			{
+				boost = valMoyen*(1+science/100) * 60;
+			}
 		}
 
 		if(effect[TYPE] == EFFECT_BUFF_STRENGTH || effect[TYPE] == EFFECT_AFTEREFFECT)

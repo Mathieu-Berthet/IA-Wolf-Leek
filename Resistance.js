@@ -12,8 +12,7 @@ function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax) {
     var nb_action = count(actions);
     for(var tool in ShieldTools) {
         if ( (isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool)) ) {
-            var effect = getChipEffects(tool);
-			if ((effect[0][0] == EFFECT_ABSOLUTE_SHIELD || effect[0][0] == EFFECT_RELATIVE_SHIELD || effect[0][0] == EFFECT_DAMAGE_RETURN) || tool == WEAPON_J_LASER)
+			if (tool == WEAPON_J_LASER)
 			{
 				var tir;
 				if(tool == WEAPON_J_LASER)
@@ -33,11 +32,18 @@ function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax) {
 					var valeur = tir[VALEUR];
 					var n;
 					var change_weapon = 0;
-					coutPT = getChipCost(tir[CHIP_WEAPON]);
-					if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) {
+					if (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon()) 
+					{
+						change_weapon = 1;
+					}
+					coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON]) : getChipCost(tir[CHIP_WEAPON]);
+					if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) 
+					{
 						n = 1;
-					} else {
-						n = 1;
+					} 
+					else 
+					{
+						n = floor(TPmax / coutPT);
 					}
 					//ajouter le bon nombre de fois dans les actions
 					for (var o = 1; o <= n; o++) {
@@ -77,12 +83,12 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
 			var sommeShield = 0;
 			for (var i in cell_affecter) 
 			{
-				if (getCellContent(i) == 1) 
+				if (getCellContent(i) == CELL_PLAYER) 
 				{
 					var leek = getLeekOnCell(i);
 					if (leek != getLeek()) 
 					{
-						ResistVal(tool, leek, absoluteVulne);
+						absoluteVulne += ResistVal(tool, leek);
 						var team = (isAlly(leek)) ? 0.5 : 1;
 						absoluteVulne += team * SCORE[leek];
 					}
@@ -134,8 +140,7 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
                         cellAllie = getCell(allie);
                         cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
                         if (cell_deplace != -2) { //la cellule doit être atteignable
-							var absoluteVulne;
-                            var resist = ResistVal(tool, allie, absoluteVulne);
+                            var resist = ResistVal(tool, allie);
                             valeur = SCORE_RESISTANCE[allie]*(resist);
                        		debug("Value : "+valeur);
                             if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
@@ -160,7 +165,7 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
     return @bestAction;
 }
  
-function ResistVal(tool, leek, @absoluteVulne){
+function ResistVal(tool, leek){
     var effects = getChipEffects(tool);
     var resistance = getResistance();
     var agility = getAgility();
@@ -193,9 +198,11 @@ function ResistVal(tool, leek, @absoluteVulne){
             var renvois = valMoyen*(1+agility/100) * effect[TURNS];
             return 3*renvois;
         }
-		if(effect[TYPE] == EFFECT_STEAL_ABSOLUTE_SHIELD)
+		if(effect[TYPE] == EFFECT_ABSOLUTE_VULNERABILITY || effect[TYPE] == EFFECT_STEAL_ABSOLUTE_SHIELD)
 		{
-			absoluteVulne = valMoyen * effect[TURNS] *3;
+			var vulne = valMoyen * effect[TURNS];
+			//TO continue. Because first effect will give a negative value, and the other, the same value but in positive. So value will became 0 at the end.
+			return 3*vulne;
 		}
     }
 }
