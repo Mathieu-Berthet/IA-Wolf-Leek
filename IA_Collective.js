@@ -14,50 +14,6 @@ include("Tactics");
 COMBO = [];
 CACHER = false;
 
-// [Caneton] à retirer avant commit
-/*==============Ajout par rapport au code Share================*/
-
-
-if (getFightType() == FIGHT_TYPE_SOLO) {
-	setCoeffSolo();
-	//getOpponent(getAliveEnemies());
-	var ennemis = getNearestEnemy();
-	if(isSummon(ennemis)) ennemis = getSummoner(ennemis);
-	if(getLeekID(ennemis) == 60498 || getLeekID(ennemis) == 59247) {
-		SCORE_RESISTANCE[getLeek()] = 0;
-	}
-} else {
-	getOpponent(getAliveEnemies());
-}
-
-
-var armor = true;
-if (getFightType() == FIGHT_TYPE_SOLO) {
-	var leek = getNearestEnemy();
-	if (isSummon(leek)) leek = getSummoner(leek);
-	if (getStrength(leek) <= 100 && getMagic(leek) >= 300) {
-		armor = false;
-	}
-}
-
-var effet = getEffects();
-var poison = 0;
-for (var i = 0; i < count(effet); i++) {
-	if (effet[i][0] == EFFECT_POISON) {
-		poison = poison + effet[i][1];
-		debug("poison :" + effet[i][1]);
-	}
-}
-
-if (poison > 300) {
-	if (getCooldown(CHIP_ANTIDOTE) == 0 && getTP() >= 3) {
-		useChip(CHIP_ANTIDOTE, getLeek());
-	} else {
-		debug("Pas de libé :p");
-	}
-}
-
-/*===============================================================*/
 
 getOpponent(getAliveEnemies());
 SetupAll();
