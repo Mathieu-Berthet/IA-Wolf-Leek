@@ -1,3 +1,4 @@
+
 // @auteur : Marmotte33
 // Dernière mise à jour: 01/04/2018 par Marmotte
 /**
@@ -59,6 +60,10 @@ function selectPipotron(listeFonctions) {
 	else { return random([pipotronWizard, pipotronRayman]); }
 }
 
+function getNoteDeMusique() {
+	var notes = ["♩", "♪", "♫", "♬", "♭"];
+	return random(notes);
+}
 
 function chanson() {
 	var choix = CHANSON_SYNCHRO[0];
@@ -344,13 +349,11 @@ global fonction = [
 "du courage",
 ];
 
-function random(array)
-{
+function random(array) {
 	return array[randInt(0, count(array))];
 }
 
-function pipotronRayman()
-{
+function pipotronRayman() {
 	var key = random(keys);
 	var nom = random(Nom[key]);
 	var personne = random(genre[key]);

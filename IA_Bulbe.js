@@ -7,9 +7,108 @@ include("Resistance");
 include("Communication");
 //include("Deplacements");
 include("Boost");
-	
 
-	
+
+
+// [Caneton] : c'est ma vieille fonction pour le healer, à vérifier si je la commit
+function bulbe_gerisseur() {
+	var allie = getAliveAllies();
+	var nb_allie = count(allie);
+	//Pour le vaccin il faut vérifier que le poireau n'a pas déjà l'effet sur lui
+	// Vaccin pour le summoner
+	if (getTP() >= 6 && getCooldown(CHIP_VACCINE) == 0) {
+		var effect = getEffects(getSummoner());
+		var booster = false;
+		for (var j = 0; j < count(effect); j++) {
+			if (effect[j][5] == CHIP_VACCINE) {
+				if (getCooldown(CHIP_VACCINE, effect[j][2]) > 1) {
+					booster = true;
+				}
+			}
+		}
+		if (booster == false) {
+			var cell = getCellToUseChip(CHIP_VACCINE, getSummoner());
+			if (getPathLength(cell, getCell()) <= getMP()) {
+				moveTowardCell(cell);
+				useChip(CHIP_VACCINE, getSummoner());
+			}
+		}
+	}
+	// Vaccin pour les alliers
+	if (getTP() >= 6 && getCooldown(CHIP_VACCINE) == 0) {
+		for (var i = 0; i < nb_allie; i++) {
+			var effect = getEffects(allie[i]);
+			var booster = false;
+			if (effect != null) {
+				for (var j = 0; j < count(effect); j++) {
+					if (effect[j][5] == CHIP_VACCINE) {
+						booster = true;
+					}
+				}
+			}
+			if (booster == false && getLife(allie[i]) < 0.75 * getTotalLife(allie[i]) && getCooldown(CHIP_VACCINE) == 0) {
+				var cell = getCellToUseChip(CHIP_VACCINE, allie[i]);
+				if (getPathLength(getCell(), cell) <= getMP()) {
+					moveTowardCell(cell);
+					useChip(CHIP_VACCINE, allie[i]);
+				}
+			}
+		}
+	}
+
+
+
+	var i = 0;
+	while (getCooldown(CHIP_CURE) == 0 && i < count(allie) && getTP() >= 4) {
+		var chip = getChips(allie[i]);
+		if (getLife(allie[i]) < getTotalLife(allie[i]) - 70) {
+			var cell = getCellToUseChip(CHIP_CURE, allie[i]);
+			if (getPathLength(getCell(), cell) <= getMP()) {
+				moveTowardCell(cell);
+				useChip(CHIP_CURE, allie[i]);
+			}
+		}
+		i++;
+	}
+
+	while (getCooldown(CHIP_DRIP) == 0 && i < count(allie) && getTP() >= 5) {
+		if (getLife(allie[i]) < getTotalLife(allie[i]) - 70 && getLeek() != allie[i]) {
+			var cell = getCellToUseChip(CHIP_DRIP, allie[i]);
+			if (getPathLength(getCell(), cell) <= getMP()) {
+				moveTowardCell(cell);
+				useChip(CHIP_DRIP, allie[i]);
+			}
+		}
+		i++;
+	}
+
+	i = 0;
+	while (getCooldown(CHIP_BANDAGE) == 0 && i < count(allie) && getTP() >= 2) {
+		var chip = getChips(allie[i]);
+		if (getLife(allie[i]) != getTotalLife(allie[i])) {
+			var cell = getCellToUseChip(CHIP_BANDAGE, allie[i]);
+			if (getPathLength(getCell(), cell) <= getMP()) {
+				moveTowardCell(cell);
+				useChip(CHIP_BANDAGE, allie[i]);
+			}
+		}
+		i++;
+	}
+
+	//Déplacement
+	var c = 1;
+	while (getDistance(getCell(), getCell(getSummoner())) > 3 && getMP() > 0 && c == 1) {
+		c = moveToward(getSummoner(), 1);
+	}
+	if (getPath(getCell(), getCell(getSummoner())) <= 3) {
+		moveAwayFrom(getSummoner(), 2);
+	}
+}
+
+
+
+
+
 function IA_Collective() {
 	SetupAll();
 	if (getName() == 'healer_bulb') {			// bulbe guerisseur
@@ -34,7 +133,7 @@ function IA_Collective() {
 				useChip(action, ally);
 			}
 		}
-	} else {	// tous les autres bulbes	
+	} else {	// tous les autres bulbes
 		if (getScience() > 0) {
 			setBoostCoeff();
 		}
@@ -58,7 +157,7 @@ function IA_Collective() {
 			}
 			var combo = getBestCombo(actions, getTP());
 			if (combo != []) {
-				var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
+				var action = getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo); // Y a d'autres type d'ordonnancement, choisissez celui que vous préférez (cf ordonnancement)
 				doAction(action);
 			} else {
 				continu = false;
