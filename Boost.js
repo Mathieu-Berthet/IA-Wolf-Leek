@@ -72,7 +72,7 @@ function haveEffect(leek,tool) {
 
 function Booster(tool, allies, @cellsAccessible)
 {
-	// pour les puces de soins sans AOE.   De boost*
+	// pour les puces de boost sans AOE.
 	var ope = getOperations();
 	var cell_deplace;
 	var cellAllie;
@@ -82,7 +82,6 @@ function Booster(tool, allies, @cellsAccessible)
 	var valeur;
 	var bestValeur = 0;
 	var distanceBestAction = 0;
-	//var area = [];
 	for (var allie in allies)
 	{
 		var eff = getChipEffects(tool)[0];
@@ -131,7 +130,7 @@ function Booster(tool, allies, @cellsAccessible)
 	return @bestAction;
 }
 
-function getTarget(tool, cell) {
+function getTargetBoost(tool, cell) {
 	return (isChip(tool)) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
 }
 
@@ -162,7 +161,7 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 						var boost;
 						if (cell_deplace != -2)
 						{
-							var cibles = getTarget(tool, cell);
+							var cibles = getTargetBoost(tool, cell);
 							if (cibles != [])
 							{
 								var nbCibles = count(cibles);
@@ -202,30 +201,27 @@ function boostVal(tool, leek, coeffReduction, @boost, nbCibles)
 	boost = 0;
 	var effects = getChipEffects(tool);
 	var science = getScience();
-	for (var effect in effects)
+	for (var effect in effects) 
 	{
 		var valMoyen = (effect[MIN] + effect[MAX]) / 2;
 		if(effect[TYPE] == EFFECT_BUFF_TP)
 		{
-			if(tool == CHIP_COVETOUSNESS)
-			{
-				boost = valMoyen*nbCibles * 80;
-			}
-			else
-			{
-				boost = valMoyen*(1+science/100) * 80;
-			}
+			boost = valMoyen*(1+science/100) * 80;
 		}
+		
+		if(effect[TYPE] == EFFECT_RAW_BUFF_TP)
+		{
+			boost = valMoyen*nbCibles * 80;
+		}
+		
 		if(effect[TYPE] == EFFECT_BUFF_MP)
 		{
-			if(tool == CHIP_PRECIPITATION)
-			{
-				boost = valMoyen*nbCibles * 60;
-			}
-			else
-			{
-				boost = valMoyen*(1+science/100) * 60;
-			}
+			boost = valMoyen*(1+science/100) * 60;
+		}
+		
+		if(effect[TYPE] == EFFECT_RAW_BUFF_MP)
+		{
+			boost = valMoyen*nbCibles * 60;
 		}
 
 		if(effect[TYPE] == EFFECT_BUFF_STRENGTH || effect[TYPE] == EFFECT_AFTEREFFECT)
@@ -253,14 +249,9 @@ function boostVal(tool, leek, coeffReduction, @boost, nbCibles)
 		{
 		  boost = valMoyen*(1+science/100) * 0.7;
 		}
-			if(effect[TYPE] == EFFECT_BUFF_WISDOM)
+			if(effect[TYPE] == EFFECT_BUFF_WISDOM) 
 		{
 		  boost = valMoyen*(1+science/100) * 0.7;
-		}
+		}		
 	}
 }
-
-
-//[test] [[32, 1, 1, 2, 29, 6]] --> Convoitise
-//[test] [[2, 38, 40, 0, 29, 6]] --> Vampirisme
-//[test] [[31, 1, 1, 1, 29, 6]] --> Precipitation

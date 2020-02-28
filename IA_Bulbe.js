@@ -7,10 +7,9 @@ include("Resistance");
 include("Communication");
 //include("Deplacements");
 include("Boost");
+	
 
-
-
-
+	
 function IA_Collective() {
 	SetupAll();
 	if (getName() == 'healer_bulb') {			// bulbe guerisseur
@@ -35,7 +34,7 @@ function IA_Collective() {
 				useChip(action, ally);
 			}
 		}
-	} else {	// tous les autres bulbes
+	} else {	// tous les autres bulbes	
 		if (getScience() > 0) {
 			setBoostCoeff();
 		}
@@ -46,20 +45,20 @@ function IA_Collective() {
 			var toutEnnemis = getAliveEnemies();
 			var toutAllies = getAliveAllies();
 			if (getStrength() > 0) {
-				getAttackAction(actions, cellsAccessible, toutEnnemis);
+				getAttackAction(actions, cellsAccessible, toutEnnemis, getTP());
 			}
 			if (getScience() > 0) {
-				getBoostAction(actions, cellsAccessible, toutAllies);
+				getBoostAction(actions, cellsAccessible, toutAllies, toutEnnemis, getTP());
 			}
 			if (getResistance() > 0) {
 				getResistanceAction(actions, cellsAccessible, toutAllies, getTP());
 			}
 			if(getWisdom() > 0) {
-				getHealAction(actions, cellsAccessible, toutAllies);
+				getHealAction(actions, cellsAccessible, toutAllies, toutEnnemis, getTP());
 			}
 			var combo = getBestCombo(actions, getTP());
 			if (combo != []) {
-				var action = getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo); // Y a d'autres type d'ordonnancement, choisissez celui que vous préférez (cf ordonnancement)
+				var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
 				doAction(action);
 			} else {
 				continu = false;

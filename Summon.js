@@ -115,7 +115,7 @@ function summonBulb(CHIP, IA, ennemie, @cellsAccessible) {
 		summon(param[0], cellOuSummon, param[1]);
   	/* Mise à jour des variables globales pour pouvoir booster et ne pas kill le bulbe */
 		updateInfoLeeks();
-  	getOpponent(getAliveEnemies());
+		getOpponent(getAliveEnemies());
 		setBoostCoeff();
 	});
   tir[PARAM] = [CHIP, IA, cellsAccessible];

@@ -130,7 +130,7 @@ function attaqueTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			var sommeVolVie = 0;
 			var sommeRenvoi = 0;
 			for (var i in cell_affecter) {
-				if (getCellContent(i) == 1) {
+				if (getCellContent(i) == CELL_PLAYER) {
 					var leek = getLeekOnCell(i);
 					if (leek != getLeek()) {
 						pvLost(INFO_LEEKS[ME], INFO_LEEKS[leek], tool, cell, degat, degat_renvoyer, volDeVie);
@@ -426,7 +426,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
 
-    if(i[0] == EFFECT_SHACKLE_TP && ! isAlreadyShackle(cible[Leek],i[0])) {
+		if(i[0] == EFFECT_SHACKLE_TP && ! isAlreadyShackle(cible[Leek],i[0])) {
 			degatMoyen = (i[1] + i[2]) / 2;
 			degatMin = i[1];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
@@ -436,7 +436,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
 
-    if(i[0] == EFFECT_SHACKLE_MP && ! isAlreadyShackle(cible[Leek],i[0])) {
+		if(i[0] == EFFECT_SHACKLE_MP && ! isAlreadyShackle(cible[Leek],i[0])) {
 			degatMoyen = (i[1] + i[2]) / 2;
 			degatMin = i[1];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
@@ -446,7 +446,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
 
-    if(i[0] == EFFECT_SHACKLE_STRENGTH && ! isAlreadyShackle(cible [Leek],i[0])) {
+		if(i[0] == EFFECT_SHACKLE_STRENGTH && ! isAlreadyShackle(cible [Leek],i[0])) {
 			degatMoyen = (i[1] + i[2]) / 2;
 			degatMin = i[1];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
@@ -456,7 +456,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
 
-    if(i[0] == EFFECT_SHACKLE_MAGIC && !isAlreadyShackle(cible [Leek],i[0])) {
+		if(i[0] == EFFECT_SHACKLE_MAGIC && !isAlreadyShackle(cible [Leek],i[0])) {
 			degatMoyen = (i[1] + i[2]) / 2;
 			degatMin = i[1];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
@@ -466,7 +466,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
 
-    if(i[0] == EFFECT_KILL) {
+		if(i[0] == EFFECT_KILL) {
 			var bulbe = cible[Leek];
 			if(isAlly(bulbe)) {
 				degat[MOYEN] = getLife(bulbe);

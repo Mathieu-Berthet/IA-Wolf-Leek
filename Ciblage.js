@@ -27,7 +27,19 @@ function getOpponent(enemies) {
 			+ res * 2 * getLevel(enemy) / 100
 			+ poison * 4 * getLevel(enemy) / 100
 			+ agile * 2 * getLevel(enemy) / 100;
-		if (getCellDistance(getCell(), getCell(enemy)) < 8) {
+		for(var effect in getEffects(enemy))
+		{
+			if(effect[0] == EFFECT_POISON)
+			{
+				degatPoisonPris += effect[1];
+			}
+			if(effect[0] == EFFECT_HEAL)
+			{
+				degatPoisonPris -= effect[1];
+			}
+		}
+		if (getCellDistance(getCell(), getCell(enemy)) < 8) 
+		{
 			coeffDangereux *= 3;
 		}
 		if(degatPoisonPris >= getLife(enemy)) {
