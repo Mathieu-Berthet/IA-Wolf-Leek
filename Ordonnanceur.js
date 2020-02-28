@@ -1,8 +1,8 @@
 include("GLOBALS");
 
 global ORDONNANCEMENT_DEFAULT = ORDONNANCEMENT_BVF;
-global ORDONNANCEMENT_BVF = 0;// Big Value First
-global ORDONNANCEMENT_SCIENCE = 1;//Spécial pour la science //Ne pas être un ordonnancement par defaut
+global ORDONNANCEMENT_BVF = 0; // Big Value First
+global ORDONNANCEMENT_SCIENCE = 1; //Spécial pour la science //Ne pas être un ordonnancement par defaut
 global ORDONNANCEMENT_SUMMON_FIRST = 2; // Summon les bulbes en premier
 global ORDONNANCEMENT_SUMMON_LAST = 3; // Summon les bulbes à la fin
 global ORDONNANCEMENT_DEBUFF = 4;
@@ -19,35 +19,37 @@ getActionFromCombo[ORDONNANCEMENT_BVF] = function(@combo) {
 	}
 	return @combo[best];
 };
+
+
 getActionFromCombo[ORDONNANCEMENT_SCIENCE] = function(@combo) {
 	var action = getActionInComboByTool(combo, CHIP_STRETCHING);
-	if(action[CELL_DEPLACE]==-1) {// -1 si utilisation de la puce sur soi
+	if (action[CELL_DEPLACE] == -1) { // -1 si utilisation de la puce sur soi
 		return action;
 	}
 	action = getActionInComboByTool(combo, CHIP_REFLEXES);
-	if(action[CELL_DEPLACE]==-1) {
+	if (action[CELL_DEPLACE] == -1) {
 		return action;
 	}
 	action = getActionInComboByTool(combo, CHIP_RAGE);
-	if(action[CELL_DEPLACE]==-1) {
+	if (action[CELL_DEPLACE] == -1) {
 		return action;
 	}
 	action = getActionInComboByTool(combo, CHIP_MOTIVATION);
-	if(action[CELL_DEPLACE]==-1) {
+	if (action[CELL_DEPLACE] == -1) {
 		return action;
 	}
-	if(getFightType()==FIGHT_TYPE_SOLO || getFightType()==FIGHT_TYPE_BATTLE_ROYALE) {
+	if (getFightType() == FIGHT_TYPE_SOLO || getFightType() == FIGHT_TYPE_BATTLE_ROYALE) {
 		action = getActionInComboByTool(combo, CHIP_DOPING);
-		if(action[CELL_DEPLACE]==-1) {
+		if (action[CELL_DEPLACE] == -1) {
 			return action;
 		}
 		action = getActionInComboByTool(combo, CHIP_PROTEIN);
-		if(action[CELL_DEPLACE]==-1) {
+		if (action[CELL_DEPLACE] == -1) {
 			return action;
 		}
 	}
 	//TODO: Rajouter des choses si besoin
-	return getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
+	return getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST](combo);
 };
 
 
@@ -61,22 +63,22 @@ getActionFromCombo[ORDONNANCEMENT_DEBUFF] = function(@combo) {
 	if(action[CELL_DEPLACE]==-1) {
 		return action;
 	}
-	
+
 	/*action = getActionInComboByTool(combo, CHIP_TRANQUILIZER);
 	if(action[CELL_DEPLACE]==-1) {
 		return action;
 	}
-	
+
 	action = getActionInComboByTool(combo, CHIP_TRANQUILIZER);
 	if(action[CELL_DEPLACE]==-1) {
 		return action;
 	}*/
-	
+
 	action = getActionInComboByTool(combo, CHIP_COVETOUSNESS);
 	if(action[CELL_DEPLACE]==-1) {
 		return action;
 	}
-	
+
 	action = getActionInComboByTool(combo, CHIP_VENOM);
 	if(action[CELL_DEPLACE]==-1) {
 		return action;
@@ -115,13 +117,20 @@ getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST] = function(@combo) {
 };
 
 function getActionInComboByTool(@combo, tool) {
-	for(var action in combo) {
-		if(action[CHIP_WEAPON]==tool) {
+	for (var action in combo) {
+		if (action[CHIP_WEAPON] == tool) {
 			return action;
 		}
 	}
 }
 
+function getComboValue(@combo) {
+	var value = 0;
+	for (var action in combo) {
+		value += action[VALEUR];
+	}
+	return value;
+}
 
 
 function getBestCombo(@actions, TP) {
@@ -148,6 +157,7 @@ function getBestCombo(@actions, TP) {
 
 
 function doAction(attack) {
+	debug(attack);
 	if (attack != [] && attack != null) {
 		mark(attack[CELL_DEPLACE], COLOR_BLUE);
 		mark(attack[CELL_VISE], COLOR_RED);
@@ -155,9 +165,10 @@ function doAction(attack) {
 			moveTowardCell(attack[CELL_DEPLACE]);
 		}
 		var n = 0;
-		var nbPeopleAvant=count(getAliveAllies()+getAliveEnemies());
+		var nbPeopleAvant = count(getAliveAllies() + getAliveEnemies());
 		var nbPeopleApres = nbPeopleAvant;
-		while (n < attack[NB_TIR] && nbPeopleApres==nbPeopleAvant) {
+		STOP_ACTION = false;
+		while (n < attack[NB_TIR] && nbPeopleApres == nbPeopleAvant && !STOP_ACTION) {
 			if (isWeapon(attack[CHIP_WEAPON])) {
 				if (getWeapon() != attack[CHIP_WEAPON]) {
 					setWeapon(attack[CHIP_WEAPON]);
@@ -171,11 +182,26 @@ function doAction(attack) {
 				}
 			}
 			n++;
-			nbPeopleApres=count(getAliveAllies()+getAliveEnemies());
+			nbPeopleApres = count(getAliveAllies() + getAliveEnemies());
+
+			if (attack[CALLBACK] !== null) {
+				if (attack[PARAM] !== null) {
+					attack[CALLBACK](attack[PARAM]);
+				} else {
+					attack[CALLBACK]();
+				}
+			}
 		}
-    if(attack[CALLBACK] !== null) {
-        attack[CALLBACK](attack[PARAM]);
-  	}
+		if (nbPeopleApres != nbPeopleAvant) { // On a tuer quelqu'un
+			updateInfoLeeks(); // on met à jour les infos car tout les effet qu'il a lancé sont supprimé
+		}
+		if (!attack[NB_TIR] && attack[CALLBACK] !== null) {
+			if (attack[PARAM] !== null) {
+				attack[CALLBACK](attack[PARAM]);
+			} else {
+				attack[CALLBACK]();
+			}
+		}
 		return USE_SUCCESS;
 	} else {
 		return USE_FAILED;
@@ -201,7 +227,7 @@ function doAction(attack) {
  *	var w = [null, 5, 3, 4, 6];
  * sortie : [null, 1, 1, 0, 1]
  **/
-function knapsack(p, w, W) {
+function knapsack(@p, @w, W) {
 	var n = count(p);
 	var T = [];
 	var x = [];

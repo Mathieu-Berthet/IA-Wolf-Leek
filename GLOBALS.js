@@ -1,10 +1,10 @@
-// dernière mise à jour le : 31/03/2018 par : Marmotte
-
+// dernière mise à jour le : 03/02/2020 par : Caneton
 
 /********************** Globals *********************************/
 global CACHER;
 global ME = getLeek();
 global PHRASE_A_DIRE = [];
+global STOP_ACTION;
 
 global COMBO = [];
 
@@ -21,8 +21,8 @@ function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des 
 }
 INFO_LEEKS = updateInfoLeeks();
 
-  
-global SCORE; //TODO: faire une fonction plus précise  <= ok fait par ray dans le ciblage 
+
+global SCORE; //TODO: faire une fonction plus précise  <= ok fait par ray dans le ciblage
 SCORE = (function () {
 		var tab = [];
 		var leeks = getAliveAllies() + getAliveEnemies();
@@ -36,7 +36,7 @@ SCORE = (function () {
 global SCORE_HEAL; //TODO: faire une fonction plus précise
 SCORE_HEAL = (function () {
 		var tab = [];
-		var leeks = getAliveAllies();
+		var leeks = getAliveAllies() + getAliveEnemies();
 		for (var leek in leeks) {
 			tab[leek] = (isSummon(leek)) ? 0.5 : 1;
 		}
@@ -46,25 +46,31 @@ SCORE_HEAL = (function () {
 
 global SCORE_TACTIC;
 SCORE_TACTIC = (function() {
-  var tab = [];
-  var leeks = getAliveAllies() + getAliveEnemies();
-  for(var leek in leeks)
-  {
-    tab[leek] = (isSummon(leek)) ? 0.5 : 1;
-  }
-  return tab;
+	var tab = [];
+	var leeks = getAliveAllies() + getAliveEnemies();
+	for (var leek in leeks) {
+		tab[leek] = (isSummon(leek)) ? 0.5 : 1;
+	}
+	return tab;
 })();
 
 
-
 global SCORE_RESISTANCE;
-SCORE_RESISTANCE = (function () 
-{
+SCORE_RESISTANCE = (function () {
 	var tab = [];
 	var leeks = getAliveAllies();
-	for(var leek in leeks) 
-	{
-		tab[leek] =(isSummon(leek)) ? 0.2 : 1;
+	for(var leek in leeks) {
+		if(getFightType() == FIGHT_TYPE_SOLO) {
+			var ennemy = getNearestEnemy();
+			if(isSummon(ennemy)) ennemy = getSummoner(ennemy);
+			if(getMagic(ennemy) >= 300 && getStrength(ennemy) < 100) {
+				tab[leek] =(isSummon(leek)) ? 0 : 0.2;
+			} else {
+				tab[leek] =(isSummon(leek)) ? 0.4 : 1;
+			}
+		} else {
+			tab[leek] =(isSummon(leek)) ? 0.2 : 1;
+		}
 	}
 	return tab;
 })();
@@ -87,16 +93,16 @@ function setBoostCoeff() { // Méthode du nombre de puce
   for (var allie in getAliveAllies()) {
     var tools = getChips(allie)+getWeapons(allie);
     var nbDamageTool = compteurPuceEffect(tools, EFFECT_DAMAGE);
-		var nbHealTool = compteurPuceEffect(tools, EFFECT_HEAL);
-    var nbResiTool = compteurPuceEffect(tools, EFFECT_ABSOLUTE_SHIELD)+compteurPuceEffect(tools, EFFECT_RELATIVE_SHIELD); 
-    var nbReturnDamageTool = compteurPuceEffect(tools, EFFECT_DAMAGE_RETURN); 
-    var nbScienceTool = compteurPuceEffect(tools, EFFECT_BUFF_STRENGTH)
-    									+ compteurPuceEffect(tools, EFFECT_BUFF_WISDOM)
-    									+ compteurPuceEffect(tools, EFFECT_BUFF_RESISTANCE)
-    									+ compteurPuceEffect(tools, EFFECT_BUFF_AGILITY)
-    									+	compteurPuceEffect(tools, EFFECT_BUFF_TP)
-    									+	compteurPuceEffect(tools, EFFECT_BUFF_MP); 
-    
+	var nbHealTool = compteurPuceEffect(tools, EFFECT_HEAL);
+    var nbResiTool = compteurPuceEffect(tools, EFFECT_ABSOLUTE_SHIELD)+compteurPuceEffect(tools, EFFECT_RELATIVE_SHIELD);
+    var nbReturnDamageTool = compteurPuceEffect(tools, EFFECT_DAMAGE_RETURN);
+    var nbScienceTool =   compteurPuceEffect(tools, EFFECT_BUFF_STRENGTH)
+    					+ compteurPuceEffect(tools, EFFECT_BUFF_WISDOM)
+    					+ compteurPuceEffect(tools, EFFECT_BUFF_RESISTANCE)
+    					+ compteurPuceEffect(tools, EFFECT_BUFF_AGILITY)
+    					+ compteurPuceEffect(tools, EFFECT_BUFF_TP)
+    					+ compteurPuceEffect(tools, EFFECT_BUFF_MP);
+
     boost[allie] = [];
     boost[allie][EFFECT_BUFF_STRENGTH] = nbDamageTool == 0 ? 0 : sqrt(nbDamageTool);
     boost[allie][EFFECT_BUFF_WISDOM] = nbHealTool == 0 ? 0 : sqrt(nbHealTool);
@@ -105,24 +111,24 @@ function setBoostCoeff() { // Méthode du nombre de puce
     boost[allie][EFFECT_BUFF_TP] = 1.7;
     boost[allie][EFFECT_BUFF_MP] = 1.7;
 
-    
+
   	if(isSummon(allie)) {
-      for (var cle : var val in boost[allie]) { 
+      for (var cle : var val in boost[allie]) {
         boost[allie][cle] *= 0.7;
       }
     }
-    
+
   }
   SCORE_BOOST = boost;
 }
 
 
 global SCORE_BOOST;
-SCORE_BOOST = (function () 
+SCORE_BOOST = (function ()
 {
 	var tab = [];
 	var leeks = getAliveAllies();
-	for(var leek in leeks) 
+	for(var leek in leeks)
 	{
 		tab[leek] =(isSummon(leek)) ? 0.5 : 1;
 	}
@@ -141,13 +147,13 @@ global SE_laser = 3;
 //getEffects: [type, value, caster_id, turns, critical, item_id, target_id]
 global TYPE = 0, VALUE = 1, CASTER_ID = 2, TURNS = 3, CRITICAL = 4, ITEM_ID = 5, TARGET_ID = 6;
 //getWeaponEffects:[type, min, max, turns, targets]
-global  MIN = 1, MAX = 2, TARGETS = 4;
+global MIN = 1, MAX = 2, TARGETS = 4;
 
 global MOYEN = 3;
 
 global MIN_RANGE = (function () {
 	var min_range = [];
-	for (var i=1; i<123; i++) {
+	for (var i=1; i<130; i++) {
 		min_range[i] = (isChip(i)) ? getChipMinRange(i) : getWeaponMinRange(i);
 	}
 	min_range[CHIP_TRANQUILIZER] = 2;
@@ -167,16 +173,15 @@ global MAX_RANGE = (function () {
 })();
 
 
-
 global MINIMUM_TO_USE = (function(){
 	var tab = [];
 	tab[CHIP_REGENERATION] = 1 * (1 + getWisdom()/100) * getChipEffects(CHIP_REGENERATION)[0][MIN];
-	
+
 	//TODO: rajouter
-	
+
 	return tab;
 })();
-	
+
 global NOT_USE_ON;
 NOT_USE_ON = (function() {
 	var tab = [];
@@ -194,9 +199,9 @@ NOT_USE_ON = (function() {
 global TOUR = 0; TOUR ++; // getTurn()
 
 global _RESU_PRIORITY = [
-"science": 3,
-"strength": 2,
-"magic": 1,
+	"science": 3,
+    "strength": 2,
+    "magic": 1
 ];
 /******************************************************************/
 
@@ -240,14 +245,14 @@ function SetupTools(){//equipe les puces et les armes
 		var effectLifeDamage = getValeurEffect(Tools[i], EFFECT_LIFE_DAMAGE, ME, "moy");
 		var effectNovaDamage = getValeurEffect(Tools[i], EFFECT_NOVA_DAMAGE, ME, "moy");
 		var AllAttaque = effectPoison + effectDamage + effectDebuffMagic + effectDebuffStrength + effectDebuffPT + effectDebuffPM + effectLifeDamage + effectNovaDamage;
-	
+
 		//Pour les Shield + renvoie
 		var effRelaShield=getValeurEffect(Tools[i],EFFECT_RELATIVE_SHIELD, ME,"moy");
 		var effectShield = getValeurEffect(Tools[i],EFFECT_ABSOLUTE_SHIELD, ME,"moy");
 		var effectRenvoie = getValeurEffect(Tools[i],EFFECT_DAMAGE_RETURN, ME,"moy");
 		var effectStealShield = getValeurEffect(Tools[i], EFFECT_STEAL_ABSOLUTE_SHIELD, ME, "moy");
 		var AllShield = effRelaShield + effectShield + effectRenvoie + effectStealShield;
-	
+
 		//Pour les soins
 		var effectSoin;
 		if(Tools[i] != CHIP_INVERSION) //Pour ne pas avoir inversion dans les puces de soins
@@ -256,14 +261,14 @@ function SetupTools(){//equipe les puces et les armes
 		}
 		var effectBoostLife = getValeurEffect(Tools[i],EFFECT_BOOST_MAX_LIFE, ME,"moy");
 		var AllSoin = effectSoin + effectBoostLife;
-		
+
 		//Pour les puces tactiques
 		var effectLibe = getValeurEffect(Tools[i],EFFECT_DEBUFF, ME,"moy");
 		var effectAntidote = getValeurEffect(Tools[i],EFFECT_ANTIDOTE, ME,"moy");
 		var effectInvert = getValeurEffect(Tools[i],EFFECT_INVERT, ME,"moy");
 		var effectTeleport = getValeurEffect(Tools[i],EFFECT_TELEPORT, ME,"moy");
 		var AllTatics = effectLibe + effectAntidote + effectInvert + effectTeleport;
-	
+
     //Pour les boosts
 		var effectBuffStrength = getValeurEffect(Tools[i],  EFFECT_BUFF_STRENGTH,  ME,  "moy");
 		var effectBuffAgile = getValeurEffect(Tools[i], EFFECT_BUFF_AGILITY, ME,"moy");
@@ -274,12 +279,12 @@ function SetupTools(){//equipe les puces et les armes
 		var effectRawBuffTP = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_TP, ME,"moy");
 		var effectRawBuffMP = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_MP, ME,"moy");
 		var AllBoost = effectBuffStrength + effectBuffAgile + effectBuffResis + effectBuffMP + effectBuffTP + effectBuffWisdom + effectRawBuffTP + effectRawBuffMP;
-	
+
     //Les invocations
 		var effectSummon = getValeurEffect(Tools[i], EFFECT_SUMMON, ME, "moy");
     	var effectResurrect = getValeurEffect(Tools[i], EFFECT_RESURRECT, ME, "moy");
 		var AllSummons = effectSummon + effectResurrect;
-		
+
 		if(AllAttaque>0) push(AttackTools,Tools[i]);
 		if(AllShield>0) push(ShieldTools,Tools[i]);
 		if(AllSoin>0) push(HealTools,Tools[i]);
@@ -326,7 +331,7 @@ function getValeurEffect(tool, effectVoulu, leek, valeur){
 		effects = getWeaponEffects(tool);
 	}
 	for (var effect in effects) //plus efficace que for (var i = 0; i < count(effects); i++)
-	{	
+	{
 		if (effect[0] == effectVoulu)
 		{//on cherche l'effet damage
 				var nbrTour=effect[3];
@@ -343,8 +348,8 @@ function getValeurEffect(tool, effectVoulu, leek, valeur){
 				if(effectVoulu == EFFECT_HEAL || effectVoulu == EFFECT_BOOST_MAX_LIFE) amelioration = getWisdom(leek);
 				if(effectVoulu == EFFECT_DAMAGE)amelioration = getStrength(leek);
 				if(effectVoulu == EFFECT_POISON || effectVoulu == EFFECT_SHACKLE_STRENGTH || effectVoulu == EFFECT_SHACKLE_MAGIC || effectVoulu == EFFECT_SHACKLE_TP|| effectVoulu == EFFECT_SHACKLE_MP) amelioration = getMagic(leek);
-				if(effectVoulu == EFFECT_BUFF_STRENGTH || effectVoulu == EFFECT_BUFF_WISDOM || effectVoulu == EFFECT_BUFF_RESISTANCE || effectVoulu == EFFECT_BUFF_AGILITY|| 
-			 effectVoulu == EFFECT_BUFF_TP || effectVoulu == EFFECT_BUFF_MP || effectVoulu == EFFECT_RAW_BUFF_TP || effectVoulu == EFFECT_RAW_BUFF_MP || 
+				if(effectVoulu == EFFECT_BUFF_STRENGTH || effectVoulu == EFFECT_BUFF_WISDOM || effectVoulu == EFFECT_BUFF_RESISTANCE || effectVoulu == EFFECT_BUFF_AGILITY||
+			 effectVoulu == EFFECT_BUFF_TP || effectVoulu == EFFECT_BUFF_MP || effectVoulu == EFFECT_RAW_BUFF_TP || effectVoulu == EFFECT_RAW_BUFF_MP ||
 			 effectVoulu == EFFECT_NOVA_DAMAGE) amelioration = getScience(leek);
 				if(effectVoulu == EFFECT_DEBUFF || effectVoulu == EFFECT_ANTIDOTE || effectVoulu == EFFECT_INVERT || effectVoulu == EFFECT_TELEPORT) amelioration = 0;
 

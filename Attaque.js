@@ -1,3 +1,4 @@
+
 include("GLOBALS");
 include("getArea");
 include("getCellToUse");
@@ -28,13 +29,12 @@ include("getCellToUse");
 *
 *
 **/
-function getAttackAction(@actions, @cellsAccessible, toutEnnemis)
-{
+function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax) {
 	//On reccupère armes et chip qui font des dommages
 	var ope = getOperations();
 	var c = 0;
 	var nb_action = count(actions);
-    var TPmax = getTP();
+
 
 	// Calcul
 	for (var i in AttackTools) {
@@ -48,15 +48,10 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis)
 					var cellToCheck = getCellsToCheckForLaser(cellsAccessible, toutEnnemis);
 					tir = attaqueTypeLigne(i, cellToCheck, cellsAccessible);
 
-				} 
-				else 
-				{ //AOE
-					if (i == CHIP_DEVIL_STRIKE) 
-					{
+				} else { //AOE
+					if (i == CHIP_DEVIL_STRIKE) {
 						tir = frappeDuDemon(toutEnnemis,cellsAccessible);
-					} 
-					else 
-					{
+					} else {
 						tir = attaqueTypeAOE(toutEnnemis, i, cellsAccessible);
 					}
 				}
@@ -83,13 +78,22 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis)
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
 					tir[EFFECT] = ((isChip(i)) ? getChipEffects(i) : getWeaponEffects(i))[0][0];
+					tir[CALLBACK] = (function (params) {
+						updateInfoLeeks();
+						debug('CALLBACK');
+						var cible = getLeekOnCell(params[CELL_VISE]);
+						if (cible && isAlreadyShackle(cible, params[EFFECT])) {
+							STOP_ACTION = true;
+						}
+					});
+					tir[PARAM] = tir;
 					actions[nb_action] = tir;
 					nb_action++;
 				}
 			}
 		}
 	}
-	/*debugC("Calcul getAttackAction => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + " %", COLOR_RED);*/
+	//debugC("Calcul getAttackAction => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + " %", COLOR_RED);
 }
 
 
@@ -371,7 +375,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 	var RenvoiDegat = 4;
 	var Magie = 5;
 	var Science = 6;
-	
+
 	/*								*/
 
 	degat = [0, 0];
@@ -393,12 +397,11 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 	}
 
 	if (aoe < 0.399) {
-		debugE("pvLost : Erreur dans le calcul de l'aoe ! : " + aoe);
+		debugE("pvLost : Erreur dans le calcul de l'aoe ! : " + aoe + " => " + isChip(arme_chip) ? getChipName(arme_chip) : getWeaponName(arme_chip));
 		aoe = 0;
 	}
 
-	for (var i in effect) 
-	{
+	for (var i in effect) {
 		if (i[0] == EFFECT_DAMAGE) {
 			degatMoyen = (i[1] + i[2]) / 2;
 			degatMin = i[1];
@@ -423,7 +426,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
 
-		if(i[0] == EFFECT_SHACKLE_TP) {
+    if(i[0] == EFFECT_SHACKLE_TP && ! isAlreadyShackle(cible[Leek],i[0])) {
 			degatMoyen = (i[1] + i[2]) / 2;
 			degatMin = i[1];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
@@ -433,7 +436,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
 
-		if(i[0] == EFFECT_SHACKLE_MP) {
+    if(i[0] == EFFECT_SHACKLE_MP && ! isAlreadyShackle(cible[Leek],i[0])) {
 			degatMoyen = (i[1] + i[2]) / 2;
 			degatMin = i[1];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
@@ -443,16 +446,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
 
-		if(i[0] == EFFECT_SHACKLE_STRENGTH) {
-			degatMin = i[1];
-			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
-			var degatBrutMin = aoe * degatMin * (1 + tireur[Magie] / 100);
-			var nb_tour = i[3];
-			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
-			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
-		}
-
-		if(i[0] == EFFECT_SHACKLE_MAGIC) {
+    if(i[0] == EFFECT_SHACKLE_STRENGTH && ! isAlreadyShackle(cible [Leek],i[0])) {
 			degatMoyen = (i[1] + i[2]) / 2;
 			degatMin = i[1];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
@@ -461,14 +455,24 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
-			
-		if(i[0] == EFFECT_KILL) {
+
+    if(i[0] == EFFECT_SHACKLE_MAGIC && !isAlreadyShackle(cible [Leek],i[0])) {
+			degatMoyen = (i[1] + i[2]) / 2;
+			degatMin = i[1];
+			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
+			var degatBrutMin = aoe * degatMin * (1 + tireur[Magie] / 100);
+			var nb_tour = i[3];
+			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
+			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
+		}
+
+    if(i[0] == EFFECT_KILL) {
 			var bulbe = cible[Leek];
 			if(isAlly(bulbe)) {
 				degat[MOYEN] = getLife(bulbe);
 				degat[MIN] = getLife(bulbe);
 				volDeVie = 0;// pas de vol de vie si on tue le bulbe
-				degat_renvoyer = cible[RenvoiDegat] * degat[MOYEN] / 100; // ???
+				degat_renvoyer = 0; // pas de renvoi non plus
 				break;
 			}
 		}
@@ -494,14 +498,14 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 				degatTmp[MOYEN] = max(degatBrutMoyen * (1 - tireur[RelativeShield] / 100) - tireur[AbsoluteShield], 0);
 				degat[MOYEN] = degat[MOYEN] + degatTmp[MOYEN];
 				degat_ligne_lanceur = degat[MOYEN];
-				
+
 				if(degat[MOYEN] >= getLife(tireur))
 				{
 					degatMoyen = 0;
 				}
 				else
 				{
-					degat[MOYEN] = min(degat_ligne_ennemie, getLife(cible)) - degat_ligne_lanceur; //Calcul du risque 
+					degat[MOYEN] = min(degat_ligne_ennemie, getLife(cible)) - degat_ligne_lanceur; //Calcul du risque
 				}
 			}
 		}
@@ -516,4 +520,23 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MIN] = degat[MIN] + degatBrutMin;
 		}
 	}
+}
+
+
+
+function isAlreadyShackle(leek, effect) {
+	// TODO: améliorer la fonction : en prenant en compte les effets qui vont se finir avant le tour de la cible
+	if(effect == EFFECT_SHACKLE_MAGIC) {
+		return INFO_LEEKS[leek][MAGIC] <= 0;
+	}
+	if (effect == EFFECT_SHACKLE_STRENGTH) {
+		return INFO_LEEKS[leek][STRENGTH] <= 0;
+	}
+	if (effect == EFFECT_SHACKLE_MP) {
+		return INFO_LEEKS[leek][MP] <= 0;
+	}
+	if (effect == EFFECT_SHACKLE_TP) {
+		return INFO_LEEKS[leek][PT] <= 0;
+	}
+	return false ;
 }

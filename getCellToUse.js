@@ -1,3 +1,4 @@
+
 // Fonction pour économiser des opétations à utiliser à la place de getCellToUseChip/Weapon
 // Dernière mise à jour: 26/01/2018 par Caneton
 // TODO: definir les range min et max pour chaque armes et chips => empêcher de s'empoisonner pour certaines armes/chips
@@ -10,9 +11,8 @@ include("GLOBALS");
 * @auteur: Caneton
 * renvoit la cell la plus proche pour utiliser tool parmis les cellsAccessibles
 * Si non pas de cells accessible pour utiliser tool=> valeur du return : -2
-* 	/!\ cellsAccecible est un tableau, avec Tab[i] = longueur du chemin pour aller sur la cell i ! 
+* 	/!\ cellsAccecible est un tableau, avec Tab[i] = longueur du chemin pour aller sur la cell i !
 **/
-
 function getCellToUseToolsOnCell(tool, cellVisee, cellsAccessible) {
 	var cells = [];
 	CellsToUseTool (tool, cellVisee, cells);
@@ -62,7 +62,6 @@ function CellsToUseTool (tool, cellVisee, @allCells) {
 	}
 }
 
-
 /**
  * @auteur : Caneton
  * getCellsToCheckForLaser => selectionne des cases où il y a des ennemis qui se trouve sur la même ligne
@@ -92,7 +91,7 @@ function getCellsToCheckForLaser(@pathLengh, leeks) {
 	for (var i = 0; i < 613; i++) { //toutes les cells de la maps
 		if (pathLengh[i] !== null) { //si accessible
 			var j = 0;
-			while (j < n) { //sur toutes les cells où il y a un ennemis 
+			while (j < n) { //sur toutes les cells où il y a un ennemis
 				if (isOnSameLine(i, cells[j]) && lineOfSight(i, cells[j], all)) {
 					//todo : determiner l'orientation
 					array[taille] = [];
@@ -129,6 +128,9 @@ global _initInLineCell = [];
 
 
 global celltouse = [0: [0], 1 : [18, 17, -17, -18], 2 : [36, 35, 34, 1, -1, -34, -35, -36], 3 : [54, 53, 52, 51, 19, 16, -16, -19, -51, -52, -53, -54], 4 : [72, 71, 70, 69, 68, 37, 33, 2, -2, -33, -37, -68, -69, -70, -71, -72], 5 : [90, 89, 88, 87, 86, 85, 55, 50, 20, 15, -15, -20, -50, -55, -85, -86, -87, -88, -89, -90], 6 : [108, 107, 106, 105, 104, 103, 102, 73, 67, 38, 32, 3, -3, -32, -38, -67, -73, -102, -103, -104, -105, -106, -107, -108], 7 : [126, 125, 124, 123, 122, 121, 120, 119, 91, 84, 56, 49, 21, 14, -14, -21, -49, -56, -84, -91, -119, -120, -121, -122, -123, -124, -125, -126], 8 : [144, 143, 142, 141, 140, 139, 138, 137, 136, 109, 101, 74, 66, 39, 31, 4, -4, -31, -39, -66, -74, -101, -109, -136, -137, -138, -139, -140, -141, -142, -143, -144], 9 : [162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 127, 118, 92, 83, 57, 48, 22, 13, -13, -22, -48, -57, -83, -92, -118, -127, -153, -154, -155, -156, -157, -158, -159, -160, -161, -162], 10 : [180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 145, 135, 110, 100, 75, 65, 40, 30, 5, -5, -30, -40, -65, -75, -100, -110, -135, -145, -170, -171, -172, -173, -174, -175, -176, -177, -178, -179, -180]] ;
+// tableau tout moche qui donne les offset des cases se situant à une distante présise
+
+
 
 init_obstacle();
 initialisationCellToUse();
@@ -241,7 +243,7 @@ function initialisationInLineCell() {
 				}
 			}
 		}
-		//debug("initialisationInLineCell :"+((getOperations()-ope)/OPERATIONS_LIMIT *100));
+		debug("initialisationInLineCell :"+((getOperations()-ope)/OPERATIONS_LIMIT *100));
 	}
 }
 function initialisationCellToUse(){
@@ -262,6 +264,6 @@ function initialisationCellToUse(){
 				_initCellToUse[i][j] = sstab;
 			}
 		}
-		//debug("initialisationCellToUse :"+((getOperations()-av)/OPERATIONS_LIMIT *100));
+		debug("initialisationCellToUse :"+((getOperations()-av)/OPERATIONS_LIMIT *100));
 	}
 }

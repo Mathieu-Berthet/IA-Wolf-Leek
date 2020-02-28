@@ -7,9 +7,10 @@ include("Resistance");
 include("Communication");
 //include("Deplacements");
 include("Boost");
-	
 
-	
+
+
+
 function IA_Collective() {
 	SetupAll();
 	if (getName() == 'healer_bulb') {			// bulbe guerisseur
@@ -34,7 +35,7 @@ function IA_Collective() {
 				useChip(action, ally);
 			}
 		}
-	} else {	// tous les autres bulbes	
+	} else {	// tous les autres bulbes
 		if (getScience() > 0) {
 			setBoostCoeff();
 		}
@@ -58,7 +59,7 @@ function IA_Collective() {
 			}
 			var combo = getBestCombo(actions, getTP());
 			if (combo != []) {
-				var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
+				var action = getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo); // Y a d'autres type d'ordonnancement, choisissez celui que vous préférez (cf ordonnancement)
 				doAction(action);
 			} else {
 				continu = false;

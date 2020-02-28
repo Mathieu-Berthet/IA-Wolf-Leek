@@ -1,15 +1,19 @@
 // Fonction pour économiser des opérations à utiliser à la place de getChip/WeaponEffectiveArea
-// Dernière mise à jour: 04/02/2018 par Caneton
+// Dernière mise à jour: 03/02/2020 par Caneton
 
 include("GLOBALS");
 
 global tabAOE = [];
+global tabPlus = [];
+global tabCroix = [];
+
 global OBSTACLE = [];
 global AREA_LASER;
 global AREA_M_LASER;
 global AREA_LANCE_FLAMME;
 global AREA_J_LASER;
 
+//include('GLOBALS');
 
 						/*				Fonction publique					*/
 
@@ -26,20 +30,17 @@ function getAreaLine(tool, from, orientation) {
 	if (tool == WEAPON_FLAME_THROWER) {
 		return AREA_LANCE_FLAMME[from][orientation];
 	}
-  	if (tool == WEAPON_B_LASER) {
+	if (tool == WEAPON_B_LASER) {
 		return AREA_LANCE_FLAMME[from][orientation];
 	}
-	if(tool == WEAPON_J_LASER)
-	{
+	if (tool == WEAPON_J_LASER) {
 		return AREA_J_LASER[from][orientation];
 	}
 }
 
 
-
-
 // retourne les cellules qui seront affectée si l'arme est utilisée sur la cell
-// /!\ Ne fonction que pour les AOE !!! Ne pas utiliser pour les armes en ligne !!! 
+// /!\ Ne fonction que pour les AOE !!! Ne pas utiliser pour les armes en ligne !!!
 function getEffectiveArea(arme, cell) {
 	var typeArea;
 	(isWeapon(arme)) ? typeArea = getWeaponArea(arme) : typeArea = getChipArea(arme);
@@ -89,7 +90,7 @@ function getEffectiveArea(arme, cell) {
 		{
 			tailleCroixAOE = 3;
 		}
-		return tabAOE[cell][tailleAOE];
+		return tabAOE[cell][tailleCroixAOE];
 	}
 }
 
@@ -108,9 +109,9 @@ if (getTurn() == 1) {
 
 
 function init_AreaLine() {
-	var ope = getOperations(); 
+	var ope = getOperations();
 	// Note : NE[0] correspond à l'offset de la case à une distance de 2 dans la direction Nord-Est
-	// d'où les décalage de -2 !
+	// d'où les décalages de -2 !
 	var NE = [-34, -51, -68, -85, -102, -119, -136, -153, -170, -187, -204]; // Nord-Est
 	var SO = [34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204]; //Sud-Ouest
 	var NO = [-36, -54, -72, -90, -108, -126, -144, -162, -180, -198, -216]; // Nord-Ouest
@@ -200,10 +201,10 @@ function initgetAOE() {
 
 function initgetAOECroix() {
 	for (var i = 0; i < 613; i++) {
-		tabAOE[i] = [];
+		tabCroix[i] = [];
 		if (!OBSTACLE[i]) {
 			for (var j = 1; j < 4; j++) {
-				tabAOE[i][j] = getAOECroix(j, i);
+				tabCroix[i][j] = getAOECroix(j, i);
 			}
 		}
 	}
@@ -211,10 +212,10 @@ function initgetAOECroix() {
 
 function initgetAOEPlus() {
 	for (var i = 0; i < 613; i++) {
-		tabAOE[i] = [];
+		tabPlus[i] = [];
 		if (!OBSTACLE[i]) {
 			for (var j = 1; j < 4; j++) {
-				tabAOE[i][j] = getAOEPlus(j, i);
+				tabPlus[i][j] = getAOEPlus(j, i);
 			}
 		}
 	}
@@ -249,7 +250,7 @@ function getAOECroix(taille, centre)
 	if(taille == 1) Voisin = [-1, -35, 1, 35];
 	if(taille == 2) Voisin = [-1, -35, 1, 35, -2, -70, 2, 70];
 	if(taille == 3) Voisin = [-1, -35, 1, 35, -2, -70, 2, 70, -3, -105, 3, 105];
-	
+
 	for (var i in Voisin) {
 
 		if (centre + i >= 0 && centre + i < 613 && !OBSTACLE[centre + i]) {
@@ -270,7 +271,7 @@ function getAOEPlus(taille, centre)
 	if(taille == 1) Voisin = [-17, -18, 17, 18];
 	if(taille == 2) Voisin = [-17, -18, 17, 18, -34, 34, -36, 36];
 	if(taille == 3) Voisin = [-17, -18, 17, 18, -34, 34, -36, 36, 51, -51, 54, -54];
-	
+
 	for (var i in Voisin) {
 
 		if (centre + i >= 0 && centre + i < 613 && !OBSTACLE[centre + i]) {
