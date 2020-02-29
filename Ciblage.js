@@ -49,7 +49,7 @@ function getOpponent(enemies) {
 			coeffDangereux *= 0.5;
 		}
 		if (isStatic(enemy)) {
-          debug(getLeekName(enemy) + "is static");
+          //debug(getLeekName(enemy) + "is static");
           if(isStatic(ME)){
           	coeffDangereux =1;
           } else {

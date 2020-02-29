@@ -74,7 +74,7 @@ function getEffectiveArea(arme, cell) {
 		{
 			taillePlusAOE = 3;
 		}
-		return tabAOE[cell][taillePlusAOE];
+		return tabPlus[cell][taillePlusAOE];
 	}
 	if(typeArea == AREA_X_1 || typeArea == AREA_X_2 || typeArea == AREA_X_3)
 	{
@@ -90,7 +90,7 @@ function getEffectiveArea(arme, cell) {
 		{
 			tailleCroixAOE = 3;
 		}
-		return tabAOE[cell][tailleCroixAOE];
+		return tabCroix[cell][tailleCroixAOE];
 	}
 }
 

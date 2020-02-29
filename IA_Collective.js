@@ -8,7 +8,7 @@ include("Communication");
 include("Summon");
 include("MapDangerV1");
 include("Resistance");
-include("StatsCombo");
+include("StatsCombos");
 include("Tactics");
 
 COMBO = [];

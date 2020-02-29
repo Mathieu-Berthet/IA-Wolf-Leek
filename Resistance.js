@@ -50,7 +50,7 @@ function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax) {
 						tir[NB_TIR] = o;
 						tir[PT_USE] = o * coutPT + change_weapon;
 						tir[VALEUR] = o * valeur;
-						tir[EFFECT] = getChipEffects(chip)[0][0];
+						tir[EFFECT] = getChipEffects(tool)[0][0];
 						tir[CALLBACK] = function (leek) {
 							INFO_LEEKS[leek][1] = getAbsoluteShield(leek);
 							INFO_LEEKS[leek][2] = getRelativeShield(leek);

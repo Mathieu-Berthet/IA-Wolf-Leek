@@ -209,7 +209,8 @@ function healTypeAOE(toutPoireau, tool, @cellsAccessible)
 									if (leek != getLeek()) 
 									{
 										healVal(tool,  leek,  null,  heal,  boostMaxLife, degat, nbCibles);
-										sommeHeal += heal;
+										var team = (isEnemy(leek)) ? -1 : 1;
+										sommeHeal += team * SCORE[leek] * heal;
 									}
 								}
 							}
