@@ -214,9 +214,12 @@ function boostVal(tool, leek, coeffReduction, @boost, nbCibles)
 			boost = valMoyen*nbCibles * 80;
 		}
 		
-		if(effect[TYPE] == EFFECT_BUFF_MP)
-		{
-			boost = valMoyen*(1+science/100) * 60;
+		if(effect[TYPE] == EFFECT_BUFF_MP) {
+			if (isStatic(leek)) {
+				boost = 0;
+			} else {
+				boost = valMoyen*(1+science/100) * 80;
+			}
 		}
 		
 		if(effect[TYPE] == EFFECT_RAW_BUFF_MP)
