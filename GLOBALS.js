@@ -187,14 +187,28 @@ NOT_USE_ON = (function() {
 	var tab = [];
 	tab[CHIP_REGENERATION] = [];
 	tab[CHIP_FORTRESS] = [];
-	for(var leek in getAliveAllies()+getAliveEnemies()) {
+	tab[CHIP_RAMPART] = [];
+	for(var leek in getAliveAllies()) {
 		if(isSummon(leek)) {
 			tab[CHIP_REGENERATION][leek] = true;
 			tab[CHIP_FORTRESS][leek] = true;
+			if (getFightType() != FIGHT_TYPE_SOLO && countLeekAllie() > 1) {
+				tab[CHIP_RAMPART][leek] = true;
+			}
 		}
 	}
 	return tab;
 })();
+
+function countLeekAllie() {
+	var cpt = 0;
+	for(var leek in getAliveAllies()) {
+ 		if(getType(leek) == ENTITY_LEEK) {
+			cpt++;
+		}
+	}
+	return cpt;
+ }
 
 global TOUR = 0; TOUR ++; // getTurn()
 
