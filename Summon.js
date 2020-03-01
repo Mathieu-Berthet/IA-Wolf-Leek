@@ -67,12 +67,13 @@ function resu() {
 	tir[NB_TIR] = 0;
 	tir[PT_USE] = getChipCost(CHIP_RESURRECTION);
 	tir[EFFECT] = EFFECT_RESURRECT;
-	tir[CALLBACK] = function(param) {
-	resurrect(param[0], getSaferCell());
-	/* Mise à jour variable global pour pouvoir booster */
-	getOpponent(getAliveEnemies());
-	setBoostCoeff();
-	};
+	tir[CALLBACK] = (function(param) {
+		var code_return = resurrect(param[0], getSaferCell());
+		/* Mise à jour variable global pour pouvoir booster */
+		getOpponent(getAliveEnemies());
+		setBoostCoeff();
+		return code_return;
+	});
 	tir[PARAM] = [allieToResurrect];
 	tir[VALEUR] = getTotalLife(allieToResurrect);
 	return tir;
@@ -111,12 +112,12 @@ function summonBulb(CHIP, IA, ennemie, @cellsAccessible) {
 				}
 			}
 		}
-		// TODO: recupérer le code d'erreur en cas d'échec => pas de cell pour summon => boucle infini
-		summon(param[0], cellOuSummon, param[1]);
+		var code_return = summon(param[0], cellOuSummon, param[1]);
   	/* Mise à jour des variables globales pour pouvoir booster et ne pas kill le bulbe */
 		updateInfoLeeks();
 		getOpponent(getAliveEnemies());
 		setBoostCoeff();
+		return code_return;
 	});
   tir[PARAM] = [CHIP, IA, cellsAccessible];
   return tir;

@@ -48,7 +48,11 @@ while (continu) { // Pour l'instant on ne fait qu'une action
 		for(var i = 1; i <= action[4]; i++){
 			push(COMBO, action[3]);
 		}
-		doAction(action);
+		var isUseSucess = doAction(action);
+		if(!isUseSucess) {
+			debugE('Action non effectué : ' + action + '\n Attention à la boucle infini');
+			// TODO : mettre en place un mécanisme pour ne pas refaire la même action
+		}
 	} else {
 		continu = false;
 	}

@@ -158,6 +158,8 @@ function getBestCombo(@actions, TP) {
 
 function doAction(attack) {
 	debug(attack);
+	var code_return = USE_SUCCESS; // note : les codes d'erreurs sont négatifs
+	var code_return_callback = USE_SUCCESS;
 	if (attack != [] && attack != null) {
 		mark(attack[CELL_DEPLACE], COLOR_BLUE);
 		mark(attack[CELL_VISE], COLOR_RED);
@@ -173,12 +175,12 @@ function doAction(attack) {
 				if (getWeapon() != attack[CHIP_WEAPON]) {
 					setWeapon(attack[CHIP_WEAPON]);
 				}
-				useWeaponOnCell(attack[CELL_VISE]);
+				code_return &= 0 < useWeaponOnCell(attack[CELL_VISE]);
 			} else {
 				if (attack[CELL_VISE] != -1) {
-					useChipOnCell(attack[CHIP_WEAPON], attack[CELL_VISE]);
+					code_return &= 0 < useChipOnCell(attack[CHIP_WEAPON], attack[CELL_VISE]);
 				} else {
-					useChipOnCell(attack[CHIP_WEAPON], getCell());
+					code_return &= 0 < useChipOnCell(attack[CHIP_WEAPON], getCell());
 				}
 			}
 			n++;
@@ -186,23 +188,27 @@ function doAction(attack) {
 
 			if (attack[CALLBACK] !== null) {
 				if (attack[PARAM] !== null) {
-					attack[CALLBACK](attack[PARAM]);
+					code_return_callback = attack[CALLBACK](attack[PARAM]);
 				} else {
-					attack[CALLBACK]();
+					code_return_callback = attack[CALLBACK]();
 				}
+				if (code_return_callback !== null) code_return &= 0 < code_return_callback;
 			}
 		}
 		if (nbPeopleApres != nbPeopleAvant) { // On a tuer quelqu'un
 			updateInfoLeeks(); // on met à jour les infos car tout les effet qu'il a lancé sont supprimé
 		}
+
 		if (!attack[NB_TIR] && attack[CALLBACK] !== null) {
 			if (attack[PARAM] !== null) {
-				attack[CALLBACK](attack[PARAM]);
+				code_return_callback = attack[CALLBACK](attack[PARAM]);
 			} else {
-				attack[CALLBACK]();
+				code_return_callback = attack[CALLBACK]();
 			}
+			if (code_return_callback !== null) code_return &= 0 < code_return_callback;
 		}
-		return USE_SUCCESS;
+		
+		return code_return;
 	} else {
 		return USE_FAILED;
 	}
