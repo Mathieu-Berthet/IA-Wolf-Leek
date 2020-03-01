@@ -2,7 +2,7 @@ include("GLOBALS");
 
 // Memorise sous la forme : {combo : nb_reps}
 function Memorise(combo) {
-	if(combo == [] or getFightContext() != FIGHT_TYPE_SOLO)
+	if(combo == [] or getFightType() != FIGHT_TYPE_SOLO)
 	{
 		return;
 	}
@@ -59,7 +59,7 @@ function getHighestRegisterKey() {
 			Max = key;
 		}
 	}
-	return Max;
+	return number(Max);
 }
 
 
