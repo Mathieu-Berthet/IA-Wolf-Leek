@@ -23,7 +23,7 @@ debug("");
 var continu = true;
 while (continu) {// Pour l'instant on ne fait qu'une action
 	var actions = [null];// 1er élément à null pour le knapsack
-	var cellsAccessible = accessible(getCell(), getMP());
+	var cellsAccessible = accessible(getCell(), 0);
 	var toutEnnemis = getAliveEnemies();
 	var toutAllies = getAliveAllies();
 	var tp = getTP();
