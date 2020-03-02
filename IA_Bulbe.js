@@ -59,7 +59,12 @@ function IA_Collective() {
 			var combo = getBestCombo(actions, getTP());
 			if (combo != []) {
 				var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
-				doAction(action);
+				var isUseSucess = doAction(action);
+				if(!isUseSucess) {
+					debugE('Action non effectué : ' + action + '\n Attention à la boucle infini');
+					// TODO : mettre en place un mécanisme pour ne pas refaire la même action
+					ERROR_TOOLS[action[CHIP_WEAPON]] = true;
+				}
 			} else {
 				continu = false;
 			}
