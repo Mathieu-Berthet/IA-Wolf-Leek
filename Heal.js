@@ -18,6 +18,7 @@ function getHealAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax)
 	var toutPoireau = Allies + Ennemies;
 	for (var tool in HealTools) 
 	{
+		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
 		if ((isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool))) 
 		{

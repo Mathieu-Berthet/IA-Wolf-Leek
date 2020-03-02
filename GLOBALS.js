@@ -5,6 +5,7 @@ global CACHER;
 global ME = getLeek();
 global PHRASE_A_DIRE = [];
 global STOP_ACTION;
+global ERROR_TOOLS;
 
 global COMBO = [];
 

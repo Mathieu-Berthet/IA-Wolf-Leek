@@ -17,6 +17,7 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax) {
 	var toutPoireau = Allies + Ennemies;
 	for(var tool in BoostsTools)
 	{
+		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
 		if (getCooldown(tool) == 0 && getTP() >= getChipCost(tool))
 		{

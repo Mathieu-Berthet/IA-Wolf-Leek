@@ -11,6 +11,7 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies)
 	var nb_action = count(actions);
 	for(var chip in TacticsTools)
 	{
+		if(ERROR_TOOLS[chip]) continue;
 		if((isWeapon(chip) && (getTP() >= getWeaponCost(chip) + 1 || getTP() == getWeaponCost(chip) && getWeapon() == chip)) || (isChip(chip) && getCooldown(chip) == 0 && getTP() >= getChipCost(chip)))
 		{
 			var effect = getChipEffects(chip);

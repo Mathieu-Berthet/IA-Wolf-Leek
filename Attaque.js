@@ -38,6 +38,7 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax) {
 
 	// Calcul
 	for (var i in AttackTools) {
+		if(ERROR_TOOLS[i]) continue;
 		var tir = [];
 		if ((isWeapon(i) && (TPmax >= getWeaponCost(i) + 1 || TPmax == getWeaponCost(i) && getWeapon() == i)) || (isChip(i) && getCooldown(i) == 0 && TPmax >= getChipCost(i))) {
 			var area = (isChip(i)) ? getChipArea(i) : getWeaponArea(i);

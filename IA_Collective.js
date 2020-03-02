@@ -13,7 +13,7 @@ include("Tactics");
 
 COMBO = [];
 CACHER = false;
-
+ERROR_TOOLS = [];
 
 getOpponent(getAliveEnemies());
 SetupAll();
@@ -52,6 +52,7 @@ while (continu) { // Pour l'instant on ne fait qu'une action
 		if(!isUseSucess) {
 			debugE('Action non effectué : ' + action + '\n Attention à la boucle infini');
 			// TODO : mettre en place un mécanisme pour ne pas refaire la même action
+			ERROR_TOOLS[action[CHIP_WEAPON]] = true;
 		}
 	} else {
 		continu = false;
