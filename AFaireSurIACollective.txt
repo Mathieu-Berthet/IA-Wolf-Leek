@@ -1,0 +1,12 @@
+Petit fichier texte afin de mettre ici les points que l'on veut faire, et qui s'occupe de quoi. 
+Comme cela il sera facile de s'y retrouver, et si nécessaire de contacté la personne en charge ou qui s'est occupé d'un point précis, afin de lui demander des informations ou lui signaler un problème
+
+Je met déjà les premiers points actuellement en cours. Vous pourrez à tout moment modifier ce fichier pour mettre un nouveau point, ou signaler sur quel point vous travailler.
+
+
+A faire : 
+- Revoir le déplacement, essayer de regrouper les différentes fonctions faites par les membres en une seule
+
+- Corriger le setup des armes/puces pour les bulbes + Ajouter certaines infos dans le tableau de setup du départ. (Ordonnateur)
+
+- Regarder le problème des boucles infinies sur les actions (Caneton)
