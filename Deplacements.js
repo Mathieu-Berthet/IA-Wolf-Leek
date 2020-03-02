@@ -147,7 +147,7 @@ function getCacheCacheCells(me, TheEnemy, mp, mpAdv)
 
 /* [Caneton] : j'ai un conflit et je sais pas quel est la bonne version,
  à la vue du commentaire en dessous je commente cette fonction
- getCellToGo est plus adapté pour le cache-cache de toutes les façons
+ getCellToGo est plus adapté pour le cache-cache de toutes les façons*/
 function getNearestCellFromCell(safe_cells, cellEnemy) // PB ? // Quel est le problème ?
 {
 	var dist = 1000;
@@ -169,19 +169,19 @@ function getNearestCellFromCell(safe_cells, cellEnemy) // PB ? // Quel est le pr
 	}
 	return safe_cellule;
 }
-*/
 
-function getNearestCellFromCell(cell, tableau_cellules) {
+
+/*function getNearestCellFromCell(cell, tableau_cellules) {
 	var cellule;
 	var tableau_distances = [];
 	var position;
 	for (cellule in tableau_cellules) {
-		push(tableau_distances, getDistance(cell, cellule));
+		push(tableau_distances, getCellDistance(cell, cellule));
 	}
 	position = search(tableau_distances, arrayMin(tableau_distances));
 	var tab_cells = tableau_cellules;
 	return tab_cells[position];
-}
+}*/
 
 // récupère la cell la plus proche de l'adversaire parmis les cells où je peux me planquer
 function getCacheCacheCell(me, TheEnemy, mp, mpAdv)
@@ -209,7 +209,8 @@ function moveCacheCache(me, TheEnemy, mp, mpAdv)
 		if(cache_cache_cell === getCell(me))
 		{
 			moveToward(getNearestAlly());
-		}else
+		}
+		else
 		{
 			moveTowardCell(cache_cache_cell);
 		}
@@ -270,7 +271,7 @@ function getNearestCellFromCell_2(cell, tableau_cellules)
 	var position;
 	for (cellule in tableau_cellules)
 	{
-		push(tableau_distances, getDistance(cell, cellule));
+		push(tableau_distances, getCellDistance(cell, cellule));
 	}
 	position = search(tableau_distances, arrayMin(tableau_distances));
 	var tab_cells = tableau_cellules;
