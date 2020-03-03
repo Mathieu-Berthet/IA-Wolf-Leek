@@ -217,7 +217,8 @@ function moveCacheCache(me, TheEnemy, mp, mpAdv)
 	}
 	else
 	{
-		moveToward(getNearestAlly());
+		//moveToward(getNearestAlly()); //Sert a rien en solo, car a moins d'avoir invoqué un bulbe, on a pas d'alliés 
+		moveToward(getNearestEnemy());
 	}
 }
 
