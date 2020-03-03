@@ -11,22 +11,22 @@ global bulbeDefensif = [CHIP_HEALER_BULB: 300, CHIP_METALLIC_BULB: 270, CHIP_PUN
 
 function getSummonAction(@actions, @cellsAccessible, TPmax) {
 	var nb_action = count(actions);
-	for (var chip in SummonTools) {
-		if(ERROR_TOOLS[chip]) continue;
-		if (isChip(chip) && getCooldown(chip) == 0 && getTP() >= getChipCost(chip) && (bulbeOffensif[chip] !== null or bulbeDefensif[chip] !== null or chip === CHIP_RESURRECTION)) {
+	for (var tool in SummonTools) {
+		if(ERROR_TOOLS[tool]) continue;
+		if (isChip(tool) && getCooldown(tool) == 0 && getTP() >= getChipCost(tool) && (bulbeOffensif[tool] !== null or bulbeDefensif[tool] !== null or tool === CHIP_RESURRECTION)) {
 			var tir;
-			if (chip == CHIP_RESURRECTION) {
-				tir = resu( /*param*/ );
+			if (tool == CHIP_RESURRECTION) {
+				tir = resu();
 			} else {
 				if (compteurBulbe() < 6) {
-					tir = summonBulb(chip, IA_Collective, getNearestEnemy(), cellsAccessible);
+					tir = summonBulb(tool, IA_Collective, getNearestEnemy(), cellsAccessible);
 				}
 			}
 			if ((tir != [] || tir != null)) {
 				actions[nb_action] = tir;
 				nb_action++;
 			}
-			debug(getChipName(chip) + " => " + tir);
+			debug(getChipName(tool) + " => " + tir);
 		}
 	}
 }

@@ -6,7 +6,7 @@ include("getCellToUse");
  *		Fonctions :
  *		- pvLost => Calcule le nombre de PV infligé pour une attaque (avec le renvoit de dégat et le vol de vie)
  *		- knapsack => Sert à trouver le meilleur combo
- *	  - getCellToUseToolsOnCell => trouve une cell pour utiliser une arme //TODO
+ *		- getCellToUseToolsOnCell => trouve une cell pour utiliser une arme //TODO
  *		- attaqueTypePoint => remplit un tableau permettant la "meilleur" action pour une arme de type point
  *		- AttaqueTypeAOE => remplit un tableau permettant la "meilleur" action pour une arme de type AOE
  *		- getAttackAction => mets à jour le tableau des actions avec les actions d'attaque
@@ -37,29 +37,29 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax) {
 
 
 	// Calcul
-	for (var i in AttackTools) {
-		if(ERROR_TOOLS[i]) continue;
+	for (var tool in AttackTools) {
+		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
-		if ((isWeapon(i) && (TPmax >= getWeaponCost(i) + 1 || TPmax == getWeaponCost(i) && getWeapon() == i)) || (isChip(i) && getCooldown(i) == 0 && TPmax >= getChipCost(i))) {
-			var area = (isChip(i)) ? getChipArea(i) : getWeaponArea(i);
+		if ((isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool))) {
+			var area = (isChip(tool)) ? getChipArea(tool) : getWeaponArea(tool);
 			if (area == AREA_POINT) {
-				tir = attaqueTypePoint(toutEnnemis, i, cellsAccessible);
+				tir = attaqueTypePoint(toutEnnemis, tool, cellsAccessible);
 			} else {
 				if (area == AREA_LASER_LINE) {
 					var cellToCheck = getCellsToCheckForLaser(cellsAccessible, toutEnnemis);
-					tir = attaqueTypeLigne(i, cellToCheck, cellsAccessible);
+					tir = attaqueTypeLigne(tool, cellToCheck, cellsAccessible);
 
 				} else { //AOE
-					if (i == CHIP_DEVIL_STRIKE) {
+					if (tool == CHIP_DEVIL_STRIKE) {
 						tir = frappeDuDemon(toutEnnemis,cellsAccessible);
 					} else {
-						tir = attaqueTypeAOE(toutEnnemis, i, cellsAccessible);
+						tir = attaqueTypeAOE(toutEnnemis, tool, cellsAccessible);
 					}
 				}
 			}
 			if ((tir != [] || tir != null) && tir[VALEUR] > 15) // au moins 15 de dégats (en moyenne)
 			{
-				tir[CHIP_WEAPON] = i;
+				tir[CHIP_WEAPON] = tool;
 				var coutPT;
 				var valeur = tir[VALEUR];
 				var n;
@@ -78,10 +78,9 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax) {
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = ((isChip(i)) ? getChipEffects(i) : getWeaponEffects(i))[0][0];
+					tir[EFFECT] = ((isChip(tool)) ? getChipEffects(tool) : getWeaponEffects(tool))[0][0];
 					tir[CALLBACK] = (function (params) {
 						updateInfoLeeks();
-						debug('CALLBACK');
 						var cible = getLeekOnCell(params[CELL_VISE]);
 						if (cible && isAlreadyShackle(cible, params[EFFECT])) {
 							STOP_ACTION = true;

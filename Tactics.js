@@ -9,20 +9,19 @@ include("getArea");
 function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies)
 {
 	var nb_action = count(actions);
-	for(var chip in TacticsTools)
+	for(var tool in TacticsTools)
 	{
-		if(ERROR_TOOLS[chip]) continue;
-		if((isWeapon(chip) && (getTP() >= getWeaponCost(chip) + 1 || getTP() == getWeaponCost(chip) && getWeapon() == chip)) || (isChip(chip) && getCooldown(chip) == 0 && getTP() >= getChipCost(chip)))
+		if(ERROR_TOOLS[tool]) continue;
+		if((isWeapon(tool) && (getTP() >= getWeaponCost(tool) + 1 || getTP() == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && getTP() >= getChipCost(tool)))
 		{
-			var effect = getChipEffects(chip);
+			var effect = getChipEffects(tool);
 			var tir;
-			if(chip == CHIP_LIBERATION || chip == CHIP_ANTIDOTE || chip == CHIP_INVERSION || chip == CHIP_TELEPORTATION)
-			{
-				tir = tactic(chip, Allies, Ennemies, cellsAccessible);
+			if(inArray([CHIP_LIBERATION, CHIP_ANTIDOTE, CHIP_INVERSION, CHIP_TELEPORTATION], tool)) {
+				tir = tactic(tool, Allies, Ennemies, cellsAccessible);
 			}
 			if((tir != [] || tir != null) && tir[VALEUR] > 15) // A Vérifier
 			{
-				tir[CHIP_WEAPON] = chip;
+				tir[CHIP_WEAPON] = tool;
 				var coutPT;
 				var valeur = tir[VALEUR];
 				var n;
@@ -45,7 +44,7 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies)
 					tir[NB_TIR] = o;
 					tir[PT_USE] =  o* coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = getChipEffects(chip)[0][0];
+					tir[EFFECT] = getChipEffects(tool)[0][0];
 					actions[nb_action] = tir;
 					nb_action++;
 				}

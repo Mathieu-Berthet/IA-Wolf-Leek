@@ -9,56 +9,38 @@ dangerousEnnemis = null;
 
 
 function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax) {
-    var nb_action = count(actions);
-    for(var tool in ShieldTools) {
-        if ( (isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool)) ) {
-			if (tool == WEAPON_J_LASER)
-			{
-				var tir;
-				if(tool == WEAPON_J_LASER)
-				{
-					var cellToCheck = getCellsToCheckForLaser(cellsAccessible, Allies + getAliveEnemies());
-					tir = shieldTypeLigne(tool, cellToCheck, cellsAccessible);
-				}
-				else
-				{
-					tir = proteger(tool, Allies, cellsAccessible);
-				}
+	var nb_action = count(actions);
+	for(var tool in ShieldTools) {
+		if(ERROR_TOOLS[tool]) continue;
+		if ( (isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool)) ) {
+			var tir;
+			if(tool == WEAPON_J_LASER) {
+				var cellToCheck = getCellsToCheckForLaser(cellsAccessible, Allies + getAliveEnemies());
+				tir = shieldTypeLigne(tool, cellToCheck, cellsAccessible);
+			} else {
+				tir = proteger(tool, Allies, cellsAccessible);
+			}
 
-				if ((tir != [] || tir != null) && tir[VALEUR] > 15)
-				{
-					tir[CHIP_WEAPON] = tool;
-					var coutPT;
-					var valeur = tir[VALEUR];
-					var n;
-					var change_weapon = 0;
-					if (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon())
-					{
-						change_weapon = 1;
-					}
-					coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON]) : getChipCost(tir[CHIP_WEAPON]);
-					if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON]))
-					{
-						n = 1;
-					}
-					else
-					{
-						n = floor(TPmax / coutPT);
-					}
-					//ajouter le bon nombre de fois dans les actions
-					for (var o = 1; o <= n; o++) {
-						tir[NB_TIR] = o;
-						tir[PT_USE] = o * coutPT + change_weapon;
-						tir[VALEUR] = o * valeur;
-						tir[EFFECT] = getChipEffects(tool)[0][0];
-						tir[CALLBACK] = function (leek) {
-							INFO_LEEKS[leek][1] = getAbsoluteShield(leek);
-							INFO_LEEKS[leek][2] = getRelativeShield(leek);
-						};
-						tir[PARAM] = tir[CELL_VISE] == -1 ? getLeek() : getLeekOnCell(tir[CELL_VISE]);
-						actions[nb_action] = tir;
-						nb_action++;
-					}
+			if ((tir != [] || tir != null) && tir[VALEUR] > 15) {
+				tir[CHIP_WEAPON] = tool;
+				var valeur = tir[VALEUR];
+				var change_weapon =  (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon()) ? 1 : 0;
+				var coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON]) : getChipCost(tir[CHIP_WEAPON]);
+				var n = (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) ? 1 : floor(TPmax / coutPT);
+				
+				//ajouter le bon nombre de fois dans les actions
+				for (var o = 1; o <= n; o++) {
+					tir[NB_TIR] = o;
+					tir[PT_USE] = o * coutPT + change_weapon;
+					tir[VALEUR] = o * valeur;
+					tir[EFFECT] = getChipEffects(tool)[0][0];
+					tir[CALLBACK] = (function (leek) {
+						INFO_LEEKS[leek][ABSOLUTE_SHIELD] = getAbsoluteShield(leek);
+						INFO_LEEKS[leek][RELATIVE_SHIELD] = getRelativeShield(leek);
+					});
+					tir[PARAM] = tir[CELL_VISE] == -1 ? getLeek() : getLeekOnCell(tir[CELL_VISE]);
+					actions[nb_action] = tir;
+					nb_action++;
 				}
 			}
 		}
@@ -183,7 +165,7 @@ function ResistVal(tool, leek){
 			pvLost(INFO_LEEKS[dangerousEnnemis], INFO_LEEKS[leek], bestWeapon, null, degat, null1, null2);
 			var sans = degat[MOYEN];
 			var clone = INFO_LEEKS[leek];
-			effect[TYPE] == EFFECT_ABSOLUTE_SHIELD ? clone[1]+=valMoyen*(1+resistance/100) : clone[2]+=valMoyen*(1+resistance/100); // Suppose que l'on a pas déjà la puce /!\
+			effect[TYPE] == EFFECT_ABSOLUTE_SHIELD ? clone[1]+=valMoyen*(1+resistance/100) : clone[2]+=valMoyen*(1+resistance/100); // Suppose que l'on a pas déjà la puce /!\ 
 			pvLost(INFO_LEEKS[dangerousEnnemis], clone, bestWeapon, null, degat2, null1, null2);
 			var avec = degat2[MOYEN];
 			var bonus = sans - avec;
@@ -234,8 +216,3 @@ function getBestWeapon(leek) {
 	return best;
 }
 
-
-//[Lightning] [[27, 20, 20, 2, 31, 1], [29, 20, 20, 2, 31, 5]] (Retour debug J_Laser)
-// 31 = Toutes les cibles sauf soit meme
-// 1 = Cumulable (effet de vol)
-// 5 == cumulable et sur soi (récupération du bouclier absolu)
