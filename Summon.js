@@ -11,23 +11,22 @@ global bulbeDefensif = [CHIP_HEALER_BULB: 300, CHIP_METALLIC_BULB: 270, CHIP_PUN
 
 function getSummonAction(@actions, @cellsAccessible, TPmax) {
 	var nb_action = count(actions);
-	for (var tool in SummonTools) 
-	{
-		if(ERROR_TOOLS[tool]) continue;
-		if (isChip(tool) && getCooldown(tool) == 0 && getTP() >= getChipCost(tool) && (bulbeOffensif[tool] !== null or bulbeDefensif[tool] !== null or tool === CHIP_RESURRECTION)) {
+	for (var chip in SummonTools) {
+		if(ERROR_TOOLS[chip]) continue;
+		if (isChip(chip) && getCooldown(chip) == 0 && getTP() >= getChipCost(chip) && (bulbeOffensif[chip] !== null or bulbeDefensif[chip] !== null or chip === CHIP_RESURRECTION)) {
 			var tir;
-			if (tool == CHIP_RESURRECTION) {
+			if (chip == CHIP_RESURRECTION) {
 				tir = resu( /*param*/ );
 			} else {
 				if (compteurBulbe() < 6) {
-					tir = summonBulb(tool, IA_Collective, getNearestEnemy(), cellsAccessible);
+					tir = summonBulb(chip, IA_Collective, getNearestEnemy(), cellsAccessible);
 				}
 			}
 			if ((tir != [] || tir != null)) {
 				actions[nb_action] = tir;
 				nb_action++;
 			}
-			debug(getChipName(tool) + " => " + tir);
+			debug(getChipName(chip) + " => " + tir);
 		}
 	}
 }
@@ -66,7 +65,8 @@ function resu() {
 	}
 	var tir = [];
 	tir[CELL_DEPLACE] = -1; // TODO: mettre la cell où il faut se déplacer pour pouvoir faire le summon (si pas besoin de se déplaser : mettre -1)
-	tir[NB_TIR] = 0;
+	tir[NB_TIR] = 0; // 0 pour ne pas passer dans le useChipOnCell du doAction dans l'ordonnanceur
+	tir[CHIP_WEAPON] = CHIP_RESURRECTION;
 	tir[PT_USE] = getChipCost(CHIP_RESURRECTION);
 	tir[EFFECT] = EFFECT_RESURRECT;
 	tir[CALLBACK] = (function(param) {
@@ -86,7 +86,8 @@ function summonBulb(CHIP, IA, ennemie, @cellsAccessible) {
 	var tir = [];
 	tir[CELL_DEPLACE] = -1; // TODO: mettre la cell où il faut se déplacer pour pouvoir faire le summon (si pas besoin de se déplaser : mettre -1)
 	tir[VALEUR] = getBulbValue(CHIP, ennemie);
-	tir[NB_TIR] = 0;
+	tir[CHIP_WEAPON] = CHIP;
+	tir[NB_TIR] = 0; // 0 pour ne pas passer dans le useChipOnCell du doAction dans l'ordonnanceur
 	tir[PT_USE] = getChipCost(CHIP);
 	tir[EFFECT] = EFFECT_SUMMON;
 	tir[CALLBACK] = (function(param) { //param = [chip, IA, cellsAccessible]

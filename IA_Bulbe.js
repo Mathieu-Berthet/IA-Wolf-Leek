@@ -57,8 +57,7 @@ function IA_Collective() {
 				getHealAction(actions, cellsAccessible, toutAllies, toutEnnemis, getTP());
 			}
 			var combo = getBestCombo(actions, getTP());
-			if (combo != []) 
-			{
+			if (combo != []) {
 				var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
 				var isUseSucess = doAction(action);
 				if(!isUseSucess) {
