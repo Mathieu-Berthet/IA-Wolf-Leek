@@ -14,13 +14,13 @@ global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RE
 
 function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des constantes associées
 	var tab = [];
-		var leeks = getAliveAllies()+ getAliveEnemies();
-		for (var leek in leeks) {
-			tab[leek] = [leek, getAbsoluteShield(leek), getRelativeShield(leek),  max(0,getStrength(leek)), getDamageReturn(leek), max(0,getMagic(leek)), getTP(leek), getMP(leek)];
-    }
-		return tab;
+	var leeks = getAliveAllies()+ getAliveEnemies();
+	for (var leek in leeks) {
+		tab[leek] = [leek, getAbsoluteShield(leek), getRelativeShield(leek),  max(0,getStrength(leek)), getDamageReturn(leek), max(0,getMagic(leek)), getTP(leek), getMP(leek)];
+	}
+	INFO_LEEKS = tab;
 }
-INFO_LEEKS = updateInfoLeeks();
+ updateInfoLeeks();
 
 
 global SCORE; //TODO: faire une fonction plus précise  <= ok fait par ray dans le ciblage
