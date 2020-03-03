@@ -1,4 +1,4 @@
-/* ============== A Tester ==========*/
+/*============== A Tester ==========*/
 
 include("GLOBALS");
 include("getCellToUse");
@@ -9,20 +9,20 @@ include("getArea");
 function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies)
 {
 	var nb_action = count(actions);
-	for(var chip in TacticsTools)
+	for(var tool in TacticsTools)
 	{
-		if(ERROR_TOOLS[chip]) continue;
-		if((isWeapon(chip) && (getTP() >= getWeaponCost(chip) + 1 || getTP() == getWeaponCost(chip) && getWeapon() == chip)) || (isChip(chip) && getCooldown(chip) == 0 && getTP() >= getChipCost(chip)))
+		if(ERROR_TOOLS[tool]) continue;
+		if((isWeapon(tool) && (getTP() >= getWeaponCost(tool) + 1 || getTP() == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && getTP() >= getChipCost(tool)))
 		{
-			var effect = getChipEffects(chip);
+			var effect = getChipEffects(tool);
 			var tir;
-			if(chip == CHIP_LIBERATION || chip == CHIP_ANTIDOTE || chip == CHIP_INVERSION || chip == CHIP_TELEPORTATION)
+			if(tool == CHIP_LIBERATION || tool == CHIP_ANTIDOTE || tool == CHIP_INVERSION || tool == CHIP_TELEPORTATION)
 			{
-				tir = tactic(chip, Allies, Ennemies, cellsAccessible);
+				tir = tactic(tool, Allies, Ennemies, cellsAccessible);
 			}
 			if((tir != [] || tir != null) && tir[VALEUR] > 15) // A Vérifier
 			{
-				tir[CHIP_WEAPON] = chip;
+				tir[CHIP_WEAPON] = tool;
 				var coutPT;
 				var valeur = tir[VALEUR];
 				var n;
@@ -32,20 +32,20 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies)
 					change_weapon = 1;
 				}
 				coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON] ): getChipCost(tir[CHIP_WEAPON]);
-				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON]))
+				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) 
 				{
 					n  = 1;
-				}
-				else
+				} 
+				else 
 				{
 					n = 1; /*floor(getTP() / coutPT)*/
-				}
+				} 
 				for (var o = 1; o <= n; o++)
 				{
 					tir[NB_TIR] = o;
 					tir[PT_USE] =  o* coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = getChipEffects(chip)[0][0];
+					tir[EFFECT] = getChipEffects(tool)[0][0];
 					actions[nb_action] = tir;
 					nb_action++;
 				}
@@ -90,7 +90,7 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
                   bestAction[CELL_DEPLACE] = -1;
                   bestAction[CELL_VISE] = -1;
                 }
-                else
+                else 
                 {
                   bestAction[CELL_DEPLACE] = cell_deplace;
                   bestAction[CELL_VISE] = cellAllie;
@@ -108,7 +108,7 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
   //debug((isChip(tool) ? getChipName(tool) : getWeaponName(tool)) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
-
+                  
 function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @teleport)
 {
 	libere = 0; antidote = 0; invert = 0;
@@ -117,7 +117,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 	if(tool == CHIP_ANTIDOTE && isAlly(leek))
 	{
 		var effectPoison = getEffects(leek);
-		for(var unEffet in effectPoison)
+		for(var unEffet in effectPoison) 
 		{
 			var eff = unEffet[TYPE];
 			if (eff == EFFECT_POISON)
@@ -132,14 +132,14 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 		if(isAlly(leek))
 		{
 			var effectMalus = getEffects(leek);
-			for(var unEffet in effectMalus)
+			for(var unEffet in effectMalus) 
 			{
 				var eff = unEffet[TYPE];
 				if (eff == EFFECT_POISON)
 				{
 					libere += unEffet[VALUE];
 				}
-				if(eff == EFFECT_SHACKLE_MAGIC)
+				if(eff == EFFECT_SHACKLE_MAGIC) 
 				{
 					libere += unEffet[VALUE];
 				}
@@ -176,7 +176,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 				{
 					libere -= unEffet[VALUE] * 0.7;
 				}
-				if(eff == EFFECT_BUFF_WISDOM)
+				if(eff == EFFECT_BUFF_WISDOM) 
 				{
 					libere -= unEffet[VALUE] * 0.7;
 				}
@@ -194,7 +194,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 		else
 		{
 			var effect = getEffects(leek);
-			for(var unEffet in effect)
+			for(var unEffet in effect) 
 			{
 				var eff = unEffet[TYPE];
 				if(eff == EFFECT_BUFF_TP)
@@ -220,7 +220,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 				{
 					libere += unEffet[VALUE] * 0.7;
 				}
-				if(eff == EFFECT_BUFF_WISDOM)
+				if(eff == EFFECT_BUFF_WISDOM) 
 				{
 					libere += unEffet[VALUE] * 0.7;
 				}
@@ -232,12 +232,12 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 				{
 					libere += unEffet[VALUE];
 				}
-
+				
 				if (eff == EFFECT_POISON)
 				{
 					libere -= unEffet[VALUE];
 				}
-				if(eff == EFFECT_SHACKLE_MAGIC)
+				if(eff == EFFECT_SHACKLE_MAGIC) 
 				{
 					libere -= unEffet[VALUE];
 				}
@@ -279,9 +279,9 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 			return invert;
 		}
 	}
-
+	
 	if(tool == CHIP_TELEPORTATION)
 	{
-
+		
 	}
 }
