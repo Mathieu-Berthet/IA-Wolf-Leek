@@ -1,3 +1,4 @@
+
 include("GLOBALS");
 include("getArea");
 include("getCellToUse");
@@ -5,7 +6,7 @@ include("getCellToUse");
  *		Fonctions :
  *		- pvLost => Calcule le nombre de PV infligé pour une attaque (avec le renvoit de dégat et le vol de vie)
  *		- knapsack => Sert à trouver le meilleur combo
- *	  - getCellToUseToolsOnCell => trouve une cell pour utiliser une arme //TODO
+ *		- getCellToUseToolsOnCell => trouve une cell pour utiliser une arme //TODO
  *		- attaqueTypePoint => remplit un tableau permettant la "meilleur" action pour une arme de type point
  *		- AttaqueTypeAOE => remplit un tableau permettant la "meilleur" action pour une arme de type AOE
  *		- getAttackAction => mets à jour le tableau des actions avec les actions d'attaque
@@ -28,40 +29,30 @@ include("getCellToUse");
 *
 *
 **/
-function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax)
-{
+function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax) {
 	//On reccupère armes et chip qui font des dommages
 	var ope = getOperations();
 	var c = 0;
 	var nb_action = count(actions);
 
+
 	// Calcul
-	for (var tool in AttackTools) 
-	{
+	for (var tool in AttackTools) {
 		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
 		if ((isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool))) {
 			var area = (isChip(tool)) ? getChipArea(tool) : getWeaponArea(tool);
-			if (area == AREA_POINT) 
-			{
+			if (area == AREA_POINT) {
 				tir = attaqueTypePoint(toutEnnemis, tool, cellsAccessible);
-			} 
-			else 
-			{
-				if (area == AREA_LASER_LINE) 
-				{
+			} else {
+				if (area == AREA_LASER_LINE) {
 					var cellToCheck = getCellsToCheckForLaser(cellsAccessible, toutEnnemis);
 					tir = attaqueTypeLigne(tool, cellToCheck, cellsAccessible);
 
-				} 
-				else 
-				{ //AOE
-					if (tool == CHIP_DEVIL_STRIKE) 
-					{
+				} else { //AOE
+					if (tool == CHIP_DEVIL_STRIKE) {
 						tir = frappeDuDemon(toutEnnemis,cellsAccessible);
-					} 
-					else 
-					{
+					} else {
 						tir = attaqueTypeAOE(toutEnnemis, tool, cellsAccessible);
 					}
 				}
@@ -73,29 +64,23 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax)
 				var valeur = tir[VALEUR];
 				var n;
 				var change_weapon = 0;
-				if (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon()) 
-				{
+				if (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon()) {
 					change_weapon = 1;
 				}
 				coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON]) : getChipCost(tir[CHIP_WEAPON]);
-				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) 
-				{
+				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) {
 					n = 1;
-				} 
-				else 
-				{
+				} else {
 					n = floor(TPmax / coutPT);
 				}
 				//ajouter le bon nombre de fois dans les actions
-				for (var o = 1; o <= n; o++) 
-				{
+				for (var o = 1; o <= n; o++) {
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
 					tir[EFFECT] = ((isChip(tool)) ? getChipEffects(tool) : getWeaponEffects(tool))[0][0];
 					tir[CALLBACK] = (function (params) {
 						updateInfoLeeks();
-						debug('CALLBACK');
 						var cible = getLeekOnCell(params[CELL_VISE]);
 						if (cible && isAlreadyShackle(cible, params[EFFECT])) {
 							STOP_ACTION = true;
@@ -108,7 +93,7 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax)
 			}
 		}
 	}
-	/*debugC("Calcul getAttackAction => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + " %", COLOR_RED);*/
+	//debugC("Calcul getAttackAction => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + " %", COLOR_RED);
 }
 
 
@@ -254,7 +239,7 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 	for (var ennemis in toutEnnemis) {
 		var distance = getDistance(getCell(), getCell(ennemis));
 		if (distance <= maxRange + getMP())
-		{
+		{ // Ne permet pas de tirer au delà de maxRange alors que l'AOE pourrait toucher un ennemi sans être à range ? // Je sais pas trop, comme ça je dirais que si en fait, mais faudrait voir avec Caneton. Tu peux lui mettre un MP pour lui dire, il verra quand il sera co.
 			var zone = getEffectiveArea(tool, getCell(ennemis));
 			if (zone != null) {
 				for (var cell in zone) {
@@ -390,7 +375,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 	var RenvoiDegat = 4;
 	var Magie = 5;
 	var Science = 6;
-	
+
 	/*								*/
 
 	degat = [0, 0];
@@ -412,12 +397,11 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 	}
 
 	if (aoe < 0.399) {
-		debugE("pvLost : Erreur dans le calcul de l'aoe ! : " + aoe);
+		debugE("pvLost : Erreur dans le calcul de l'aoe ! : " + aoe + " => " + isChip(arme_chip) ? getChipName(arme_chip) : getWeaponName(arme_chip));
 		aoe = 0;
 	}
 
-	for (var i in effect) 
-	{
+	for (var i in effect) {
 		if (i[0] == EFFECT_DAMAGE) {
 			degatMoyen = (i[1] + i[2]) / 2;
 			degatMin = i[1];
@@ -481,14 +465,14 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
-			
+
 		if(i[0] == EFFECT_KILL) {
 			var bulbe = cible[Leek];
 			if(isAlly(bulbe)) {
 				degat[MOYEN] = getLife(bulbe);
 				degat[MIN] = getLife(bulbe);
 				volDeVie = 0;// pas de vol de vie si on tue le bulbe
-				degat_renvoyer = cible[RenvoiDegat] * degat[MOYEN] / 100; // ???
+				degat_renvoyer = 0; // pas de renvoi non plus
 				break;
 			}
 		}
@@ -514,14 +498,14 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 				degatTmp[MOYEN] = max(degatBrutMoyen * (1 - tireur[RelativeShield] / 100) - tireur[AbsoluteShield], 0);
 				degat[MOYEN] = degat[MOYEN] + degatTmp[MOYEN];
 				degat_ligne_lanceur = degat[MOYEN];
-				
+
 				if(degat[MOYEN] >= getLife(tireur))
 				{
 					degatMoyen = 0;
 				}
 				else
 				{
-					degat[MOYEN] = min(degat_ligne_ennemie, getLife(cible)) - degat_ligne_lanceur; //Calcul du risque 
+					degat[MOYEN] = min(degat_ligne_ennemie, getLife(cible)) - degat_ligne_lanceur; //Calcul du risque
 				}
 			}
 		}
@@ -537,6 +521,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 		}
 	}
 }
+
 
 
 function isAlreadyShackle(leek, effect) {

@@ -1,4 +1,4 @@
-/*============== A Tester ==========*/
+/* ============== A Tester ==========*/
 
 include("GLOBALS");
 include("getCellToUse");
@@ -16,8 +16,7 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies)
 		{
 			var effect = getChipEffects(tool);
 			var tir;
-			if(tool == CHIP_LIBERATION || tool == CHIP_ANTIDOTE || tool == CHIP_INVERSION || tool == CHIP_TELEPORTATION)
-			{
+			if(inArray([CHIP_LIBERATION, CHIP_ANTIDOTE, CHIP_INVERSION, CHIP_TELEPORTATION], tool)) {
 				tir = tactic(tool, Allies, Ennemies, cellsAccessible);
 			}
 			if((tir != [] || tir != null) && tir[VALEUR] > 15) // A Vérifier
@@ -32,14 +31,14 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies)
 					change_weapon = 1;
 				}
 				coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON] ): getChipCost(tir[CHIP_WEAPON]);
-				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) 
+				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON]))
 				{
 					n  = 1;
-				} 
-				else 
+				}
+				else
 				{
 					n = 1; /*floor(getTP() / coutPT)*/
-				} 
+				}
 				for (var o = 1; o <= n; o++)
 				{
 					tir[NB_TIR] = o;
@@ -90,7 +89,7 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
                   bestAction[CELL_DEPLACE] = -1;
                   bestAction[CELL_VISE] = -1;
                 }
-                else 
+                else
                 {
                   bestAction[CELL_DEPLACE] = cell_deplace;
                   bestAction[CELL_VISE] = cellAllie;
@@ -108,7 +107,7 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
   //debug((isChip(tool) ? getChipName(tool) : getWeaponName(tool)) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
-                  
+
 function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @teleport)
 {
 	libere = 0; antidote = 0; invert = 0;
@@ -117,7 +116,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 	if(tool == CHIP_ANTIDOTE && isAlly(leek))
 	{
 		var effectPoison = getEffects(leek);
-		for(var unEffet in effectPoison) 
+		for(var unEffet in effectPoison)
 		{
 			var eff = unEffet[TYPE];
 			if (eff == EFFECT_POISON)
@@ -132,14 +131,14 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 		if(isAlly(leek))
 		{
 			var effectMalus = getEffects(leek);
-			for(var unEffet in effectMalus) 
+			for(var unEffet in effectMalus)
 			{
 				var eff = unEffet[TYPE];
 				if (eff == EFFECT_POISON)
 				{
 					libere += unEffet[VALUE];
 				}
-				if(eff == EFFECT_SHACKLE_MAGIC) 
+				if(eff == EFFECT_SHACKLE_MAGIC)
 				{
 					libere += unEffet[VALUE];
 				}
@@ -176,7 +175,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 				{
 					libere -= unEffet[VALUE] * 0.7;
 				}
-				if(eff == EFFECT_BUFF_WISDOM) 
+				if(eff == EFFECT_BUFF_WISDOM)
 				{
 					libere -= unEffet[VALUE] * 0.7;
 				}
@@ -194,7 +193,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 		else
 		{
 			var effect = getEffects(leek);
-			for(var unEffet in effect) 
+			for(var unEffet in effect)
 			{
 				var eff = unEffet[TYPE];
 				if(eff == EFFECT_BUFF_TP)
@@ -220,7 +219,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 				{
 					libere += unEffet[VALUE] * 0.7;
 				}
-				if(eff == EFFECT_BUFF_WISDOM) 
+				if(eff == EFFECT_BUFF_WISDOM)
 				{
 					libere += unEffet[VALUE] * 0.7;
 				}
@@ -232,12 +231,12 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 				{
 					libere += unEffet[VALUE];
 				}
-				
+
 				if (eff == EFFECT_POISON)
 				{
 					libere -= unEffet[VALUE];
 				}
-				if(eff == EFFECT_SHACKLE_MAGIC) 
+				if(eff == EFFECT_SHACKLE_MAGIC)
 				{
 					libere -= unEffet[VALUE];
 				}
@@ -279,9 +278,9 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 			return invert;
 		}
 	}
-	
+
 	if(tool == CHIP_TELEPORTATION)
 	{
-		
+
 	}
 }
