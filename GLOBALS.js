@@ -218,6 +218,26 @@ global _RESU_PRIORITY = [
     "strength": 2,
     "magic": 1
 ];
+
+global LEEK_VALUE = 3;
+global TERRITOIRE_PARAM;
+TERRITOIRE_PARAM = (function() {  // j'ai mis les valeurs un peu au pifomètre 
+	var tab = [];
+	for(var leek in getAliveAllies()+getAliveEnemies()) { 
+		if (getType(leek) == ENTITY_LEEK) { // évidemment il faudrait prendre en compte les lvl des poireaux
+			tab[leek] = [MAX : 5, MIN : 9, LEEK_VALUE : 10]; // Les scores Max sont à courte distance
+		}
+		if (getType(leek) == ENTITY_BULB) {
+			tab[leek] = [MAX : 2, MIN : 5, LEEK_VALUE : 4];
+		}
+		if (getType(leek) == ENTITY_TURRET) {
+			tab[leek] = [MAX : 7, MIN : 9, LEEK_VALUE : 20]; // il faudrait le max au moins jusqu'a la porté du debuf de MP/décharge et le min à la porté du venin
+		}
+	}
+	return tab;
+})();
+
+
 /******************************************************************/
 
 // fonctions de setup Pseud3mys  //

@@ -10,6 +10,10 @@ include("MapDangerV1");
 include("Resistance");
 include("StatsCombos");
 include("Tactics");
+include("Territoire");
+
+// clearMap();
+debugTerritoires(getTerritoires(getAliveAllies(), getAliveEnemies()));
 
 COMBO = [];
 CACHER = false;
