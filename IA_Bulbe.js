@@ -7,11 +7,17 @@ include("Resistance");
 include("Communication");
 //include("Deplacements");
 include("Boost");
-	
 
-	
+
+
 function IA_Collective() {
-	SetupAll();
+	var bulb_attack_tools = [] ;
+	var bulb_shield_tools = [] ;
+	var bulb_heal_tools = [] ;
+	var bulb_boost_tools = [] ;
+	var bulb_tactics_tools = [] ;
+	var bulb_summon_tools = [] ; // cette variable sert juste pour faire marcher la fonction setuptools, un bulbe ne pourra jamais invoquer un autre bulbe... sauf si pilow devient fou x)
+	SetupTools( bulb_attack_tools , bulb_shield_tools , bulb_heal_tools , bulb_boost_tools , bulb_tactics_tools , bulb_summon_tools ) ;
 	if (getName() == 'healer_bulb') {			// bulbe guerisseur
 		var combo = [CHIP_DRIP, CHIP_VACCINE, CHIP_CURE, CHIP_BANDAGE];
 		for (var action in combo) {
@@ -45,16 +51,16 @@ function IA_Collective() {
 			var toutEnnemis = getAliveEnemies();
 			var toutAllies = getAliveAllies();
 			if (getStrength() > 0) {
-				getAttackAction(actions, cellsAccessible, toutEnnemis, getTP());
+				getAttackAction(actions, cellsAccessible, toutEnnemis, getTP(), bulb_attack_tools);
 			}
 			if (getScience() > 0) {
-				getBoostAction(actions, cellsAccessible, toutAllies, toutEnnemis, getTP());
+				getBoostAction(actions, cellsAccessible, toutAllies, toutEnnemis, getTP(), bulb_boost_tools);
 			}
 			if (getResistance() > 0) {
-				getResistanceAction(actions, cellsAccessible, toutAllies, getTP());
+				getResistanceAction(actions, cellsAccessible, toutAllies, getTP(), bulb_shield_tools);
 			}
 			if(getWisdom() > 0) {
-				getHealAction(actions, cellsAccessible, toutAllies, toutEnnemis, getTP());
+				getHealAction(actions, cellsAccessible, toutAllies, toutEnnemis, getTP(), bulb_heal_tools);
 			}
 			var combo = getBestCombo(actions, getTP());
 			if (combo != []) {

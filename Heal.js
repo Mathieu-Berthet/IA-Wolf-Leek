@@ -12,11 +12,11 @@ include("getCellToUse");
 */
 
 
-function getHealAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax) 
+function getHealAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @heal_tools) 
 {
 	var nb_action = count(actions);
 	var toutPoireau = Allies + Ennemies;
-	for (var tool in HealTools) 
+	for (var tool in heal_tools) 
 	{
 		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];

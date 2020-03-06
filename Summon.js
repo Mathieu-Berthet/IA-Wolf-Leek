@@ -9,9 +9,9 @@ global bulbeOffensif = [CHIP_ROCKY_BULB: 90, CHIP_ICED_BULB: 120, CHIP_FIRE_BULB
 global bulbeDefensif = [CHIP_HEALER_BULB: 300, CHIP_METALLIC_BULB: 270, CHIP_PUNY_BULB: 60];
 
 
-function getSummonAction(@actions, @cellsAccessible, TPmax) {
+function getSummonAction(@actions, @cellsAccessible, TPmax, @summon_tools) {
 	var nb_action = count(actions);
-	for (var tool in SummonTools) {
+	for (var tool in summon_tools) {
 		if(ERROR_TOOLS[tool]) continue;
 		if (isChip(tool) && getCooldown(tool) == 0 && getTP() >= getChipCost(tool) && (bulbeOffensif[tool] !== null or bulbeDefensif[tool] !== null or tool === CHIP_RESURRECTION)) {
 			var tir;

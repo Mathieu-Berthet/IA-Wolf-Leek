@@ -8,9 +8,9 @@ global bestWeapon;
 dangerousEnnemis = null;
 
 
-function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax) {
+function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax, @shield_tools) {
 	var nb_action = count(actions);
-	for(var tool in ShieldTools) {
+	for(var tool in shield_tools) {
 		if(ERROR_TOOLS[tool]) continue;
 		if ( (isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool)) ) {
 			var tir;

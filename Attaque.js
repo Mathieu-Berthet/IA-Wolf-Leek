@@ -29,7 +29,7 @@ include("getCellToUse");
 *
 *
 **/
-function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax) {
+function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack_tools) {
 	//On reccupère armes et chip qui font des dommages
 	var ope = getOperations();
 	var c = 0;
@@ -37,7 +37,7 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax) {
 
 
 	// Calcul
-	for (var tool in AttackTools) {
+	for (var tool in attack_tools) {
 		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
 		if ((isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool))) {
