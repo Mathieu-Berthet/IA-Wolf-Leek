@@ -10,13 +10,13 @@ global ERROR_TOOLS;
 global COMBO = [];
 
 global INFO_LEEKS = [];
-global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7;
+global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7, CELL = 8;
 
 function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des constantes associées
 	var tab = [];
 	var leeks = getAliveAllies()+ getAliveEnemies();
 	for (var leek in leeks) {
-		tab[leek] = [leek, getAbsoluteShield(leek), getRelativeShield(leek),  max(0,getStrength(leek)), getDamageReturn(leek), max(0,getMagic(leek)), getTP(leek), getMP(leek)];
+		tab[leek] = [leek, getAbsoluteShield(leek), getRelativeShield(leek),  max(0,getStrength(leek)), getDamageReturn(leek), max(0,getMagic(leek)), getTP(leek), getMP(leek), getCell(leek)];
 	}
 	INFO_LEEKS = tab;
 }
