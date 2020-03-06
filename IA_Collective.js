@@ -38,12 +38,12 @@ while (continu) { // Pour l'instant on ne fait qu'une action
 	var toutAllies = getAliveAllies();
 	var tp = getTP();
 
-	getAttackAction(actions, cellsAccessible, toutEnnemis, tp);
-	getHealAction(actions, cellsAccessible, toutAllies, toutEnnemis, tp);
-	getResistanceAction(actions, cellsAccessible, toutAllies, tp);
-	getBoostAction(actions, cellsAccessible, toutAllies, toutEnnemis, tp);
-	getSummonAction(actions, cellsAccessible, tp);
-	getTacticAction(actions, cellsAccessible, toutAllies, toutEnnemis);
+	getAttackAction(actions, cellsAccessible, toutEnnemis, tp, AttackTools);
+	getHealAction(actions, cellsAccessible, toutAllies, toutEnnemis, tp, HealTools);
+	getResistanceAction(actions, cellsAccessible, toutAllies, tp, ShieldTools);
+	getBoostAction(actions, cellsAccessible, toutAllies, toutEnnemis, tp, BoostsTools);
+	getSummonAction(actions, cellsAccessible, tp, SummonTools);
+	getTacticAction(actions, cellsAccessible, toutAllies, toutEnnemis, TacticsTools);
 
 	var combo = getBestCombo(actions, getTP());
 	//debug(combo);

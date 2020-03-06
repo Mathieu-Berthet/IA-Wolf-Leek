@@ -6,10 +6,10 @@ include("getArea");
 
 
 
-function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies)
+function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies, @tactics_tools)
 {
 	var nb_action = count(actions);
-	for(var tool in TacticsTools)
+	for(var tool in tactics_tools)
 	{
 		if(ERROR_TOOLS[tool]) continue;
 		if((isWeapon(tool) && (getTP() >= getWeaponCost(tool) + 1 || getTP() == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && getTP() >= getChipCost(tool)))

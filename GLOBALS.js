@@ -260,14 +260,15 @@ global Setup=false;
 function SetupAll(){
 	if(Setup==true) return Setup;
 	var ope = getOperations();
-	SetupTools();
+	SetupTools( AttackTools , ShieldTools , HealTools , BoostsTools , TacticsTools , SummonTools ) ;
 	Setup = true;
 	ope = (getOperations()-ope)/OPERATIONS_LIMIT*100;
 	debugW("Setup reussi ! ("+ope+"%)");
 	return Setup;
 }
 
-function SetupTools(){//equipe les puces et les armes
+function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools , @tactics_tools , @summon_tools ) //equipe les puces et les armes
+{
 	var Tools = getChips() + getWeapons();
 	for(var i=0;i<count(Tools);i++){//trier les chips
     	//Pour les attaques
@@ -320,12 +321,12 @@ function SetupTools(){//equipe les puces et les armes
     	var effectResurrect = getValeurEffect(Tools[i], EFFECT_RESURRECT, ME, "moy");
 		var AllSummons = effectSummon + effectResurrect;
 
-		if(AllAttaque>0) push(AttackTools,Tools[i]);
-		if(AllShield>0) push(ShieldTools,Tools[i]);
-		if(AllSoin>0) push(HealTools,Tools[i]);
-		if(AllBoost>0) push(BoostsTools,Tools[i]);
-		if(AllTatics>0) push(TacticsTools,Tools[i]);
-		if(AllSummons>0) push(SummonTools,Tools[i]);
+		if(AllAttaque>0) push(attack_tools,Tools[i]);
+		if(AllShield>0) push(shield_tools,Tools[i]);
+		if(AllSoin>0) push(heal_tools,Tools[i]);
+		if(AllBoost>0) push(boost_tools,Tools[i]);
+		if(AllTatics>0) push(tactics_tools,Tools[i]);
+		if(AllSummons>0) push(summon_tools,Tools[i]);
 	}
 }
 

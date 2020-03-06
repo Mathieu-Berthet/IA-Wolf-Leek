@@ -12,10 +12,10 @@ include("getCellToUse");
  * */
 
 
-function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax) {
+function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @boost_tools) {
 	var nb_action = count(actions);
 	var toutPoireau = Allies + Ennemies;
-	for(var tool in BoostsTools)
+	for(var tool in boost_tools)
 	{
 		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
