@@ -396,3 +396,124 @@ function getValeurEffect(tool, effectVoulu, leek, valeur){
 }
 
 // FIN fonctions de setup Pseud3mys  //
+
+
+// ajout ordonnateur
+
+global NUMBER_OF_INGAME_ITEMS = 150 ;
+global ALL_INGAME_TOOLS = [] ;
+global TOOL_NAME = "name" ; // sert juste à simplifier la lecture lors des debugs, supprimable sinon
+global TOOL_IS_WEAPON = "is weapon" ; // il faudra rajouter ischip si un jour il y a trois types d'actif
+global TOOL_MIN_POWER = "min power" ;
+global TOOL_AVERAGE_POWER = "average power" ;
+global TOOL_MAX_POWER = "max power" ;
+global TOOL_EFFECT_TYPE = "effect type" ;
+global TOOL_ATTACK_EFFECTS = "attack effects" ;
+global TOOL_MIN_RANGE = "min range" ; // l'appel aux min/max sont fait dans l'ia donc bon, si ça peut eco quelques opé...
+global TOOL_MAX_RANGE = "max range" ;
+global TOOL_PT_COST = "pt cost" ;
+global TOOL_NEED_LINE_OF_SIGHT = "need line of sight" ;
+global TOOL_IS_INLINE = "is inline" ;
+global TOOL_AOE_TYPE = "aoe type" ;
+global TOOL_COOLDOWN_TIME = "cooldown time" ;
+global TOOL_NUMBER_TURN_EFFECT_LAST = "number turn effect last" ;
+global TOOL_MODIFIER_STACKABLE = "modifier stackable" ;
+global TOOL_MODIFIER_MULTIPLIED_BY_TARGETS = "modifier multiplied by targets" ;
+global TOOL_MODIFIER_ON_CASTER = "modifier on caster" ;
+global TOOL_TARGET_ALLIES = "target allies" ;
+global TOOL_TARGET_ENEMIES = "target enemies" ;
+global TOOL_TARGET_SUMMONS = "target summons" ;
+global TOOL_TARGET_NON_SUMMONS = "target non summons" ;
+global TOOL_TARGET_CASTER = "target caster" ;
+
+if ( getTurn() == 1 ) // je n'ai pas ultra compris l'idée des globales fonctions pour qu'elle ne se lancent que le premier tour ^^'
+{
+	//var op_ordo = getOperations() ;
+	create_all_tools_tab() ;
+	//debugE( getOperations()-op_ordo ) ;
+	//debugE( ALL_INGAME_TOOLS ) ;
+}
+
+function create_all_tools_tab()
+{
+	for ( var id_item = 0 ; id_item < NUMBER_OF_INGAME_ITEMS ; id_item++ )
+	{
+		if ( isChip( id_item ) == true ) // je suis habitué à voir les true/false, c'est juste plus lisible pour moi
+		{
+			ALL_INGAME_TOOLS[id_item] = [] ;
+			get_chip_stats( ALL_INGAME_TOOLS[id_item] ,  id_item ) ;
+		}
+		else if ( isWeapon( id_item ) == true )
+		{
+			ALL_INGAME_TOOLS[id_item] = [] ;
+			get_weapon_stats( ALL_INGAME_TOOLS[id_item] ,  id_item ) ;
+		}
+	}
+}
+
+function get_weapon_stats( @weapon_tab , id_arme )
+{
+	weapon_tab[TOOL_NAME] = getWeaponName( id_arme ) ;
+	weapon_tab[TOOL_IS_WEAPON] = true ;
+	weapon_tab[TOOL_ATTACK_EFFECTS] = [] ;
+	all_stats_effects( weapon_tab[TOOL_ATTACK_EFFECTS] ,  getWeaponEffects( id_arme ) ) ;
+	weapon_tab[TOOL_MIN_RANGE] = getWeaponMinRange( id_arme ) ;
+	weapon_tab[TOOL_MAX_RANGE] = getWeaponMaxRange( id_arme ) ;
+	weapon_tab[TOOL_PT_COST] = getWeaponCost( id_arme ) ;
+	weapon_tab[TOOL_NEED_LINE_OF_SIGHT] = weaponNeedLos( id_arme ) ;
+	weapon_tab[TOOL_IS_INLINE] = isInlineWeapon( id_arme ) ;
+	weapon_tab[TOOL_AOE_TYPE] = getWeaponArea( id_arme ) ;
+	weapon_tab[TOOL_COOLDOWN_TIME] = 0 ;
+}
+
+function get_chip_stats( @chip_tab , id_puce )
+{
+	chip_tab[TOOL_NAME] = getChipName( id_puce ) ;
+	chip_tab[TOOL_IS_WEAPON] = false ;
+	chip_tab[TOOL_ATTACK_EFFECTS] = [] ;
+	all_stats_effects( chip_tab[TOOL_ATTACK_EFFECTS] ,  getChipEffects( id_puce ) ) ;
+	chip_tab[TOOL_MIN_RANGE] = getChipMinRange( id_puce ) ;
+	chip_tab[TOOL_MAX_RANGE] = getChipMaxRange( id_puce ) ;
+	chip_tab[TOOL_PT_COST] = getChipCost( id_puce ) ;
+	chip_tab[TOOL_NEED_LINE_OF_SIGHT] = chipNeedLos( id_puce ) ;
+	chip_tab[TOOL_IS_INLINE] = isInlineChip( id_puce ) ;
+	chip_tab[TOOL_AOE_TYPE] = getChipArea( id_puce ) ;
+	chip_tab[TOOL_COOLDOWN_TIME] = getChipCooldown( id_puce ) ;
+}
+
+function all_stats_effects( @stat , @effects )
+{
+	var nb_effects = 0 ;
+	for ( var effect in effects )
+	{
+		stat[nb_effects] = [] ;
+		stats_effects( stat[nb_effects] , effect ) ;
+		nb_effects++ ;
+	}
+}
+
+function stats_effects( @tab_effect , @effect )
+{
+	tab_effect[TOOL_MIN_POWER] = effect[1] ;
+	tab_effect[TOOL_AVERAGE_POWER] = (effect[1]+effect[2])/2 ;
+	tab_effect[TOOL_MAX_POWER] = effect[2] ;
+	tab_effect[TOOL_EFFECT_TYPE] = effect[0] ;
+	tab_effect[TOOL_NUMBER_TURN_EFFECT_LAST] = effect[3] ;
+	// effect[4/5] & truc renvoi un nombre donc pour avoir un true/false j'ai ajouté un && true
+	tab_effect[TOOL_MODIFIER_STACKABLE] = (effect[5] & EFFECT_MODIFIER_STACKABLE) && true ;
+	tab_effect[TOOL_MODIFIER_MULTIPLIED_BY_TARGETS] = (effect[5] & EFFECT_MODIFIER_MULTIPLIED_BY_TARGETS) && true ;
+	tab_effect[TOOL_MODIFIER_ON_CASTER] = (effect[5] & EFFECT_MODIFIER_ON_CASTER) && true ;
+	tab_effect[TOOL_TARGET_ALLIES] = (effect[4] & EFFECT_TARGET_ALLIES) && true ;
+	tab_effect[TOOL_TARGET_ENEMIES] = (effect[4] & EFFECT_TARGET_ENEMIES) && true ;
+	tab_effect[TOOL_TARGET_SUMMONS] = (effect[4] & EFFECT_TARGET_SUMMONS) && true ;
+	tab_effect[TOOL_TARGET_NON_SUMMONS] = (effect[4] & EFFECT_TARGET_NON_SUMMONS) && true ;
+	tab_effect[TOOL_TARGET_CASTER] = (effect[4] & EFFECT_TARGET_CASTER) && true ;
+}
+
+
+
+
+
+
+
+
