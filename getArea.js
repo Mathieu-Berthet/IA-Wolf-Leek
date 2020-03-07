@@ -27,6 +27,9 @@ function getAreaLine(tool, from, orientation) {
 	if (tool == WEAPON_M_LASER) {
 		return AREA_M_LASER[from][orientation];
 	}
+	if (tool == WEAPON_REVOKED_M_LASER) {
+		return AREA_M_LASER[from][orientation];
+	}
 	if (tool == WEAPON_FLAME_THROWER) {
 		return AREA_LANCE_FLAMME[from][orientation];
 	}
