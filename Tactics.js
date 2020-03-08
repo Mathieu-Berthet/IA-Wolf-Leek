@@ -1,6 +1,5 @@
 /* ============== A Tester ==========*/
 
-include("GLOBALS");
 include("getCellToUse");
 include("getArea");
 
@@ -12,9 +11,9 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies, @tactics_
 	for(var tool in tactics_tools)
 	{
 		if(ERROR_TOOLS[tool]) continue;
-		if((isWeapon(tool) && (getTP() >= getWeaponCost(tool) + 1 || getTP() == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && getTP() >= getChipCost(tool)))
+		if( can_use_tool( tool , getTP() ) )
 		{
-			var effect = getChipEffects(tool);
+			var effect = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS] ;
 			var tir;
 			if(inArray([CHIP_LIBERATION, CHIP_ANTIDOTE, CHIP_INVERSION, CHIP_TELEPORTATION], tool)) {
 				tir = tactic(tool, Allies, Ennemies, cellsAccessible);
@@ -26,12 +25,12 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies, @tactics_
 				var valeur = tir[VALEUR];
 				var n;
 				var change_weapon = 0;
-				if(isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon())
+				if(ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] && tool != getWeapon())
 				{
 					change_weapon = 1;
 				}
-				coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON] ): getChipCost(tir[CHIP_WEAPON]);
-				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON]))
+				coutPT = ALL_INGAME_TOOLS[tool][TOOL_PT_COST];
+				if (ALL_INGAME_TOOLS[tool][TOOL_COOLDOWN_TIME])
 				{
 					n  = 1;
 				}
@@ -44,7 +43,7 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies, @tactics_
 					tir[NB_TIR] = o;
 					tir[PT_USE] =  o* coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = getChipEffects(tool)[0][0];
+					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE] ;
 					actions[nb_action] = tir;
 					nb_action++;
 				}
@@ -65,8 +64,7 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
   var distanceBestAction = 0;
   for(var allie in allies)
   {
-    var targets = getChipEffects(tool)[0][TARGETS];
-    if(((targets & EFFECT_TARGET_SUMMONS) && isSummon(allie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(allie)))
+    if((ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_SUMMONS] && isSummon(allie)) || (ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_NON_SUMMONS] && !isSummon(allie)))
     {
       if(!(MIN_RANGE[tool] != 0 && allie == ME))
       {
@@ -104,14 +102,14 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
       }
     }
   }
-  //debug((isChip(tool) ? getChipName(tool) : getWeaponName(tool)) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+  //debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
 function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @teleport)
 {
 	libere = 0; antidote = 0; invert = 0;
-	var effects = isChip(tool) ? getChipEffects(tool) : getWeaponEffects(tool);
+	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS];
 	//if(coeffReduction === null || coeffReduction < 1 || coeffRedcution < 0) coeffReduction = 1;
 	if(tool == CHIP_ANTIDOTE && isAlly(leek))
 	{
@@ -134,6 +132,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 			for(var unEffet in effectMalus)
 			{
 				var eff = unEffet[TYPE];
+				unEffet[VALUE] = round( unEffet[VALUE]*0.6 ) ;
 				if (eff == EFFECT_POISON)
 				{
 					libere += unEffet[VALUE];
@@ -196,6 +195,7 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 			for(var unEffet in effect)
 			{
 				var eff = unEffet[TYPE];
+				unEffet[VALUE] = round( unEffet[VALUE]*0.6 ) ;
 				if(eff == EFFECT_BUFF_TP)
 				{
 					libere += unEffet[VALUE] * 80;
@@ -261,20 +261,12 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 	{
 		if(isAlly(leek))
 		{
-			var effectInversion = getChipEffects(CHIP_INVERSION);
-			if(effectInversion[1][TYPE] == EFFECT_HEAL)
-			{
-				invert += effectInversion[1][MIN];
-			}
+			invert += ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][1][TOOL_MIN_POWER] ;
 			return invert;
 		}
 		else
 		{
-			var effectInversion = getChipEffects(CHIP_INVERSION);
-			if(effectInversion[2][TYPE] == EFFECT_VULNERABILITY)
-			{
-				invert += effectInversion[2][MIN];
-			}
+			invert += ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][2][TOOL_MIN_POWER] ;
 			return invert;
 		}
 	}
