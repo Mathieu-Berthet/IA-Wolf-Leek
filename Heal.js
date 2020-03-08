@@ -1,5 +1,4 @@
 // dernière mise à jour le 17/02/18 par Caneton
-include("GLOBALS");
 include("getArea");
 include("getCellToUse");
 
@@ -20,9 +19,9 @@ function getHealAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @hea
 	{
 		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
-		if ((isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool))) 
+		if ( can_use_tool( tool , TPmax ) ) 
 		{
-			var area = (isChip(tool)) ? getChipArea(tool) : getWeaponArea(tool);
+			var area = ALL_INGAME_TOOLS[tool][TOOL_AOE_TYPE] ;
 			if(area == AREA_POINT)
 			{
 				tir = soigner(tool, Allies, cellsAccessible);
@@ -46,11 +45,11 @@ function getHealAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @hea
 				var valeur = tir[VALEUR];
 				var n;
 				var change_weapon = 0;
-				if (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon()) {
+				if (ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] && tool != getWeapon()) {
 					change_weapon = 1;
 				}
-				coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON]) : getChipCost(tir[CHIP_WEAPON]);
-				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) {
+				coutPT = ALL_INGAME_TOOLS[tool][TOOL_PT_COST] ;
+				if (ALL_INGAME_TOOLS[tool][TOOL_COOLDOWN_TIME]) {
 					n = 1;
 				} else {
 					n = floor(getTP() / coutPT);
@@ -60,7 +59,7 @@ function getHealAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @hea
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = isChip(tool) ? getChipEffects(tool)[0][0] : EFFECT_HEAL;
+					tir[EFFECT] = !ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] ? ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE] : EFFECT_HEAL;
 					actions[nb_action] = tir;
 					nb_action++;
 				}
@@ -116,7 +115,7 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			}
 		}
 	}
-	debug(getWeaponName(tool) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -131,8 +130,7 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 	var bestValeur = 0;
 	var distanceBestAction = 0;
 	for (var allie in allies) {
-		var targets = getChipEffects(tool)[0][TARGETS];
-		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(allie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(allie))) {
+		if ((ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_SUMMONS] && isSummon(allie)) || (ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_NON_SUMMONS] && !isSummon(allie))) {
 			if (!(MIN_RANGE[tool] != 0 && allie == ME)) {
 				if(!NOT_USE_ON[tool][allie]) {
 					cellAllie = getCell(allie);
@@ -162,12 +160,12 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 			}
 		}
 	}
-	debug((isChip(tool) ? getChipName(tool) : getWeaponName(tool)) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
 function getTargetHeal(tool, cell) {
-	return (isChip(tool)) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
+	return (!ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON]) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
 }
 
 function healTypeAOE(toutPoireau, tool, @cellsAccessible)
@@ -182,11 +180,11 @@ function healTypeAOE(toutPoireau, tool, @cellsAccessible)
 	
 	var cell_deplace;
 	var valeurMax = 0;
-	var maxRange = (isChip(tool)) ? getChipMaxRange(tool) : getWeaponMaxRange(tool);
+	var maxRange = ALL_INGAME_TOOLS[tool][TOOL_MAX_RANGE];
 	var deja_fait = [];
-	for (var poireau in toutPoireau) 
+	for (var poireau in toutPoireau)
 	{
-		var distance = getDistance(getCell(), getCell(poireau));
+		var distance = getCellDistance(getCell(), getCell(poireau));
 		if (distance <= maxRange + getMP())
 		{
 			var zone = getEffectiveArea(tool, getCell(poireau));
@@ -229,8 +227,7 @@ function healTypeAOE(toutPoireau, tool, @cellsAccessible)
 			}
 		}
 	}
-	if (isChip(tool)) debug(getChipName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
-	else debug(getWeaponName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -240,14 +237,14 @@ function healTypeAOE(toutPoireau, tool, @cellsAccessible)
 function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife, @dammage, nbCibles)
 {
 	heal = 0; boostMaxLife = 0; dammage = 0;
-	var effects = isChip(tool) ? getChipEffects(tool) : getWeaponEffects(tool);
+	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS] ;
 	var sagesse = getWisdom();
 	if(coeffReduction === null || coeffReduction > 1 || coeffReduction < 0.5) coeffReduction = 1;
 	
 	for (var effect in effects) 
 	{
-		var valMoyen = (effect[MIN] + effect[MAX]) / 2;
-		if(effect[TYPE]==EFFECT_HEAL) 
+		var valMoyen = ALL_INGAME_TOOLS[tool][TOOL_AVERAGE_POWER];
+		if(effect[TOOL_EFFECT_TYPE]==EFFECT_HEAL) 
 		{
 			if(tool == CHIP_VAMPIRIZATION)
 			{
@@ -259,11 +256,11 @@ function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife, @dammage, nbC
 			}
 			
 		} 
-		if(effect[TYPE]==EFFECT_DAMAGE) 
+		if(effect[TOOL_EFFECT_TYPE]==EFFECT_DAMAGE) 
 		{
-			dammage = max(0,effect[MAX]*(1+getStrength()/100)*(1-getRelativeShield(leek))-getAbsoluteShield(leek));
+			dammage = max(0,effect[TOOL_MAX_POWER]*(1+getStrength()/100)*(1-getRelativeShield(leek))-getAbsoluteShield(leek));
 		} 
-		if(effect[TYPE]==EFFECT_BOOST_MAX_LIFE) 
+		if(effect[TOOL_EFFECT_TYPE]==EFFECT_BOOST_MAX_LIFE) 
 		{
 			boostMaxLife = valMoyen*(1+sagesse/100);
 		}

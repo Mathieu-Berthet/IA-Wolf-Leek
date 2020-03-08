@@ -1,5 +1,3 @@
-
-include("GLOBALS");
 include("getArea");
 include("getCellToUse");
 /**
@@ -40,8 +38,8 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack
 	for (var tool in attack_tools) {
 		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
-		if ((isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon() == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool))) {
-			var area = (isChip(tool)) ? getChipArea(tool) : getWeaponArea(tool);
+		if ( can_use_tool( tool , TPmax ) == true ) {
+			var area = ALL_INGAME_TOOLS[tool][TOOL_AOE_TYPE];
 			if (area == AREA_POINT) {
 				tir = attaqueTypePoint(toutEnnemis, tool, cellsAccessible);
 			} else {
@@ -64,11 +62,11 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack
 				var valeur = tir[VALEUR];
 				var n;
 				var change_weapon = 0;
-				if (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon()) {
+				if (ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] && tool != getWeapon()) {
 					change_weapon = 1;
 				}
-				coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON]) : getChipCost(tir[CHIP_WEAPON]);
-				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) {
+				coutPT = ALL_INGAME_TOOLS[tool][TOOL_PT_COST] ;
+				if (ALL_INGAME_TOOLS[tool][TOOL_COOLDOWN_TIME]) {
 					n = 1;
 				} else {
 					n = floor(TPmax / coutPT);
@@ -78,7 +76,7 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = ((isChip(tool)) ? getChipEffects(tool) : getWeaponEffects(tool))[0][0];
+					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE];
 					tir[CALLBACK] = (function (params) {
 						updateInfoLeeks();
 						var cible = getLeekOnCell(params[CELL_VISE]);
@@ -151,7 +149,7 @@ function attaqueTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			}
 		}
 	}
-	debug(getWeaponName(tool) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -234,7 +232,7 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 	var distanceBestAction = 0;
 	var cell_deplace;
 	var valeurMax = 0;
-	var maxRange = (isChip(tool)) ? getChipMaxRange(tool) : getWeaponMaxRange(tool);
+	var maxRange = ALL_INGAME_TOOLS[tool][TOOL_MAX_RANGE];
 	var deja_fait = [];
 	for (var ennemis in toutEnnemis) {
 		var distance = getDistance(getCell(), getCell(ennemis));
@@ -277,8 +275,7 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 			}
 		}
 	}
-	if (isChip(tool)) debug(getChipName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
-	else debug(getWeaponName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -334,7 +331,7 @@ function attaqueTypePoint(toutEnnemis, tool, @cellsAccessible) {
 			}
 		}
 	}
-	debug((isChip(tool) ? getChipName(tool) : getWeaponName(tool)) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -343,7 +340,7 @@ function attaqueTypePoint(toutEnnemis, tool, @cellsAccessible) {
 
 
 function getTarget(tool, cell) {
-	return (isChip(tool)) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
+	return (!ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON]) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
 }
 
 
@@ -384,27 +381,27 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 
 
 	var aoe;
-	var effect = (isChip(arme_chip)) ? getChipEffects(arme_chip) : getWeaponEffects(arme_chip);
-	var area = (isChip(arme_chip)) ? getChipArea(arme_chip) : getWeaponArea(arme_chip);
+	var effects = ALL_INGAME_TOOLS[arme_chip][TOOL_ATTACK_EFFECTS];
+	var area = ALL_INGAME_TOOLS[arme_chip][TOOL_AOE_TYPE];
 	var degatMoyen = 0;
 	var degatMin = 0;
 
 	if (area == AREA_POINT || area == AREA_LASER_LINE || cellVisee === null) {
 		aoe = 1;
 	} else {
-		var distance = getDistance(cellVisee, getCell(cible[Leek]));
-		aoe = 1 - (ceil(distance) * 0.2);
+		var distance = getCellDistance(cellVisee, getCell(cible[Leek]));
+		aoe = 1 - (distance * 0.2);
 	}
 
 	if (aoe < 0.399) {
-		debugE("pvLost : Erreur dans le calcul de l'aoe ! : " + aoe + " => " + isChip(arme_chip) ? getChipName(arme_chip) : getWeaponName(arme_chip));
+		debugE("pvLost : Erreur dans le calcul de l'aoe ! : " + aoe + " => " + ALL_INGAME_TOOLS[arme_chip][TOOL_NAME]);
 		aoe = 0;
 	}
 
-	for (var i in effect) {
-		if (i[0] == EFFECT_DAMAGE) {
-			degatMoyen = (i[1] + i[2]) / 2;
-			degatMin = i[1];
+	for (var effect in effects) {
+		if (effect[TOOL_EFFECT_TYPE] == EFFECT_DAMAGE) {
+			degatMoyen = effect[TOOL_AVERAGE_POWER];
+			degatMin = effect[TOOL_MIN_POWER];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Strenght] / 100);
 			var degatBrutMin = aoe * degatMin * (1 + tireur[Strenght] / 100);
 			var degatTmp = [0, 0];
@@ -416,57 +413,53 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degat_renvoyer = degat_renvoyer + cible[RenvoiDegat] * degatTmp[MOYEN] / 100;
 			volDeVie = volDeVie + getWisdom(tireur[Leek]) * degatTmp[MOYEN] / 1000;
 		}
-		if(i[0] == EFFECT_POISON) {
-			degatMoyen = (i[1] + i[2]) / 2;
-			degatMin = i[1];
+		if (effect[TOOL_EFFECT_TYPE] == EFFECT_POISON) {
+			degatMoyen = effect[TOOL_AVERAGE_POWER];
+			degatMin = effect[TOOL_MIN_POWER];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
 			var degatBrutMin = aoe * degatMin * (1 + tireur[Magie] / 100);
-			var nb_tour = i[3];
+			var nb_tour = effect[TOOL_NUMBER_TURN_EFFECT_LAST];
 			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
-
-		if(i[0] == EFFECT_SHACKLE_TP && ! isAlreadyShackle(cible[Leek],i[0])) {
-			degatMoyen = (i[1] + i[2]) / 2;
-			degatMin = i[1];
+		if (effect[TOOL_EFFECT_TYPE] == EFFECT_SHACKLE_TP && ! isAlreadyShackle(cible[Leek], effect[TOOL_EFFECT_TYPE])) {
+			degatMoyen = effect[TOOL_AVERAGE_POWER];
+			degatMin = effect[TOOL_MIN_POWER];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
 			var degatBrutMin = aoe * degatMin * (1 + tireur[Magie] / 100);
-			var nb_tour = i[3];
+			var nb_tour = effect[TOOL_NUMBER_TURN_EFFECT_LAST];
 			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen * 40; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
-
-		if(i[0] == EFFECT_SHACKLE_MP && ! isAlreadyShackle(cible[Leek],i[0])) {
-			degatMoyen = (i[1] + i[2]) / 2;
-			degatMin = i[1];
+		if (effect[TOOL_EFFECT_TYPE] == EFFECT_SHACKLE_MP && ! isAlreadyShackle(cible[Leek], effect[TOOL_EFFECT_TYPE])) {
+			degatMoyen = effect[TOOL_AVERAGE_POWER];
+			degatMin = effect[TOOL_MIN_POWER];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
 			var degatBrutMin = aoe * degatMin * (1 + tireur[Magie] / 100);
-			var nb_tour = i[3];
+			var nb_tour = effect[TOOL_NUMBER_TURN_EFFECT_LAST];
 			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen * 35; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
-
-		if(i[0] == EFFECT_SHACKLE_STRENGTH && ! isAlreadyShackle(cible [Leek],i[0])) {
-			degatMoyen = (i[1] + i[2]) / 2;
-			degatMin = i[1];
+		if (effect[TOOL_EFFECT_TYPE] == EFFECT_SHACKLE_STRENGTH && ! isAlreadyShackle(cible[Leek], effect[TOOL_EFFECT_TYPE])) {
+			degatMoyen = effect[TOOL_AVERAGE_POWER];
+			degatMin = effect[TOOL_MIN_POWER];
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
 			var degatBrutMin = aoe * degatMin * (1 + tireur[Magie] / 100);
-			var nb_tour = i[3];
+			var nb_tour = effect[TOOL_NUMBER_TURN_EFFECT_LAST];
+			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
+			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
+		}
+		if (effect[TOOL_EFFECT_TYPE] == EFFECT_SHACKLE_MAGIC && ! isAlreadyShackle(cible[Leek], effect[TOOL_EFFECT_TYPE])) {
+			degatMoyen = effect[TOOL_AVERAGE_POWER];
+			degatMin = effect[TOOL_MIN_POWER];
+			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
+			var degatBrutMin = aoe * degatMin * (1 + tireur[Magie] / 100);
+			var nb_tour = effect[TOOL_NUMBER_TURN_EFFECT_LAST];
 			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
 			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
 		}
 
-		if(i[0] == EFFECT_SHACKLE_MAGIC && !isAlreadyShackle(cible [Leek],i[0])) {
-			degatMoyen = (i[1] + i[2]) / 2;
-			degatMin = i[1];
-			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Magie] / 100);
-			var degatBrutMin = aoe * degatMin * (1 + tireur[Magie] / 100);
-			var nb_tour = i[3];
-			degat[MOYEN] = degat[MOYEN] + sqrt(nb_tour) * degatBrutMoyen; //petit bonus pour le effets qui dure plus long temps(a adapter si besoin)
-			degat[MIN] = degat[MIN] + degatBrutMin[MIN];
-		}
-
-		if(i[0] == EFFECT_KILL) {
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_KILL) {
 			var bulbe = cible[Leek];
 			if(isAlly(bulbe)) {
 				degat[MOYEN] = getLife(bulbe);
@@ -480,9 +473,9 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 		{
 			var degat_ligne_ennemie = 0;
 			var degat_ligne_lanceur = 0;
-			if(i[0] == EFFECT_LIFE_DAMAGE)
+			if(effect[TOOL_EFFECT_TYPE] == EFFECT_LIFE_DAMAGE)
 			{
-				degatMoyen = i[1] * getLife(tireur) / 100;
+				degatMoyen = effect[TOOL_AVERAGE_POWER] * getLife(tireur) / 100;
 				var degatBrutMoyen = aoe * degatMoyen;
 				var degatTmp = [0, 0];
 				degatTmp[MOYEN] = max(degatBrutMoyen * (1 - cible[RelativeShield] / 100) - cible[AbsoluteShield], 0);
@@ -490,9 +483,9 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 				degat_renvoyer = degat_renvoyer + cible[RenvoiDegat] * degatTmp[MOYEN] / 100;
 				degat_ligne_ennemie = degat[MOYEN];
 			}
-			if(i[0] == EFFECT_TARGET_ALWAYS_CASTER)
+			if(effect[TOOL_EFFECT_TYPE] == EFFECT_TARGET_ALWAYS_CASTER)
 			{
-				var degat_retour_chatiment = i[1] * getLife(tireur) / 100;
+				var degat_retour_chatiment = effect[TOOL_AVERAGE_POWER] * getLife(tireur) / 100;
 				var degatBrutMoyen = aoe * degat_retour_chatiment;
 				var degatTmp = [0, 0];
 				degatTmp[MOYEN] = max(degatBrutMoyen * (1 - tireur[RelativeShield] / 100) - tireur[AbsoluteShield], 0);
@@ -509,10 +502,10 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 				}
 			}
 		}
-		if(effect == EFFECT_NOVA_DAMAGE)
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_NOVA_DAMAGE)
 		{
-			degatMoyen = (i[1] + i[2]) / 2;
-			degatMin = i[1];
+			degatMoyen = effect[TOOL_AVERAGE_POWER] ;
+			degatMin = effect[TOOL_MIN_POWER] ;
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Science] / 100);
 			var degatBrutMin = aoe * degatMin * (1 + tireur[Science] / 100);
 
