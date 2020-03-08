@@ -238,6 +238,76 @@ TERRITOIRE_PARAM = (function() {  // j'ai mis les valeurs un peu au pifomètre
 })();
 
 
+
+/* TODO: faire un tableau de la forme : 
+	EFFECT = [
+		COEFF_EFFECT : aNumber
+		BOOSTED_BY : aCaracteristic
+		IS_RELATIF : Boolean
+		INTERACT_WITH [
+			SHIELD : Boolean
+			STEAL_LIFE : Boolean
+			RETURN_DAMAGE : Boolean
+			NOVA_DAMAGE
+		]
+	]
+*/
+global COEFF_EFFECT = [
+	EFFECT_DAMAGE : 1, // cas spécial : applique aussi le renvois de dégat, le vol de vie et les dégat novas 
+	EFFECT_POISON : 1, //  cas spécial : applique aussi les dégats novas
+	EFFECT_NOVA_DAMAGE : 1, // boosté par la science 
+	EFFECT_LIFE_DAMAGE : 1, // dépend de la vie du caster
+	
+	EFFECT_SHACKLE_TP : 40,
+	EFFECT_SHACKLE_MP : 35,
+	EFFECT_SHACKLE_STRENGTH : 1, 
+	EFFECT_SHACKLE_MAGIC : 1, 
+	
+	EFFECT_BUFF_TP : 80,
+	EFFECT_BUFF_MP : 80,
+	EFFECT_BUFF_STRENGTH : 1,
+	EFFECT_BUFF_AGILITY :  0.7, 
+	EFFECT_BUFF_RESISTANCE : 0.7, 
+	EFFECT_BUFF_WISDOM : 0.7,
+	 
+	EFFECT_AFTEREFFECT : 1, // +nova
+	 
+	EFFECT_HEAL : 1, 
+	EFFECT_BOOST_MAX_LIFE : 1, 
+	
+	EFFECT_RELATIVE_SHIELD : 3,  
+	EFFECT_ABSOLUTE_SHIELD : 3, 
+	EFFECT_DAMAGE_RETURN : 3, //+NOVA
+	
+	EFFECT_ABSOLUTE_VULNERABILITY : 3, 
+	EFFECT_STEAL_ABSOLUTE_SHIELD : 3, 
+	EFFECT_VULNERABILITY : 3,
+	
+	
+	EFFECT_SUMMON : 1, //spécial : dépend du Bulbe
+	EFFECT_ANTIDOTE : 1, // spécial : ne s'applique que sur le poison
+	EFFECT_DEBUFF : 1, // la valeur est en % 
+	EFFECT_KILL : 1, // cas spécial
+	EFFECT_INVERT : 1, 
+	EFFECT_RESURRECT : 1,
+	EFFECT_TELEPORT : 1, 
+	
+	// Pour l'instant l'IA ne les prends pas en compte les effets passif 
+	EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD : 0,
+	EFFECT_DAMAGE_TO_STRENGTH : 0,
+	EFFECT_NOVA_DAMAGE_TO_MAGIC : 0,
+	EFFECT_POISON_TO_SCIENCE : 0,
+	
+	// Les EFFECT_RAW sont Boosté par la science
+	EFFECT_RAW_ABSOLUTE_SHIELD : 3:
+	EFFECT_RAW_BUFF_MAGIC : 1,
+	EFFECT_RAW_BUFF_MP : 60,
+	EFFECT_RAW_BUFF_SCIENCE : 1,
+	EFFECT_RAW_BUFF_STRENGTH : 1,
+	EFFECT_RAW_BUFF_TP : 80,
+	
+]
+
 /******************************************************************/
 
 // fonctions de setup Pseud3mys  //
