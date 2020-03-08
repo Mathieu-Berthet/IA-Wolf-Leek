@@ -1,8 +1,5 @@
 // dernière mise à jour le 29/04/18 par Yama et Caneton
-include("GLOBALS");
-include("getCellToUse");
 include("IA_Bulbe");
-include("MapDangerV1");
 
 
 global bulbeOffensif = [CHIP_ROCKY_BULB: 90, CHIP_ICED_BULB: 120, CHIP_FIRE_BULB: 225, CHIP_LIGHTNING_BULB: 240];
@@ -13,7 +10,7 @@ function getSummonAction(@actions, @cellsAccessible, TPmax, @summon_tools) {
 	var nb_action = count(actions);
 	for (var tool in summon_tools) {
 		if(ERROR_TOOLS[tool]) continue;
-		if (isChip(tool) && getCooldown(tool) == 0 && getTP() >= getChipCost(tool) && (bulbeOffensif[tool] !== null or bulbeDefensif[tool] !== null or tool === CHIP_RESURRECTION)) {
+		if ( !ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] && getCooldown(tool) == 0 && getTP() >= ALL_INGAME_TOOLS[tool][TOOL_PT_COST] && (bulbeOffensif[tool] !== null or bulbeDefensif[tool] !== null or tool === CHIP_RESURRECTION)) {
 			var tir;
 			if (tool == CHIP_RESURRECTION) {
 				tir = resu();
@@ -26,7 +23,7 @@ function getSummonAction(@actions, @cellsAccessible, TPmax, @summon_tools) {
 				actions[nb_action] = tir;
 				nb_action++;
 			}
-			debug(getChipName(tool) + " => " + tir);
+			debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " => " + tir);
 		}
 	}
 }
@@ -88,7 +85,7 @@ function summonBulb(CHIP, IA, ennemie, @cellsAccessible) {
 	tir[VALEUR] = getBulbValue(CHIP, ennemie);
 	tir[CHIP_WEAPON] = CHIP;
 	tir[NB_TIR] = 0; // 0 pour ne pas passer dans le useChipOnCell du doAction dans l'ordonnanceur
-	tir[PT_USE] = getChipCost(CHIP);
+	tir[PT_USE] = ALL_INGAME_TOOLS[CHIP][TOOL_PT_COST] ;
 	tir[EFFECT] = EFFECT_SUMMON;
 	tir[CALLBACK] = (function(param) { //param = [chip, IA, cellsAccessible]
 		// appeler la fonction cache-cache si on veux se cacher avant le summon !
@@ -142,7 +139,7 @@ function getBulbValue(CHIP, ennemie) {
 	} else {
 		value = bulbeDefensif[CHIP];
 	}
-	value += getChipCost(CHIP) * 15;
+	value += ALL_INGAME_TOOLS[CHIP][TOOL_PT_COST] * 15;
 	var countBulbe = compteurBulbe();
 	if (getFightType() !== FIGHT_TYPE_SOLO and getFightType() !== FIGHT_TYPE_BATTLE_ROYALE) {
 		value /= 2;

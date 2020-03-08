@@ -1,6 +1,4 @@
 // dernière mise à jour le 17/02/18 par Caneton
-include("GLOBALS");
-include("getCellToUse");
 include("Attaque");
 
 global dangerousEnnemis;
@@ -12,7 +10,7 @@ function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax, @shield_
 	var nb_action = count(actions);
 	for(var tool in shield_tools) {
 		if(ERROR_TOOLS[tool]) continue;
-		if ( (isWeapon(tool) && (TPmax >= getWeaponCost(tool) + 1 || TPmax == getWeaponCost(tool) && getWeapon == tool)) || (isChip(tool) && getCooldown(tool) == 0 && TPmax >= getChipCost(tool)) ) {
+		if ( can_use_tool( tool , TPmax ) == true ) {
 			var tir;
 			if(tool == WEAPON_J_LASER) {
 				var cellToCheck = getCellsToCheckForLaser(cellsAccessible, Allies + getAliveEnemies());
@@ -24,16 +22,16 @@ function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax, @shield_
 			if ((tir != [] || tir != null) && tir[VALEUR] > 15) {
 				tir[CHIP_WEAPON] = tool;
 				var valeur = tir[VALEUR];
-				var change_weapon =  (isWeapon(tir[CHIP_WEAPON]) && tir[CHIP_WEAPON] != getWeapon()) ? 1 : 0;
-				var coutPT = (isWeapon(tir[CHIP_WEAPON])) ? getWeaponCost(tir[CHIP_WEAPON]) : getChipCost(tir[CHIP_WEAPON]);
-				var n = (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON])) ? 1 : floor(TPmax / coutPT);
+				var change_weapon =  ( ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] && tool != getWeapon()) ? 1 : 0;
+				var coutPT = ALL_INGAME_TOOLS[tool][TOOL_PT_COST] ;
+				var n = (ALL_INGAME_TOOLS[tool][TOOL_COOLDOWN_TIME]) ? 1 : floor(TPmax / coutPT);
 				
 				//ajouter le bon nombre de fois dans les actions
 				for (var o = 1; o <= n; o++) {
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = getChipEffects(tool)[0][0];
+					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE] ;
 					tir[CALLBACK] = (function (leek) {
 						INFO_LEEKS[leek][ABSOLUTE_SHIELD] = getAbsoluteShield(leek);
 						INFO_LEEKS[leek][RELATIVE_SHIELD] = getRelativeShield(leek);
@@ -91,7 +89,7 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
 			}
 		}
 	}
-	debug(getWeaponName(tool) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -116,8 +114,7 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 	var bestValeur = 0;
 	var distanceBestAction = 0;
 	for (var allie in allies) {
-		var targets = getChipEffects(tool)[0][TARGETS];
-		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(allie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(allie))) {
+		if ((ALL_INGAME_TOOLS[tool][TOOL_TARGET_SUMMONS] && isSummon(allie)) || (ALL_INGAME_TOOLS[tool][TOOL_TARGET_NON_SUMMONS] && !isSummon(allie))) {
 			if (!(MIN_RANGE[tool] != 0 && allie == ME)) {
 				if(!NOT_USE_ON[tool][allie]) {
 					if(!haveffect(allie,tool)) {
@@ -144,17 +141,17 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 			}
 		}
 	}
-	debug(getChipName(tool) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
 function ResistVal(tool, leek){
-	var effects = getChipEffects(tool);
+	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS];
 	var resistance = getResistance();
 	var agility = getAgility();
 	for (var effect in effects) {
-		var valMoyen = (effect[MIN] + effect[MAX]) / 2;
-		if(effect[TYPE] == EFFECT_RELATIVE_SHIELD || effect[TYPE]==EFFECT_ABSOLUTE_SHIELD) {
+		var valMoyen = effect[TOOL_AVERAGE_POWER] ;
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_RELATIVE_SHIELD || effect[TOOL_EFFECT_TYPE] == EFFECT_ABSOLUTE_SHIELD) {
 			if(dangerousEnnemis===null) {
 				findDangerousEnnemis();
 				bestWeapon = getBestWeapon(dangerousEnnemis);
@@ -165,19 +162,19 @@ function ResistVal(tool, leek){
 			pvLost(INFO_LEEKS[dangerousEnnemis], INFO_LEEKS[leek], bestWeapon, null, degat, null1, null2);
 			var sans = degat[MOYEN];
 			var clone = INFO_LEEKS[leek];
-			effect[TYPE] == EFFECT_ABSOLUTE_SHIELD ? clone[1]+=valMoyen*(1+resistance/100) : clone[2]+=valMoyen*(1+resistance/100); // Suppose que l'on a pas déjà la puce /!\ 
+			effect[TOOL_EFFECT_TYPE] == EFFECT_ABSOLUTE_SHIELD ? clone[1]+=valMoyen*(1+resistance/100) : clone[2]+=valMoyen*(1+resistance/100); // Suppose que l'on a pas déjà la puce /!\ 
 			pvLost(INFO_LEEKS[dangerousEnnemis], clone, bestWeapon, null, degat2, null1, null2);
 			var avec = degat2[MOYEN];
 			var bonus = sans - avec;
 			return 3*bonus; // TODO: ajuster le coeff
 		}
-		if(effect[TYPE]==EFFECT_DAMAGE_RETURN) {
-			var renvois = valMoyen*(1+agility/100) * effect[TURNS];
+		if(effect[TOOL_EFFECT_TYPE]==EFFECT_DAMAGE_RETURN) {
+			var renvois = valMoyen*(1+agility/100) * effect[TOOL_NUMBER_TURN_EFFECT_LAST];
 	 		return 3*renvois;
 		}
-		if(effect[TYPE] == EFFECT_ABSOLUTE_VULNERABILITY || effect[TYPE] == EFFECT_STEAL_ABSOLUTE_SHIELD)
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_ABSOLUTE_VULNERABILITY || effect[TOOL_EFFECT_TYPE] == EFFECT_STEAL_ABSOLUTE_SHIELD)
 		{
-			var vulne = valMoyen * effect[TURNS];
+			var vulne = valMoyen * effect[TOOL_NUMBER_TURN_EFFECT_LAST];
 			//TO continue. Because first effect will give a negative value, and the other, the same value but in positive. So value will became 0 at the end.
 			return 3*vulne;
 		}
@@ -204,9 +201,9 @@ function getBestWeapon(leek) {
 	var best;
 	var degat = 0;
 	for (var i in weapons+chips) {
-		var effet = isChip(i) ? getChipEffects(i) : getWeaponEffects(i);
-		if (effet[0][TYPE] == EFFECT_DAMAGE && i != CHIP_BURNING) {
-			var tmp = (effet[0][MIN] + effet[0][MAX]) / 2;
+		var effet = ALL_INGAME_TOOLS[i][TOOL_ATTACK_EFFECTS] ;
+		if (effet[0][TOOL_EFFECT_TYPE] == EFFECT_DAMAGE && i != CHIP_BURNING) {
+			var tmp = effet[0][TOOL_AVERAGE_POWER];
 			if (tmp > degat) {
 				degat = tmp;
 				best = i;

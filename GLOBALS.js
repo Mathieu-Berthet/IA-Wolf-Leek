@@ -397,6 +397,10 @@ function getValeurEffect(tool, effectVoulu, leek, valeur){
 
 // FIN fonctions de setup Pseud3mys  //
 
+function can_use_tool( tool_id , TPmax )
+{
+	return ((ALL_INGAME_TOOLS[tool_id][TOOL_IS_WEAPON] && (TPmax >= ALL_INGAME_TOOLS[tool_id][TOOL_PT_COST] + 1 || TPmax == ALL_INGAME_TOOLS[tool_id][TOOL_PT_COST] && getWeapon() == tool_id)) || (!ALL_INGAME_TOOLS[tool_id][TOOL_IS_WEAPON] && getCooldown(tool_id) == 0 && TPmax >= ALL_INGAME_TOOLS[tool_id][TOOL_PT_COST])) ;
+}
 
 // ajout ordonnateur
 
