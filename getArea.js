@@ -13,7 +13,6 @@ global AREA_M_LASER;
 global AREA_LANCE_FLAMME;
 global AREA_J_LASER;
 
-//include('GLOBALS');
 
 						/*				Fonction publique					*/
 
@@ -45,8 +44,7 @@ function getAreaLine(tool, from, orientation) {
 // retourne les cellules qui seront affectée si l'arme est utilisée sur la cell
 // /!\ Ne fonction que pour les AOE !!! Ne pas utiliser pour les armes en ligne !!!
 function getEffectiveArea(arme, cell) {
-	var typeArea;
-	(isWeapon(arme)) ? typeArea = getWeaponArea(arme) : typeArea = getChipArea(arme);
+	var typeArea = ALL_INGAME_TOOLS[arme][TOOL_AOE_TYPE] ;
 	var tailleAOE;
 	var tailleCroixAOE;
 	var taillePlusAOE;

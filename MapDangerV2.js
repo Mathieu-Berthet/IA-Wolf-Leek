@@ -8,24 +8,24 @@ global MAX_AOE = 2;
 global RANGE = 1;
 global NAME = 0;
 global DEGAT = 0, VOL = 1; //, DAMAGE_RETURN = 2;
-
+// voir pour fusionner items avec mon tableau ?
 global ITEMS = (function() {
 	var tab = [];
-	for (var i = 1; i < 111; i++) {
+	for (var i = 1; i < NUMBER_OF_INGAME_ITEMS; i++) {
 		tab[i] = [];
-		tab[i][NAME] = (isChip(i)) ? getChipName(i) : getWeaponName(i);
+		tab[i][NAME] = ALL_INGAME_TOOLS[i][TOOL_NAME] ;
 		
 		tab[i][RANGE] = [];
-		tab[i][RANGE][MIN] = (isChip(i)) ? getChipMinRange(i) : getWeaponMinRange(i);
-		tab[i][RANGE][MAX] = (isChip(i)) ? getChipMaxRange(i) : getWeaponMaxRange(i);
+		tab[i][RANGE][MIN] = ALL_INGAME_TOOLS[i][TOOL_MIN_RANGE] ;
+		tab[i][RANGE][MAX] = ALL_INGAME_TOOLS[i][TOOL_MAX_RANGE] ;
 		
-		var area = (isChip(i) ? getChipArea : getWeaponArea)(i);
+		var area = ALL_INGAME_TOOLS[i][TOOL_AOE_TYPE] ;
 		if(area==AREA_POINT || area==AREA_LASER_LINE) tab[i][MAX_AOE]=0;
 		if(area==AREA_CIRCLE_1) tab[i][MAX_AOE]=1;
 		if(area==AREA_CIRCLE_2) tab[i][MAX_AOE]=2;
 		if(area==AREA_CIRCLE_3) tab[i][MAX_AOE]=3;
-		tab[i][PT] = (isChip(i) ? getChipCost : getWeaponCost)(i);
-		tab[i][CD] = isChip(i) ? getChipCooldown(i) : 0;
+		tab[i][PT] = ALL_INGAME_TOOLS[i][TOOL_PT_COST] ;
+		tab[i][CD] = ALL_INGAME_TOOLS[i][TOOL_COOLDOWN_TIME] ;
 
 	}
 	return @tab;
@@ -44,18 +44,18 @@ function dangerCombo(@danger) {
 			for(var arme : var value in dangerArmes) {
 				var n;
 				var change_weapon = 0;
-				if (isWeapon(arme) && arme != weapon) {
+				if (ALL_INGAME_TOOLS[arme][TOOL_IS_WEAPON] && arme != weapon) {
 					change_weapon = 1;
 				}
-				var coutPT = ITEMS[arme][PT];
-				if (isChip(arme) && ITEMS[arme][CD]) {
+				var coutPT = ALL_INGAME_TOOLS[arme][TOOL_PT_COST] ;
+				if (ALL_INGAME_TOOLS[arme][TOOL_COOLDOWN_TIME]) {
 					n = 1;
 				} else {
 					n = floor(TP / coutPT);
 				}
 				//ajouter le bon nombre de fois dans les actions 
 				for (var o = 1; o <= n; o++) {
-					cout[nb_action] = o * ITEMS[arme][PT] + change_weapon;
+					cout[nb_action] = o * coutPT + change_weapon;
 					degat[nb_action] = o * value;
 					nb_action++;
 				}
@@ -80,8 +80,8 @@ function getTools(leek){
 		}
 	}
 	for (var i in getChips(leek)) {// todo: vérifier les cooldowns
-		var effet = getChipEffects(i);
-		if (effet[0][0] == EFFECT_DAMAGE && getCooldown(i, leek)<=1) {
+		var effet = ALL_INGAME_TOOLS[i][TOOL_ATTACK_EFFECTS] ;
+		if (effet[0][TOOL_EFFECT_TYPE] == EFFECT_DAMAGE && getCooldown(i, leek)<=1) {
 			tab_damage[c] = i;
 			c++;
 		}
@@ -163,15 +163,15 @@ function getValue(tool, tireur, cible, dist) { //TODO faire le poison
 
 
 	var aoe = ITEMS[tool][MAX_AOE]==0 ? 1 : 1 - (dist / (2 * ITEMS[tool][MAX_AOE]));
-	var effect = (isChip(tool)) ? getChipEffects(tool) : getWeaponEffects(tool);
-	var area = (isChip(tool)) ? getChipArea(tool) : getWeaponArea(tool);
+	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS] ;
+	var area = ALL_INGAME_TOOLS[tool][TOOL_AOE_TYPE] ;
 	var degatMoyen = 0;
 	var degatMin = 0;
 
-	for (var i in effect) {
-		if (i[0] == EFFECT_DAMAGE) {
-			degatMoyen = (i[1] + i[2]) / 2;
-			degatMin = i[1];
+	for (var effect in effects) {
+		if (effect[TOOL_EFFECT_TYPE] == EFFECT_DAMAGE) {
+			degatMoyen = effect[TOOL_AVERAGE_POWER] ;
+			degatMin = effect[TOOL_MIN_POWER] ;
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Strenght] / 100);
 			var degatBrutMin = aoe * degatMin * (1 + tireur[Strenght] / 100);
 			var degatTmp = [0, 0];

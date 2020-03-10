@@ -41,15 +41,9 @@ function CellsToUseTool (tool, cellVisee, @allCells) {
 	var mini = MIN_RANGE[tool];
 	var maxi;
 	var inLine;
-	if (isChip(tool)) {
-		//mini = getChipMinRange(tool);
-		maxi = getChipMaxRange(tool);
-		inLine = isInlineChip(tool);
-	} else {
-		//mini = getWeaponMinRange(tool);
-		maxi = getWeaponMaxRange(tool);
-		inLine = isInlineWeapon(tool);
-	}
+	//mini = ALL_INGAME_TOOLS[tool][TOOL_MIN_RANGE] ;
+	maxi = ALL_INGAME_TOOLS[tool][TOOL_MAX_RANGE] ;
+	inLine = ALL_INGAME_TOOLS[tool][TOOL_IS_INLINE] ;
 	if (!inLine) {
 		for (var i = mini; i <= maxi ; i++) {
 			allCells = allCells + _initCellToUse[cellVisee][i];
