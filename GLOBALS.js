@@ -238,73 +238,538 @@ TERRITOIRE_PARAM = (function() {  // j'ai mis les valeurs un peu au pifomètre
 })();
 
 
+global 	CHARACTERISTIC_LIFE = 'LIFE',
+		CHARACTERISTIC_STRENGTH = 'STRENGTH',
+		CHARACTERISTIC_WISDOM = 'WISDOM',
+		CHARACTERISTIC_AGILITY = 'AGILITY',
+		CHARACTERISTIC_RESISTANCE = 'RESISTANCE',
+		CHARACTERISTIC_SCIENCE = 'SCIENCE',
+		CHARACTERISTIC_MAGIC = 'MAGIC',
+		CHARACTERISTIC_FREQUENCY = 'FREQUENCY',
+		CHARACTERISTIC_MOVEMENT = 'MOVEMENT',
+		CHARACTERISTIC_TURN_POINT = 'TURN_POINT';
+		
+global	COEFF_EFFECT = 'COEFF_EFFECT',
+		BOOSTED_BY = 'BOOSTED_BY',
+		IS_RELATIF = 'IS_RELATIF',
+		INTERACT_WITH = 'INTERACT_WITH';
+		
+global	INTERACT_SHIELD = 'INTERACT_SHIELD',
+		INTERACT_STEAL_LIFE = 'INTERACT_STEAL_LIFE',
+		INTERACT_RETURN_DAMAGE = 'INTERACT_RETURN_DAMAGE',
+		INTERACT_NOVA_DAMAGE = 'INTERACT_NOVA_DAMAGE',
+		
+
 
 /* TODO: faire un tableau de la forme : 
-	EFFECT = [
+	ALL_EFFECTS = [
 		COEFF_EFFECT : aNumber
 		BOOSTED_BY : aCaracteristic
 		IS_RELATIF : Boolean
+		IS_SPECIAL : Boolean
 		INTERACT_WITH [
 			SHIELD : Boolean
 			STEAL_LIFE : Boolean
 			RETURN_DAMAGE : Boolean
-			NOVA_DAMAGE
+			NOVA_DAMAGE : Boolean
 		]
 	]
 */
-global COEFF_EFFECT = [
-	EFFECT_DAMAGE : 1, // cas spécial : applique aussi le renvois de dégat, le vol de vie et les dégat novas 
-	EFFECT_POISON : 1, //  cas spécial : applique aussi les dégats novas
-	EFFECT_NOVA_DAMAGE : 1, // boosté par la science 
-	EFFECT_LIFE_DAMAGE : 1, // dépend de la vie du caster
-	
-	EFFECT_SHACKLE_TP : 40,
-	EFFECT_SHACKLE_MP : 35,
-	EFFECT_SHACKLE_STRENGTH : 1, 
-	EFFECT_SHACKLE_MAGIC : 1, 
-	
-	EFFECT_BUFF_TP : 80,
-	EFFECT_BUFF_MP : 80,
-	EFFECT_BUFF_STRENGTH : 1,
-	EFFECT_BUFF_AGILITY :  0.7, 
-	EFFECT_BUFF_RESISTANCE : 0.7, 
-	EFFECT_BUFF_WISDOM : 0.7,
+global ALL_EFFECTS = [
+	EFFECT_DAMAGE : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_STRENGTH,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : true,
+			STEAL_LIFE : true,
+			RETURN_DAMAGE : true,
+			NOVA_DAMAGE : true
+		]
+	],
+	EFFECT_POISON : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_MAGIC,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : true
+		]
+	],
+	EFFECT_NOVA_DAMAGE : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
+		IS_RELATIF : true,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	], 
+	EFFECT_LIFE_DAMAGE : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_LIFE,
+		IS_RELATIF : true,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : true,
+			STEAL_LIFE : true,
+			RETURN_DAMAGE : true,
+			NOVA_DAMAGE : true
+		]
+	],
+	// EFFET SHACKLE
+	EFFECT_SHACKLE_TP : [
+		COEFF_EFFECT : 40,
+		BOOSTED_BY : CHARACTERISTIC_MAGIC,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_SHACKLE_MP : [
+		COEFF_EFFECT : 35,
+		BOOSTED_BY : CHARACTERISTIC_MAGIC,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_SHACKLE_STRENGTH : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_MAGIC,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	], 
+	EFFECT_SHACKLE_MAGIC : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_MAGIC,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false,
+		]
+	], 
+	// EFFECT BUFF
+	EFFECT_BUFF_TP : [
+		COEFF_EFFECT : 80,
+		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false,
+		]
+	],
+	EFFECT_BUFF_MP : [
+		COEFF_EFFECT : 80,
+		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_BUFF_STRENGTH : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_BUFF_AGILITY :  [
+		COEFF_EFFECT : 0.7,
+		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	], 
+	EFFECT_BUFF_RESISTANCE : [
+		COEFF_EFFECT : 0.7,
+		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	], 
+	EFFECT_BUFF_WISDOM : [
+		COEFF_EFFECT : 0.7,
+		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
 	 
-	EFFECT_AFTEREFFECT : 1, // +nova
-	 
-	EFFECT_HEAL : 1, 
-	EFFECT_BOOST_MAX_LIFE : 1, 
+	EFFECT_AFTEREFFECT : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : true
+		]
+	],
+	// HEAL
+	EFFECT_HEAL : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_WISDOM,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false,
+		]
+	], 
+	EFFECT_BOOST_MAX_LIFE : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_WISDOM,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false,
+		]
+	], 
+	// RESISTANCE
+	EFFECT_RELATIVE_SHIELD : [
+		COEFF_EFFECT : 3,
+		BOOSTED_BY : CHARACTERISTIC_RESISTANCE,
+		IS_RELATIF : true,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],  
+	EFFECT_ABSOLUTE_SHIELD : [
+		COEFF_EFFECT : 3,
+		BOOSTED_BY : CHARACTERISTIC_RESISTANCE,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	], 
+	EFFECT_DAMAGE_RETURN : [
+		COEFF_EFFECT : 3,
+		BOOSTED_BY : CHARACTERISTIC_AGILITY,
+		IS_RELATIF : true,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : true,
+		]
+	],
+	EFFECT_ABSOLUTE_VULNERABILITY : [
+		COEFF_EFFECT : 3,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false,
+		]
+	], 
+	EFFECT_STEAL_ABSOLUTE_SHIELD : [
+		COEFF_EFFECT : 3,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	], 
+	EFFECT_VULNERABILITY : [
+		COEFF_EFFECT : 3,
+		BOOSTED_BY : null,
+		IS_RELATIF : true,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
 	
-	EFFECT_RELATIVE_SHIELD : 3,  
-	EFFECT_ABSOLUTE_SHIELD : 3, 
-	EFFECT_DAMAGE_RETURN : 3, //+NOVA
+	// EFFET SPECIAUX 
+	EFFECT_SUMMON : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_ANTIDOTE : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_DEBUFF : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : true,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_KILL : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_INVERT : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	], 
+	EFFECT_RESURRECT : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_TELEPORT : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	], 
 	
-	EFFECT_ABSOLUTE_VULNERABILITY : 3, 
-	EFFECT_STEAL_ABSOLUTE_SHIELD : 3, 
-	EFFECT_VULNERABILITY : 3,
-	
-	
-	EFFECT_SUMMON : 1, //spécial : dépend du Bulbe
-	EFFECT_ANTIDOTE : 1, // spécial : ne s'applique que sur le poison
-	EFFECT_DEBUFF : 1, // la valeur est en % 
-	EFFECT_KILL : 1, // cas spécial
-	EFFECT_INVERT : 1, 
-	EFFECT_RESURRECT : 1,
-	EFFECT_TELEPORT : 1, 
-	
+	// EFFETS PASSIF
 	// Pour l'instant l'IA ne les prends pas en compte les effets passif 
-	EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD : 0,
-	EFFECT_DAMAGE_TO_STRENGTH : 0,
-	EFFECT_NOVA_DAMAGE_TO_MAGIC : 0,
-	EFFECT_POISON_TO_SCIENCE : 0,
+	// Mettre un EFFET dans le boosted by ?
+	// Je mets is_spacial à 1 pour l'intant => faudrait peut être mets un is_passif 
+	EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD : [
+		COEFF_EFFECT : 0,
+		BOOSTED_BY : null,
+		IS_RELATIF : true,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_DAMAGE_TO_STRENGTH : [
+		COEFF_EFFECT : 0,
+		BOOSTED_BY : null,
+		IS_RELATIF : true,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_NOVA_DAMAGE_TO_MAGIC : [
+		COEFF_EFFECT : 0,
+		BOOSTED_BY : null,
+		IS_RELATIF : true,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_POISON_TO_SCIENCE : [
+		COEFF_EFFECT : 0,
+		BOOSTED_BY : null,
+		IS_RELATIF : true,
+		IS_SPECIAL : true,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
 	
-	// Les EFFECT_RAW sont Boosté par la science
-	EFFECT_RAW_ABSOLUTE_SHIELD : 3:
-	EFFECT_RAW_BUFF_MAGIC : 1,
-	EFFECT_RAW_BUFF_MP : 60,
-	EFFECT_RAW_BUFF_SCIENCE : 1,
-	EFFECT_RAW_BUFF_STRENGTH : 1,
-	EFFECT_RAW_BUFF_TP : 80,
+	// EFFECT_RAW
+	EFFECT_RAW_ABSOLUTE_SHIELD : [
+		COEFF_EFFECT : 3,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	]:
+	EFFECT_RAW_BUFF_MAGIC : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_RAW_BUFF_MP : [
+		COEFF_EFFECT : 60,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_RAW_BUFF_SCIENCE : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_RAW_BUFF_STRENGTH : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_RAW_BUFF_TP : [
+		COEFF_EFFECT : 80,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		INTERACT_WITH [
+			SHIELD : false,
+			STEAL_LIFE : false,
+			RETURN_DAMAGE : false,
+			NOVA_DAMAGE : false
+		]
+	],
 	
 ]
 
