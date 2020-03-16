@@ -55,6 +55,7 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies, @tactics_
 function tactic(tool, allies, ennemies, @cellsAccessible)
 {
   var ope = getOperations();
+  var leeks = allies + ennemies;
   var cell_deplace;
   var cellAllie;
   var bestAction = [];
@@ -62,24 +63,24 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
   var valeur;
   var bestValeur = 0;
   var distanceBestAction = 0;
-  for(var allie in allies)
+  for(var leek in leeks)
   {
-    if((ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_SUMMONS] && isSummon(allie)) || (ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_NON_SUMMONS] && !isSummon(allie)))
+    if((ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_SUMMONS] && isSummon(leek)) || (ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_NON_SUMMONS] && !isSummon(leek)))
     {
-      if(!(MIN_RANGE[tool] != 0 && allie == ME))
+      if(!(MIN_RANGE[tool] != 0 && leek == ME))
       {
-        if(!NOT_USE_ON[tool][allie])
+        if(!NOT_USE_ON[tool][leek])
         {
-          cellAllie = getCell(allie);
+          cellAllie = getCell(leek);
           cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
           if(cell_deplace != -2)
           {
             var libere, antidote, invert, teleport;
-			tacticVal(tool, allie, null, libere, antidote, invert, teleport);
+			tacticVal(tool, leek, null, libere, antidote, invert, teleport);
 
             if(MINIMUM_TO_USE[tool] === null || MINIMUM_TO_USE[tool] <= libere)
             {
-              valeur = SCORE_TACTIC[allie] * (antidote + libere + invert + teleport);
+              valeur = SCORE_TACTIC[leek] * (antidote + libere + invert + teleport);
               if(valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction)
               {
                 if(getLeekOnCell(cellAllie) == ME)
