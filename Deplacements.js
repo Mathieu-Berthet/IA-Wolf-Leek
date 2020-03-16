@@ -19,12 +19,8 @@ function getCenterOfGravity(leeks) {
 		nb++;
 	}
 	//moyenne
-	var xmoy = 0;
-	var ymoy = 0;
-	for (var x in X) xmoy+=x;
-	for (var y in Y) ymoy+=y;
-	xmoy /= nb;
-	ymoy /= nb;
+	var xmoy = average(X);
+	var ymoy = average(Y);
 	centre = getCellFromXY(xmoy, ymoy);
 	mark(centre, getColor(255, 30, 255));
 
