@@ -5,7 +5,7 @@ Je met déjà les premiers points actuellement en cours. Vous pourrez à tout mo
 
 
 A faire : 
-- Revoir le déplacement, essayer de regrouper les différentes fonctions faites par les membres en une seule
+- Revoir le déplacement, essayer de regrouper les différentes fonctions faites par les membres en une seule (Marmotte)
 
 - Corriger le setup des armes/puces pour les bulbes + Ajouter certaines infos dans le tableau de setup du départ. (Ordonnateur)
 
