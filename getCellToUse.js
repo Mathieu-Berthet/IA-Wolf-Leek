@@ -4,6 +4,7 @@
 // TODO: definir les range min et max pour chaque armes et chips => empêcher de s'empoisonner pour certaines armes/chips
 
 include("GLOBALS");
+include("Debug");
 
 							/*						Fonction Publique							*/
 
@@ -28,7 +29,7 @@ function getCellToUseToolsOnCell(tool, cellVisee, cellsAccessible) {
 			}
 		}
 	}
-	//debug(cells);
+	//debugP(cells);
 	return cellMin;
 }
 
@@ -110,7 +111,7 @@ function getCellsToCheckForLaser(@pathLengh, leeks) {
 			}
 		}
 	}
-	//debug("cellsToCheckForLaser => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP("cellsToCheckForLaser => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @array;
 }
 
@@ -237,7 +238,7 @@ function initialisationInLineCell() {
 				}
 			}
 		}
-		debug("initialisationInLineCell :"+((getOperations()-ope)/OPERATIONS_LIMIT *100));
+		debugP("initialisationInLineCell :"+((getOperations()-ope)/OPERATIONS_LIMIT *100));
 	}
 }
 function initialisationCellToUse(){
@@ -258,6 +259,6 @@ function initialisationCellToUse(){
 				_initCellToUse[i][j] = sstab;
 			}
 		}
-		debug("initialisationCellToUse :"+((getOperations()-av)/OPERATIONS_LIMIT *100));
+		debugP("initialisationCellToUse :"+((getOperations()-av)/OPERATIONS_LIMIT *100));
 	}
 }

@@ -2,6 +2,7 @@
 
 include("getCellToUse");
 include("getArea");
+include("Debug");
 
 
 
@@ -103,7 +104,7 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
       }
     }
   }
-  //debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+  //debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 

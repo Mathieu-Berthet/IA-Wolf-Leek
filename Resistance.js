@@ -1,5 +1,6 @@
 // dernière mise à jour le 17/02/18 par Caneton
 include("Attaque");
+include("Debug");
 
 global dangerousEnnemis;
 global bestWeapon;
@@ -89,7 +90,7 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
 			}
 		}
 	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -141,7 +142,7 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 			}
 		}
 	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 

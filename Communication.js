@@ -1,4 +1,3 @@
-
 // @auteur : Marmotte33
 // Dernière mise à jour: 01/04/2018 par Marmotte
 /**
@@ -29,6 +28,8 @@
 *					=> équivalent à sendAll, mais envoie aussi l'information aux ennemis
 **/
 
+include("Debug");
+
 global listeMessages; // Liste des messages reçus depuis 1 tour
 listeMessages = recevoir();
 
@@ -36,7 +37,7 @@ global chefDeMeute = -1; // Numéro du chef de meute (comme getLeek();)
 function poireauAlpha() { // A modifier : faire le cas d'une résu pendant le tour
 	if (not isAlive(chefDeMeute)) {
 		chefDeMeute = getAliveAllies()[0];
-		debug("Chef de meute -> " + getName(chefDeMeute));
+		debugP("Chef de meute -> " + getName(chefDeMeute));
 	}
 }
 poireauAlpha();

@@ -6,6 +6,8 @@
  * 			Ils sont pour l'instant en debug mais il serait surement intéressant de les retourner
  **/
 include("MapDangerV2");
+include("Debug");
+
 function getCenterOfGravity(leeks) {
 	var distanceMoyenne;
 	var X = [];
@@ -34,8 +36,8 @@ function getCenterOfGravity(leeks) {
 		var s2primY = somme2Y/(nb-1);
 		var ecartTypeX = sqrt(s2primX);
 		var ecartTypeY = sqrt(s2primY);
-		debug("ecartTypeX = " + ecartTypeX);
-		debug("ecartTypeY = " + ecartTypeY);
+		debugP("ecartTypeX = " + ecartTypeX);
+		debugP("ecartTypeY = " + ecartTypeY);
 	}
 
 	return centre;

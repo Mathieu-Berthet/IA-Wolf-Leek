@@ -7,6 +7,7 @@ include("Resistance");
 include("Communication");
 //include("Deplacements");
 include("Boost");
+include("Debug");
 
 
 
@@ -65,7 +66,7 @@ function IA_Collective() {
 				var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
 				var isUseSucess = doAction(action);
 				if(!isUseSucess) {
-					debugE('Action non effectué : ' + action + '\n Attention à la boucle infinie');
+					debugEP('Action non effectué : ' + action + '\n Attention à la boucle infinie');
 					// TODO : mettre en place un mécanisme pour ne pas refaire la même action
 					ERROR_TOOLS[action[CHIP_WEAPON]] = true;
 				}

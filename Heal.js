@@ -1,6 +1,7 @@
 // dernière mise à jour le 17/02/18 par Caneton
 include("getArea");
 include("getCellToUse");
+include("Debug");
 
 
 
@@ -115,7 +116,7 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			}
 		}
 	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -160,7 +161,7 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 			}
 		}
 	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -227,7 +228,7 @@ function healTypeAOE(toutPoireau, tool, @cellsAccessible)
 			}
 		}
 	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 

@@ -1,5 +1,7 @@
 // dernière mise à jour le : 03/02/2020 par : Caneton
 
+include("Debug");
+
 /********************** Globals *********************************/
 global CACHER;
 global ME = getLeek();
@@ -263,7 +265,7 @@ function SetupAll(){
 	SetupTools( AttackTools , ShieldTools , HealTools , BoostsTools , TacticsTools , SummonTools ) ;
 	Setup = true;
 	ope = (getOperations()-ope)/OPERATIONS_LIMIT*100;
-	debugW("Setup reussi ! ("+ope+"%)");
+	debugWP("Setup reussi ! ("+ope+"%)");
 	return Setup;
 }
 
@@ -357,7 +359,7 @@ function getToolsHeal(){
 
 function getValeurEffect(tool, effectVoulu, leek, valeur){
 	if(tool==null){
-		debugE("arg tool est null in getValeurEffect");
+		debugEP("arg tool est null in getValeurEffect");
 		return false;
 	}
 	var effects;
@@ -377,7 +379,7 @@ function getValeurEffect(tool, effectVoulu, leek, valeur){
 				else if(valeur=="-")Valeur = effect[1] * nbrTour;  //le minimum
 				else if(valeur=="moy-")Valeur = ((effect[1]+effect[2])/2+effect[1])/2 * nbrTour;//moyenne en - et moy
 				else if(valeur=="+")Valeur = effect[2]* nbrTour; //le maximum
-				else debugE("[error-getValeurEffect] arg valeur wrong");
+				else debugEP("[error-getValeurEffect] arg valeur wrong");
 				var amelioration = 0;
 				if(effectVoulu == EFFECT_ABSOLUTE_SHIELD || effectVoulu == EFFECT_RELATIVE_SHIELD) amelioration = getResistance(leek);
 		  if(effectVoulu == EFFECT_DAMAGE_RETURN) amelioration = getAgility(leek);
@@ -434,8 +436,8 @@ if ( getTurn() == 1 ) // je n'ai pas ultra compris l'idée des globales fonction
 {
 	//var op_ordo = getOperations() ;
 	create_all_tools_tab() ;
-	//debugE( getOperations()-op_ordo ) ;
-	//debugE( ALL_INGAME_TOOLS ) ;
+	//debugEP( getOperations()-op_ordo ) ;
+	//debugEP( ALL_INGAME_TOOLS ) ;
 }
 
 function create_all_tools_tab()
@@ -513,11 +515,3 @@ function stats_effects( @tab_effect , @effect )
 	tab_effect[TOOL_TARGET_NON_SUMMONS] = (effect[4] & EFFECT_TARGET_NON_SUMMONS) && true ;
 	tab_effect[TOOL_TARGET_CASTER] = (effect[4] & EFFECT_TARGET_CASTER) && true ;
 }
-
-
-
-
-
-
-
-

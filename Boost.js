@@ -1,6 +1,7 @@
 // dernière mise à jour le 25/02/18 par Rayman
 include("getArea");
 include("getCellToUse");
+include("Debug");
 
 /*
  *  *50 pour les TP
@@ -101,7 +102,7 @@ function Booster(tool, allies, @cellsAccessible)
             			var coeff = SCORE_BOOST[allie][eff[TOOL_EFFECT_TYPE]];
 						if(coeff===null)
 						{
-							debugE("["+ALL_INGAME_TOOLS[tool][TOOL_NAME]+"]Pas de valeur pour : "+ eff[TOOL_EFFECT_TYPE]);
+							debugEP("["+ALL_INGAME_TOOLS[tool][TOOL_NAME]+"]Pas de valeur pour : "+ eff[TOOL_EFFECT_TYPE]);
 						}
 						valeur = coeff*(boost);
 						if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction)
@@ -125,7 +126,7 @@ function Booster(tool, allies, @cellsAccessible)
 			}
 	 	}
   	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -188,7 +189,7 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 			}
 		}
 	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 

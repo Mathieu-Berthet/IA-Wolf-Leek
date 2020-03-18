@@ -2,6 +2,7 @@
 // Dernière mise à jour: 03/02/2020 par Caneton
 
 include("GLOBALS");
+include("Debug");
 
 global tabAOE = [];
 global tabPlus = [];
@@ -105,7 +106,7 @@ if (getTurn() == 1) {
 	initgetAOECroix();
 	initgetAOEPlus();
   	init_AreaLine();
-	//debug(getOperations() / OPERATIONS_LIMIT * 100 + " %");
+	//debugP(getOperations() / OPERATIONS_LIMIT * 100 + " %");
 }
 
 
@@ -173,7 +174,7 @@ function init_AreaLine() {
 	AREA_M_LASER = tabMLaser;
 	AREA_LANCE_FLAMME = tabLanceFlamme;
 	AREA_J_LASER = tabJLaser;
-	//debug("init_AreaLine : "+((getOperations()-ope)/OPERATIONS_LIMIT *100)+ " %");
+	//debugP("init_AreaLine : "+((getOperations()-ope)/OPERATIONS_LIMIT *100)+ " %");
 }
 
 

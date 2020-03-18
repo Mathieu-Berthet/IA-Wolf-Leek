@@ -1,5 +1,6 @@
 // dernière mise à jour le 29/04/18 par Yama et Caneton
 include("IA_Bulbe");
+include("Debug");
 
 
 global bulbeOffensif = [CHIP_ROCKY_BULB: 90, CHIP_ICED_BULB: 120, CHIP_FIRE_BULB: 225, CHIP_LIGHTNING_BULB: 240];
@@ -23,7 +24,7 @@ function getSummonAction(@actions, @cellsAccessible, TPmax, @summon_tools) {
 				actions[nb_action] = tir;
 				nb_action++;
 			}
-			debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " => " + tir);
+			debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " => " + tir);
 		}
 	}
 }

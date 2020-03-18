@@ -1,5 +1,6 @@
 include("getArea");
 include("getCellToUse");
+include("Debug");
 /**
  *		Fonctions :
  *		- pvLost => Calcule le nombre de PV infligé pour une attaque (avec le renvoit de dégat et le vol de vie)
@@ -91,7 +92,7 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack
 			}
 		}
 	}
-	//debugC("Calcul getAttackAction => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + " %", COLOR_RED);
+	//debugCP("Calcul getAttackAction => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + " %", COLOR_RED);
 }
 
 
@@ -149,7 +150,7 @@ function attaqueTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			}
 		}
 	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -210,7 +211,7 @@ function frappeDuDemon(toutEnnemis, @cellsAccessible) {
 			}
 		}
 	}
-	debug("Frappe du demon : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	debugP("Frappe du demon : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -275,7 +276,7 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 			}
 		}
 	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -331,7 +332,7 @@ function attaqueTypePoint(toutEnnemis, tool, @cellsAccessible) {
 			}
 		}
 	}
-	debug(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -394,7 +395,7 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 	}
 
 	if (aoe < 0.399) {
-		debugE("pvLost : Erreur dans le calcul de l'aoe ! : " + aoe + " => " + ALL_INGAME_TOOLS[arme_chip][TOOL_NAME]);
+		debugEP("pvLost : Erreur dans le calcul de l'aoe ! : " + aoe + " => " + ALL_INGAME_TOOLS[arme_chip][TOOL_NAME]);
 		aoe = 0;
 	}
 

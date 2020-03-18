@@ -1,4 +1,5 @@
 include("GLOBALS");
+include("Debug");
 
 global ORDONNANCEMENT_DEFAULT = ORDONNANCEMENT_BVF;
 global ORDONNANCEMENT_BVF = 0; // Big Value First
@@ -111,7 +112,7 @@ getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST] = function(@combo) {
 	if(count(nonSummonAction)) {
 		return @getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
 	} else {
-		if(!count(summonAction)) debugW("Actions Vide ???");
+		if(!count(summonAction)) debugWP("Actions Vide ???");
 		return @summonAction[0];
 	}
 };
@@ -157,7 +158,7 @@ function getBestCombo(@actions, TP) {
 
 
 function doAction(attack) {
-	debug(attack);
+	debugP(attack);
 	var code_return = USE_SUCCESS; // note : les codes d'erreurs sont négatifs
 	var code_return_callback = USE_SUCCESS;
 	if (attack != [] && attack != null) {
