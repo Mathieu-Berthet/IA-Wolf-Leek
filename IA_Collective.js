@@ -11,6 +11,7 @@ include("Resistance");
 include("StatsCombos");
 include("Tactics");
 include("Territoire");
+include("Debug");
 
 // clearMap();
 debugTerritoires(getTerritoires(getAliveAllies(), getAliveEnemies()));
@@ -22,11 +23,11 @@ ERROR_TOOLS = [];
 getOpponent(getAliveEnemies());
 SetupAll();
 
-debug("SCORE :");
+debugP("SCORE :");
 for (var cle: var val in SCORE) {
-	debug(getName(cle) + " => " + val);
+	debugP(getName(cle) + " => " + val);
 }
-debug("");
+debugP("");
 
 //setBoostCoeff(); //A decommenter si votre poireau joue science
 var continu = true;
@@ -46,7 +47,7 @@ while (continu) { // Pour l'instant on ne fait qu'une action
 	getTacticAction(actions, cellsAccessible, toutAllies, toutEnnemis, TacticsTools);
 
 	var combo = getBestCombo(actions, getTP());
-	//debug(combo);
+	//debugP(combo);
 	if(combo != []) {
 		var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
 		for(var i = 1; i <= action[4]; i++){
@@ -54,7 +55,7 @@ while (continu) { // Pour l'instant on ne fait qu'une action
 		}
 		var isUseSucess = doAction(action);
 		if(!isUseSucess) {
-			debugE('Action non effectué : ' + action + '\n Attention à la boucle infini');
+			debugEP('Action non effectué : ' + action + '\n Attention à la boucle infinie');
 			// TODO : mettre en place un mécanisme pour ne pas refaire la même action
 			ERROR_TOOLS[action[CHIP_WEAPON]] = true;
 		}
@@ -63,7 +64,7 @@ while (continu) { // Pour l'instant on ne fait qu'une action
 	}
 }
 
-debugW("Fin Action (tour : " + TOUR + "): opération :" + (getOperations() / OPERATIONS_LIMIT * 100) + " %");
+debugWP("Fin Action (tour : " + TOUR + "): opération :" + (getOperations() / OPERATIONS_LIMIT * 100) + " %");
 Memorise(COMBO);
 
 

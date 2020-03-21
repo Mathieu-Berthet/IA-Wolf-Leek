@@ -4,6 +4,7 @@
 // TODO: definir les range min et max pour chaque armes et chips => empêcher de s'empoisonner pour certaines armes/chips
 
 include("GLOBALS");
+include("Debug");
 
 							/*						Fonction Publique							*/
 
@@ -28,7 +29,7 @@ function getCellToUseToolsOnCell(tool, cellVisee, cellsAccessible) {
 			}
 		}
 	}
-	//debug(cells);
+	//debugP(cells);
 	return cellMin;
 }
 
@@ -41,15 +42,9 @@ function CellsToUseTool (tool, cellVisee, @allCells) {
 	var mini = MIN_RANGE[tool];
 	var maxi;
 	var inLine;
-	if (isChip(tool)) {
-		//mini = getChipMinRange(tool);
-		maxi = getChipMaxRange(tool);
-		inLine = isInlineChip(tool);
-	} else {
-		//mini = getWeaponMinRange(tool);
-		maxi = getWeaponMaxRange(tool);
-		inLine = isInlineWeapon(tool);
-	}
+	//mini = ALL_INGAME_TOOLS[tool][TOOL_MIN_RANGE] ;
+	maxi = ALL_INGAME_TOOLS[tool][TOOL_MAX_RANGE] ;
+	inLine = ALL_INGAME_TOOLS[tool][TOOL_IS_INLINE] ;
 	if (!inLine) {
 		for (var i = mini; i <= maxi ; i++) {
 			allCells = allCells + _initCellToUse[cellVisee][i];
@@ -116,7 +111,7 @@ function getCellsToCheckForLaser(@pathLengh, leeks) {
 			}
 		}
 	}
-	//debug("cellsToCheckForLaser => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP("cellsToCheckForLaser => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @array;
 }
 
@@ -243,7 +238,7 @@ function initialisationInLineCell() {
 				}
 			}
 		}
-		debug("initialisationInLineCell :"+((getOperations()-ope)/OPERATIONS_LIMIT *100));
+		debugP("initialisationInLineCell :"+((getOperations()-ope)/OPERATIONS_LIMIT *100));
 	}
 }
 function initialisationCellToUse(){
@@ -264,6 +259,6 @@ function initialisationCellToUse(){
 				_initCellToUse[i][j] = sstab;
 			}
 		}
-		debug("initialisationCellToUse :"+((getOperations()-av)/OPERATIONS_LIMIT *100));
+		debugP("initialisationCellToUse :"+((getOperations()-av)/OPERATIONS_LIMIT *100));
 	}
 }

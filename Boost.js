@@ -1,7 +1,7 @@
 // dernière mise à jour le 25/02/18 par Rayman
-include("GLOBALS");
 include("getArea");
 include("getCellToUse");
+include("Debug");
 
 /*
  *  *50 pour les TP
@@ -19,9 +19,9 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @bo
 	{
 		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
-		if (getCooldown(tool) == 0 && getTP() >= getChipCost(tool))
+		if (getCooldown(tool) == 0 && getTP() >= ALL_INGAME_TOOLS[tool][TOOL_PT_COST])
 		{
-			var area = (isChip(tool) ? getChipArea(tool) : getWeaponArea(tool));
+			var area = ALL_INGAME_TOOLS[tool][TOOL_AOE_TYPE] ;
 			if(area == AREA_POINT)
 			{
 				tir = Booster(tool, Allies, cellsAccessible);
@@ -37,8 +37,8 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @bo
 				var valeur = tir[VALEUR];
 				var n;
 				var change_weapon = 0;
-				coutPT = getChipCost(tir[CHIP_WEAPON]);
-				if (isChip(tir[CHIP_WEAPON]) && getChipCooldown(tir[CHIP_WEAPON]))
+				coutPT = ALL_INGAME_TOOLS[tool][TOOL_PT_COST] ;
+				if (ALL_INGAME_TOOLS[tool][TOOL_COOLDOWN_TIME])
 				{
 					n = 1;
 				}
@@ -52,7 +52,7 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @bo
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
-					tir[EFFECT] = getChipEffects(tool)[0][0];
+					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE] ;
 					actions[nb_action] = tir;
 					nb_action++;
 				}
@@ -85,9 +85,8 @@ function Booster(tool, allies, @cellsAccessible)
 	var distanceBestAction = 0;
 	for (var allie in allies)
 	{
-		var eff = getChipEffects(tool)[0];
-		var targets = eff[TARGETS];
-		if (((targets & EFFECT_TARGET_SUMMONS) && isSummon(allie)) || ((targets & EFFECT_TARGET_NON_SUMMONS) && !isSummon(allie)))
+		var eff = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0] ;
+		if ((eff[TOOL_TARGET_SUMMONS] && isSummon(allie)) || (eff[TOOL_TARGET_NON_SUMMONS] && !isSummon(allie)))
 		{
       		if(!(MIN_RANGE[tool] != 0 && allie == ME))
 			{
@@ -100,10 +99,10 @@ function Booster(tool, allies, @cellsAccessible)
             			var boost;
 						var nbCibles = 0;
             			boostVal(tool, allie, null, boost, nbCibles);
-            			var coeff = SCORE_BOOST[allie][eff[TYPE]];
+            			var coeff = SCORE_BOOST[allie][eff[TOOL_EFFECT_TYPE]];
 						if(coeff===null)
 						{
-							debugE("["+getChipName(tool)+"]Pas de valeur pour : "+ eff[TYPE]);
+							debugEP("["+ALL_INGAME_TOOLS[tool][TOOL_NAME]+"]Pas de valeur pour : "+ eff[TOOL_EFFECT_TYPE]);
 						}
 						valeur = coeff*(boost);
 						if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction)
@@ -127,12 +126,12 @@ function Booster(tool, allies, @cellsAccessible)
 			}
 	 	}
   	}
-	debug(getChipName(tool) + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
 function getTargetBoost(tool, cell) {
-	return (isChip(tool)) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
+	return (!ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON]) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
 }
 
 function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
@@ -142,10 +141,10 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 	var distanceBestAction = 0;
 	var cell_deplace;
 	var valeurMax = 0;
-	var maxRange = (isChip(tool)) ? getChipMaxRange(tool) : getWeaponMaxRange(tool);
+	var maxRange = ALL_INGAME_TOOLS[tool][TOOL_MAX_RANGE] ;
 	var deja_fait = [];
 	for (var poireau in toutPoireau) {
-		var distance = getDistance(getCell(), getCell(poireau));
+		var distance = getCellDistance(getCell(), getCell(poireau));
 		if (distance <= maxRange + getMP())
 		{
 			var zone = getEffectiveArea(tool, getCell(poireau));
@@ -190,8 +189,7 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 			}
 		}
 	}
-	if (isChip(tool)) debug(getChipName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
-	else debug(getWeaponName(tool) + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -200,22 +198,22 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 function boostVal(tool, leek, coeffReduction, @boost, nbCibles)
 {
 	boost = 0;
-	var effects = getChipEffects(tool);
+	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS];
 	var science = getScience();
 	for (var effect in effects) 
 	{
-		var valMoyen = (effect[MIN] + effect[MAX]) / 2;
-		if(effect[TYPE] == EFFECT_BUFF_TP)
+		var valMoyen = effect[TOOL_AVERAGE_POWER];
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_BUFF_TP)
 		{
 			boost = valMoyen*(1+science/100) * 80;
 		}
 		
-		if(effect[TYPE] == EFFECT_RAW_BUFF_TP)
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_RAW_BUFF_TP)
 		{
 			boost = valMoyen*nbCibles * 80;
 		}
 		
-		if(effect[TYPE] == EFFECT_BUFF_MP) {
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_BUFF_MP) {
 			if (isStatic(leek)) {
 				boost = 0;
 			} else {
@@ -223,18 +221,18 @@ function boostVal(tool, leek, coeffReduction, @boost, nbCibles)
 			}
 		}
 		
-		if(effect[TYPE] == EFFECT_RAW_BUFF_MP)
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_RAW_BUFF_MP)
 		{
 			boost = valMoyen*nbCibles * 60;
 		}
 
-		if(effect[TYPE] == EFFECT_BUFF_STRENGTH || effect[TYPE] == EFFECT_AFTEREFFECT)
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_BUFF_STRENGTH || effect[TOOL_EFFECT_TYPE] == EFFECT_AFTEREFFECT)
 		{
-			if(effect[TYPE] == EFFECT_BUFF_STRENGTH)
+			if(effect[TOOL_EFFECT_TYPE] == EFFECT_BUFF_STRENGTH)
 			{
 				boost = valMoyen*(1+science/100) * 1;
 			}
-			if(effect[TYPE] == EFFECT_AFTEREFFECT)
+			if(effect[TOOL_EFFECT_TYPE] == EFFECT_AFTEREFFECT)
 			{
 				var degat = valMoyen*(1+science/100) *1;
 				if(degat >= getLife(leek))
@@ -244,16 +242,16 @@ function boostVal(tool, leek, coeffReduction, @boost, nbCibles)
 			}
 		}
 
-		if(effect[TYPE]== EFFECT_BUFF_AGILITY)
+		if(effect[TOOL_EFFECT_TYPE]== EFFECT_BUFF_AGILITY)
 		{
 			boost = valMoyen*(1+science/100) * 0.7;
 		}
 
-		if(effect[TYPE] == EFFECT_BUFF_RESISTANCE)
+		if(effect[TOOL_EFFECT_TYPE] == EFFECT_BUFF_RESISTANCE)
 		{
 		  boost = valMoyen*(1+science/100) * 0.7;
 		}
-			if(effect[TYPE] == EFFECT_BUFF_WISDOM) 
+			if(effect[TOOL_EFFECT_TYPE] == EFFECT_BUFF_WISDOM) 
 		{
 		  boost = valMoyen*(1+science/100) * 0.7;
 		}		

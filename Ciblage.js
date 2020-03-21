@@ -1,4 +1,5 @@
 include("GLOBALS");
+include("Debug");
 
 function getOpponent(enemies) {
 	var dangerousEnemies = [];
@@ -49,7 +50,7 @@ function getOpponent(enemies) {
 			coeffDangereux *= 0.5;
 		}
 		if (isStatic(enemy)) {
-          //debug(getLeekName(enemy) + "is static");
+          //debugP(getLeekName(enemy) + "is static");
           if(isStatic(ME)){
           	coeffDangereux =1;
           } else {
@@ -111,7 +112,7 @@ function getEchantillonCentre(@resultat, tab) {
 	} else {
 		ecartType = 0;
 	}
-    debug("ecart-type = " + ecartType);
+    debugP("ecart-type = " + ecartType);
 	for(var cle : var valeur in tab) {
 		resultat[cle] = (ecartType==0) ? 1 : ((valeur - moy) / ecartType) + 1;
 		if (resultat[cle] <= 0) {

@@ -7,6 +7,7 @@ include("Resistance");
 include("Communication");
 //include("Deplacements");
 include("Boost");
+include("Debug");
 
 
 
@@ -23,9 +24,8 @@ function IA_Collective() {
 		for (var action in combo) {
 			var ally = getAllyToHeal();
 			var accessibles_cells = getReachableCells(getCell(), getMP());
-			if (inArray(accessibles_cells, getCellToUseChip(action, ally)) and getCooldown(action) == 0 and getTP() >= getChipCost(action)) {
+			if (inArray(accessibles_cells, getCellToUseChip(action, ally)) and getCooldown(action) == 0 and getTP() >= ALL_INGAME_TOOLS[action][TOOL_PT_COST]) {
 				moveTowardCell(getCellToUseChip(action, ally));
-				useChip(action, ally);
 				useChip(action, ally);
 			}
 		}
@@ -34,9 +34,8 @@ function IA_Collective() {
 		for (var action in combo) {
 			var ally = getAllyToProtect();
 			var accessibles_cells = getReachableCells(getCell(), getMP());
-			if (inArray(accessibles_cells, getCellToUseChip(action, ally)) and getCooldown(action) == 0 and getTP() >= getChipCost(action)) {
+			if (inArray(accessibles_cells, getCellToUseChip(action, ally)) and getCooldown(action) == 0 and getTP() >= ALL_INGAME_TOOLS[action][TOOL_PT_COST]) {
 				moveTowardCell(getCellToUseChip(action, ally));
-				useChip(action, ally);
 				useChip(action, ally);
 			}
 		}
@@ -67,7 +66,7 @@ function IA_Collective() {
 				var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
 				var isUseSucess = doAction(action);
 				if(!isUseSucess) {
-					debugE('Action non effectué : ' + action + '\n Attention à la boucle infini');
+					debugEP('Action non effectué : ' + action + '\n Attention à la boucle infinie');
 					// TODO : mettre en place un mécanisme pour ne pas refaire la même action
 					ERROR_TOOLS[action[CHIP_WEAPON]] = true;
 				}
@@ -97,9 +96,10 @@ function IA_Collective() {
 function getAllyToHeal() {
 	var scores = [];
 	var ally;
+	var alive_allies = getAliveAllies() ;
 	var i = -1;
-	fill(scores, 0, count(getAliveAllies()));
-	for (ally in getAliveAllies()) {
+	fill(scores, 0, count(alive_allies));
+	for (ally in alive_allies) {
 		i = i + 1;
 		if (getType(ally) == ENTITY_LEEK) {
 			scores[i] = scores[i] + 1;
@@ -123,7 +123,7 @@ function getAllyToHeal() {
 		}
 		scores[i] = scores[i] + 1 - (getLife(ally) / getTotalLife(ally)) * 5;
 	}
-	return getAliveAllies()[search(scores, arrayMax(scores))];
+	return alive_allies[search(scores, arrayMax(scores))];
 }
 
 
@@ -131,9 +131,10 @@ function getAllyToProtect() {
   var accessibles_cells = getReachableCells(getCell(), getMP());
 	var scores = [];
 	var ally;
+	var alive_allies = getAliveAllies() ;
 	var i = -1;
-	fill(scores, 0, count(getAliveAllies()));
-	for (ally in getAliveAllies()) {
+	fill(scores, 0, count(alive_allies));
+	for (ally in alive_allies) {
 		i = i + 1;
 		if (getType(ally) == ENTITY_LEEK) {
 			scores[i] = scores[i] + 1;
@@ -148,5 +149,5 @@ function getAllyToProtect() {
 		scores[i] = scores[i] + 1 - (getLife(ally) / getTotalLife(ally)) * 6;
 		scores[i] = scores[i] - (getDistance(getCell(ally), getCell(getNearestEnemy()))/3);
 	}
-	return getAliveAllies()[search(scores, arrayMax(scores))];
+	return alive_allies[search(scores, arrayMax(scores))];
 }
