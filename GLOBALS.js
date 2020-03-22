@@ -269,11 +269,12 @@ global	INTERACT_SHIELD = 'INTERACT_SHIELD',
 		BOOSTED_BY : aCaracteristic
 		IS_RELATIF : Boolean
 		IS_SPECIAL : Boolean
+		IS_HEALTHY : Boolean
 		INTERACT_WITH [
-			SHIELD : Boolean
-			STEAL_LIFE : Boolean
-			RETURN_DAMAGE : Boolean
-			NOVA_DAMAGE : Boolean
+			INTERACT_SHIELD : Boolean
+			INTERACT_STEAL_LIFE : Boolean
+			INTERACT_RETURN_DAMAGE : Boolean
+			INTERACT_NOVA_DAMAGE : Boolean
 		]
 	]
 */
@@ -283,11 +284,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_STRENGTH,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : true,
-			STEAL_LIFE : true,
-			RETURN_DAMAGE : true,
-			NOVA_DAMAGE : true
+			INTERACT_SHIELD : true,
+			INTERACT_STEAL_LIFE : true,
+			INTERACT_RETURN_DAMAGE : true,
+			INTERACT_NOVA_DAMAGE : true
 		]
 	],
 	EFFECT_POISON : [
@@ -295,11 +297,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_MAGIC,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false, 
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : true
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : true
 		]
 	],
 	EFFECT_NOVA_DAMAGE : [
@@ -307,11 +310,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	], 
 	EFFECT_LIFE_DAMAGE : [
@@ -319,11 +323,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_LIFE,
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : true,
-			STEAL_LIFE : true,
-			RETURN_DAMAGE : true,
-			NOVA_DAMAGE : true
+			INTERACT_SHIELD : true,
+			INTERACT_STEAL_LIFE : true,
+			INTERACT_RETURN_DAMAGE : true,
+			INTERACT_NOVA_DAMAGE : true
 		]
 	],
 	// EFFET SHACKLE
@@ -332,11 +337,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_MAGIC,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_SHACKLE_MP : [
@@ -344,11 +350,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_MAGIC,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_SHACKLE_STRENGTH : [
@@ -356,11 +363,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_MAGIC,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	], 
 	EFFECT_SHACKLE_MAGIC : [
@@ -368,11 +376,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_MAGIC,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false,
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false,
 		]
 	], 
 	// EFFECT BUFF
@@ -381,11 +390,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false,
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false,
 		]
 	],
 	EFFECT_BUFF_MP : [
@@ -393,11 +403,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_BUFF_STRENGTH : [
@@ -405,11 +416,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_BUFF_AGILITY :  [
@@ -417,11 +429,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	], 
 	EFFECT_BUFF_RESISTANCE : [
@@ -429,11 +442,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	], 
 	EFFECT_BUFF_WISDOM : [
@@ -441,11 +455,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	 
@@ -454,11 +469,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : true
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : true
 		]
 	],
 	// HEAL
@@ -467,11 +483,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_WISDOM,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false,
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false,
 		]
 	], 
 	EFFECT_BOOST_MAX_LIFE : [
@@ -479,11 +496,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_WISDOM,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false,
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false,
 		]
 	], 
 	// RESISTANCE
@@ -492,11 +510,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_RESISTANCE,
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],  
 	EFFECT_ABSOLUTE_SHIELD : [
@@ -504,11 +523,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_RESISTANCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	], 
 	EFFECT_DAMAGE_RETURN : [
@@ -516,11 +536,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_AGILITY,
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : true,
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : true,
 		]
 	],
 	EFFECT_ABSOLUTE_VULNERABILITY : [
@@ -528,11 +549,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false,
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false,
 		]
 	], 
 	EFFECT_STEAL_ABSOLUTE_SHIELD : [
@@ -540,11 +562,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	], 
 	EFFECT_VULNERABILITY : [
@@ -552,11 +575,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
+		IS_HEALTHY : false,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	
@@ -566,11 +590,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_ANTIDOTE : [
@@ -578,11 +603,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_DEBUFF : [
@@ -590,11 +616,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
+		IS_HEALTHY : null,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_KILL : [
@@ -602,11 +629,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_INVERT : [
@@ -614,11 +642,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
+		IS_HEALTHY : null,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	], 
 	EFFECT_RESURRECT : [
@@ -626,11 +655,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_TELEPORT : [
@@ -638,28 +668,30 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	], 
 	
 	// EFFETS PASSIF
 	// Pour l'instant l'IA ne les prends pas en compte les effets passif 
 	// Mettre un EFFET dans le boosted by ?
-	// Je mets is_spacial à 1 pour l'intant => faudrait peut être mets un is_passif 
+	// Je mets is_special à 1 pour l'intant => faudrait peut être mets un is_passif 
 	EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD : [
 		COEFF_EFFECT : 0,
 		BOOSTED_BY : null,
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_DAMAGE_TO_STRENGTH : [
@@ -667,11 +699,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_NOVA_DAMAGE_TO_MAGIC : [
@@ -679,11 +712,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_POISON_TO_SCIENCE : [
@@ -691,11 +725,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	
@@ -705,11 +740,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	]:
 	EFFECT_RAW_BUFF_MAGIC : [
@@ -717,11 +753,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_RAW_BUFF_MP : [
@@ -729,11 +766,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_RAW_BUFF_SCIENCE : [
@@ -741,11 +779,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_RAW_BUFF_STRENGTH : [
@@ -753,11 +792,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_RAW_BUFF_TP : [
@@ -765,11 +805,12 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
+		IS_HEALTHY : true,
 		INTERACT_WITH [
-			SHIELD : false,
-			STEAL_LIFE : false,
-			RETURN_DAMAGE : false,
-			NOVA_DAMAGE : false
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	
