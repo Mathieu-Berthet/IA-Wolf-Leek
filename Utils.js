@@ -1,4 +1,4 @@
-
+include('GLOBALS');
 
 
 function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea) { // ignoreCasterOnNonePointArea permet de ne pas se prendre pour cible car généralement on va se déplacer donc on ne sera plus dans les targets
@@ -45,7 +45,7 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea) { 
 							coeffAOE = 1;
 						} else {
 							var distance = getDistance(cellVisee, getCell(cible));
-							if(inArray([AREA_X_1, AREA_X_2, AREA_X_3], area)) { //TODO: vérifier l'ordre des paramètres de inArray
+							if(inArray([AREA_X_1, AREA_X_2, AREA_X_3], area)) { //TODO: vérifier l'ordre des paramètres de inArray
 								distance /= sqrt(2);
 							}
 							coeffAOE = 1 - (ceil(distance) * 0.2);
@@ -138,9 +138,27 @@ function getCharacteristiqueFunction(characteristic) {
 	][charactetistic];
 }
 
-function getValueOfTargetEffect() {
+function getValueOfTargetEffect(aTargetEffect) {
 	// on parcours les cibles & effect retourné par getTargetEffect
 	// et on attribut un score en fonction de COEFF_EFFECT dans ALL_EFFECT, du score de chaque Leek, de la team du leek
 	
 	// TODO: calcul spécial pour la résistance; utiliser isAlreadyShackle
+	var coeffReturned = 0;
+	for (var leek : var effectLeek in aTargetEffect) {
+	  for (var effect : var value in effectLeek) {
+	    var infoEffect = ALL_EFFECTS[effect];
+	    if (!infoEffect[IS_SPECIAL]) {
+	      if (inArray([EFFECT_ABSOLUTE_SHIELD, EFFECT_RELATIVE_SHIELD], effect)) {
+	        //TODO:
+	      } else {
+  	      value = (isAlreadyShacle (leek, effect)) ? 0 : value ;
+  	      
+  	      coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
+	      }
+	    } else {
+	      //TODO : faire une fonction spéciale pour l'inversion
+	    }
+	  }
+	}
+	return coeffReturned;
 }
