@@ -9,4 +9,4 @@ A faire :
 
 - Corriger le setup des armes/puces pour les bulbes + Ajouter certaines infos dans le tableau de setup du départ. (Ordonnateur)
 
-- Regarder le problème des boucles infinies sur les actions (Caneton)
+
