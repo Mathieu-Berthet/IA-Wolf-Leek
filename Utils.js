@@ -78,7 +78,10 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_SHIELD]) {
 							value = max(0, value * (1 - INFO_LEEKS[cible][RELATIVE_SHIELD] / 100) - INFO_LEEKS[cible][ABSOLUTE_SHIELD]);
 						}
-						
+						// TODO: si le tool est non cumulable et que la cible le possède déjà il faut faire quelque chose...
+						//		- on met la value à 0 pour éviter le précédent ?
+						//		- on fait la différence entre les 2 valeurs + prendre en compte le nombre de tours restant ?
+						// ou alors on le prends en compte dans getValueOfTargetEffect => je préfère garder les vrai valeurs dans cette fonction
 						var stealLife;
 						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_STEAL_LIFE]) {
 							stealLife = getWisdom(caster) * value / 1000;
@@ -159,16 +162,19 @@ function getValueOfTargetEffect(aTargetEffect) {
 					initDangerousEnnemis();
 					var damageOnLeekBeforeShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
 					var shield = (effect == EFFECT_ABSOLUTE_SHIELD) ? ABSOLUTE_SHIELD : RELATIVE_SHIELD;
+					// /!\ on suppose que la cible n'a pas déjà la puce !!! => rajouter un controle avant dans getTargetEffectou bien ici
 					INFO_LEEKS[leek][shield] += value;
 					var damageOnLeekAfterShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
 					INFO_LEEKS[leek][shield] -= value;
 					
+					coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * bonus; // normalement c'est toujours sur des alliés donc je met pas de controlle sur la team
 					var bonus = damageOnLeekBeforeShield - damageOnLeekAfterShield;
-					coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * bonus;
 				} else {
 					// Par default
 					value = (isAlreadyShacle (leek, effect)) ? 0 : value ;
-					coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
+					var coeffTeam = isAlly(leek) ? 1 : -1;
+					coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
+					coeffReturned += coeffTeam * coeffHealthy * infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
 				}
 			} else {
 				//TODO : faire une fonction spéciale pour l'inversion
