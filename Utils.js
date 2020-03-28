@@ -1,8 +1,14 @@
 include('GLOBALS');
 
-
-function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea) { // ignoreCasterOnNonePointArea permet de ne pas se prendre pour cible car généralement on va se déplacer donc on ne sera plus dans les targets
-	var cibles = getTarget(tool, cellVise);
+/**
+ * castel : ID Leek 
+ * Tool : ID of chip / weapon
+ * cellVise : ID cell
+ * ignoreCasterOnNonePointArea : Boolean
+ * multiTarget Boolean
+ */
+function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, multiTarget) { // ignoreCasterOnNonePointArea permet de ne pas se prendre pour cible car généralement on va se déplacer donc on ne sera plus dans les targets
+	var cibles = multiTarget ? getTarget(tool, cellVise) : getLeekOnCell(cellVise);
 	var nbCible = count(cibles);
 	var infoTool = ALL_INGAME_TOOLS[arme_chip];
 	var effects = infoTool[TOOL_ATTACK_EFFECTS];
@@ -145,20 +151,76 @@ function getValueOfTargetEffect(aTargetEffect) {
 	// TODO: calcul spécial pour la résistance; utiliser isAlreadyShackle
 	var coeffReturned = 0;
 	for (var leek : var effectLeek in aTargetEffect) {
-	  for (var effect : var value in effectLeek) {
-	    var infoEffect = ALL_EFFECTS[effect];
-	    if (!infoEffect[IS_SPECIAL]) {
-	      if (inArray([EFFECT_ABSOLUTE_SHIELD, EFFECT_RELATIVE_SHIELD], effect)) {
-	        //TODO:
-	      } else {
-  	      value = (isAlreadyShacle (leek, effect)) ? 0 : value ;
-  	      
-  	      coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
-	      }
-	    } else {
-	      //TODO : faire une fonction spéciale pour l'inversion
-	    }
-	  }
+		for (var effect : var value in effectLeek) {
+			var infoEffect = ALL_EFFECTS[effect];
+			if (!infoEffect[IS_SPECIAL]) {
+				if (inArray([EFFECT_ABSOLUTE_SHIELD, EFFECT_RELATIVE_SHIELD], effect)) {
+					// on calcule la protection que ça apporte
+					initDangerousEnnemis();
+					var damageOnLeekBeforeShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
+					var shield = (effect == EFFECT_ABSOLUTE_SHIELD) ? ABSOLUTE_SHIELD : RELATIVE_SHIELD;
+					INFO_LEEKS[leek][shield] += value;
+					var damageOnLeekAfterShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
+					INFO_LEEKS[leek][shield] -= value;
+					
+					var bonus = damageOnLeekBeforeShield - damageOnLeekAfterShield;
+					coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * bonus;
+				} else {
+					// Par default
+					value = (isAlreadyShacle (leek, effect)) ? 0 : value ;
+					coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
+				}
+			} else {
+				//TODO : faire une fonction spéciale pour l'inversion
+			}
+		}
 	}
 	return coeffReturned;
 }
+
+
+
+global dangerousEnnemis;
+global bestWeapon;
+dangerousEnnemis = null;
+
+
+function findDangerousEnnemis() {//TODO: améliorer => avec la tourelle ça fausse un peu  
+	var maxStrengh = 0;
+	var ennemis = getAliveEnemies();
+	for (var j = 0; j< count(ennemis); j++) {
+		var saForce = getStrength(ennemis[j]);
+		if (saForce > maxStrengh || saForce == maxStrengh && getLevel(ennemis[j] > getLevel(dangerousEnnemis))) {
+			dangerousEnnemis = ennemis[j];
+			maxStrengh = saForce;
+		}
+	}
+}
+
+function getBestWeapon(leek) {
+	var weapons = getWeapons(leek);
+	var chips = getChips(leek);
+	var best;
+	var degat = 0;
+	for (var i in weapons+chips) {
+		var effet = ALL_INGAME_TOOLS[i][TOOL_ATTACK_EFFECTS] ;
+		if (effet[0][TOOL_EFFECT_TYPE] == EFFECT_DAMAGE && i != CHIP_BURNING) {
+			var tmp = effet[0][TOOL_AVERAGE_POWER];
+			if (tmp > degat) {
+				degat = tmp;
+				best = i;
+			}
+		}
+	}
+	return best;
+}
+
+
+function initDangerousEnnemis() {
+	if(dangerousEnnemis===null) {
+		findDangerousEnnemis();
+		bestWeapon = getBestWeapon(dangerousEnnemis);
+	}
+}
+
+

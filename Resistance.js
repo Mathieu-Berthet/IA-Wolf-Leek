@@ -2,10 +2,6 @@
 include("Attaque");
 include("Debug");
 
-global dangerousEnnemis;
-global bestWeapon;
-dangerousEnnemis = null;
-
 
 function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax, @shield_tools) {
 	var nb_action = count(actions);
@@ -184,33 +180,4 @@ function ResistVal(tool, leek){
 
 
 
-function findDangerousEnnemis() {//TODO: améliorer
-	var maxStrengh = 0;
-	var ennemis = getAliveEnemies();
-	for (var j = 0; j< count(ennemis); j++) {
-		var saForce = getStrength(ennemis[j]);
-		if (saForce > maxStrengh || saForce == maxStrengh && getLevel(ennemis[j] > getLevel(dangerousEnnemis))) {
-			dangerousEnnemis = ennemis[j];
-			maxStrengh = saForce;
-		}
-	}
-}
-
-function getBestWeapon(leek) {
-	var weapons = getWeapons(leek);
-	var chips = getChips(leek);
-	var best;
-	var degat = 0;
-	for (var i in weapons+chips) {
-		var effet = ALL_INGAME_TOOLS[i][TOOL_ATTACK_EFFECTS] ;
-		if (effet[0][TOOL_EFFECT_TYPE] == EFFECT_DAMAGE && i != CHIP_BURNING) {
-			var tmp = effet[0][TOOL_AVERAGE_POWER];
-			if (tmp > degat) {
-				degat = tmp;
-				best = i;
-			}
-		}
-	}
-	return best;
-}
 
