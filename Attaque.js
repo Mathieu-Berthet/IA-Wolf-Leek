@@ -518,19 +518,3 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 
 
 
-function isAlreadyShackle(leek, effect) {
-	// TODO: améliorer la fonction : en prenant en compte les effets qui vont se finir avant le tour de la cible
-	if(effect == EFFECT_SHACKLE_MAGIC) {
-		return INFO_LEEKS[leek][MAGIC] <= 0;
-	}
-	if (effect == EFFECT_SHACKLE_STRENGTH) {
-		return INFO_LEEKS[leek][STRENGTH] <= 0;
-	}
-	if (effect == EFFECT_SHACKLE_MP) {
-		return INFO_LEEKS[leek][MP] <= 0;
-	}
-	if (effect == EFFECT_SHACKLE_TP) {
-		return INFO_LEEKS[leek][PT] <= 0;
-	}
-	return false ;
-}

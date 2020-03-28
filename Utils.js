@@ -1,13 +1,17 @@
 include('GLOBALS');
 
 /**
- * castel : ID Leek 
- * Tool : ID of chip / weapon
- * cellVise : ID cell
- * ignoreCasterOnNonePointArea : Boolean
- * multiTarget Boolean
+ * @auteur : Caneton
+ *
+ * castel : ID Leek 					| Le poireau qui fait l'action
+ * Tool : ID of chip / weapon				| l'arme utilisé
+ * cellVise : ID cell 					| la cell sur laquelle on va tirer
+ * ignoreCasterOnNonePointArea : Boolean 	| permet de ne pas prendre en compte le caster dans les dégats d'AOE (généralement on se déplace on ne fera donc pas parti des cibles)
+ * multiTarget Boolean					| permet de prendre en compte plusieurs cible grâce à l'AOE
+ *									|
+ * @return : array						| [LEEK : [EFFECT : [TURN : VALUE]]]
  */
-function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, multiTarget) { // ignoreCasterOnNonePointArea permet de ne pas se prendre pour cible car généralement on va se déplacer donc on ne sera plus dans les targets
+function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, multiTarget) {
 	var cibles = multiTarget ? getTarget(tool, cellVise) : getLeekOnCell(cellVise);
 	var nbCible = count(cibles);
 	var infoTool = ALL_INGAME_TOOLS[arme_chip];
@@ -51,7 +55,7 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 							coeffAOE = 1;
 						} else {
 							var distance = getDistance(cellVisee, getCell(cible));
-							if(inArray([AREA_X_1, AREA_X_2, AREA_X_3], area)) { //TODO: vérifier l'ordre des paramètres de inArray
+							if(inArray([AREA_X_1, AREA_X_2, AREA_X_3], area)) {
 								distance /= sqrt(2);
 							}
 							coeffAOE = 1 - (ceil(distance) * 0.2);
@@ -99,27 +103,32 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						}
 						
 						// on sauvegarde les valeurs
+						var turnNumber = effect[TOOL_NUMBER_TURN_EFFECT_LAST];
 						
 						if(returnTab[cible] === null) returnTab[cible] = [];
-						var oldValue = (returnTab[cible][effect[TOOL_EFFECT_TYPE]] === null) ? 0 : returnTab[cible][effect[TOOL_EFFECT_TYPE]];
-						returnTab[cible][effect[TOOL_EFFECT_TYPE]] = oldValue + value;
+						if(returnTab[cible][effect[TOOL_EFFECT_TYPE]] === null) returnTab[cible][effect[TOOL_EFFECT_TYPE]] = [];
+						var oldValue = (returnTab[cible][effect[TOOL_EFFECT_TYPE]][turnNumber] === null) ? 0 : returnTab[cible][effect[TOOL_EFFECT_TYPE]][turnNumber];
+						returnTab[cible][effect[TOOL_EFFECT_TYPE]][turnNumber] = oldValue + value;
 						
 						if(stealLife) {
 							if(returnTab[caster] === null) returnTab[caster] = [];
-							var oldValue = (returnTab[caster][EFFECT_HEAL] === null) ? 0 : returnTab[caster][EFFECT_HEAL];
-							returnTab[caster][EFFECT_HEAL] = oldValue + stealLife;
+							if(returnTab[caster][EFFECT_HEAL] === null) returnTab[caster][EFFECT_HEAL] = [];
+							var oldValue = (returnTab[caster][EFFECT_HEAL][1] === null) ? 0 : returnTab[caster][EFFECT_HEAL][1];
+							returnTab[caster][EFFECT_HEAL][1] = oldValue + stealLife;
 						}
 						
 						if(damageReturn) {
 							if(returnTab[caster] === null) returnTab[caster] = [];
-							var oldValue = (returnTab[caster][EFFECT_LIFE_DAMAGE] === null) ? 0 : returnTab[caster][EFFECT_LIFE_DAMAGE];
-							returnTab[caster][EFFECT_LIFE_DAMAGE] = oldValue + damageReturn;
+							if(returnTab[caster][EFFECT_LIFE_DAMAGE] === null) returnTab[caster][EFFECT_LIFE_DAMAGE] = [];
+							var oldValue = (returnTab[caster][EFFECT_LIFE_DAMAGE][1] === null) ? 0 : returnTab[caster][EFFECT_LIFE_DAMAGE][1];
+							returnTab[caster][EFFECT_LIFE_DAMAGE][1] = oldValue + damageReturn;
 						}
 						
 						if(degatNova) {
 							if(returnTab[caster] === null) returnTab[caster] = [];
-							var oldValue = (returnTab[caster][EFFECT_NOVA_DAMAGE] === null) ? 0 : returnTab[caster][EFFECT_NOVA_DAMAGE];
-							returnTab[caster][EFFECT_NOVA_DAMAGE] = oldValue + degatNova;
+							if(returnTab[caster][EFFECT_NOVA_DAMAGE] === null) returnTab[caster][EFFECT_NOVA_DAMAGE] = [];
+							var oldValue = (returnTab[caster][EFFECT_NOVA_DAMAGE][1] === null) ? 0 : returnTab[caster][EFFECT_NOVA_DAMAGE][1];
+							returnTab[caster][EFFECT_NOVA_DAMAGE][1] = oldValue + degatNova;
 						}
 					} else {
 						// TODO : antidote & summon & libé...
@@ -132,6 +141,9 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 	return returnTab;
 }
 
+/**
+ * Retourne la fonction a appeler
+ */
 function getCharacteristiqueFunction(characteristic) {
 	return [
 		CHARACTERISTIC_LIFE : getLife,
@@ -147,37 +159,44 @@ function getCharacteristiqueFunction(characteristic) {
 	][charactetistic];
 }
 
+
+/**
+ * @autor : Caneton
+ * 
+ * aTargetEffect : array		| [LEEK : [EFFECT : [TURN : VALUE]]]
+ */
 function getValueOfTargetEffect(aTargetEffect) {
 	// on parcours les cibles & effect retourné par getTargetEffect
 	// et on attribut un score en fonction de COEFF_EFFECT dans ALL_EFFECT, du score de chaque Leek, de la team du leek
 	
-	// TODO: calcul spécial pour la résistance; utiliser isAlreadyShackle
 	var coeffReturned = 0;
 	for (var leek : var effectLeek in aTargetEffect) {
-		for (var effect : var value in effectLeek) {
-			var infoEffect = ALL_EFFECTS[effect];
-			if (!infoEffect[IS_SPECIAL]) {
-				if (inArray([EFFECT_ABSOLUTE_SHIELD, EFFECT_RELATIVE_SHIELD], effect)) {
-					// on calcule la protection que ça apporte
-					initDangerousEnnemis();
-					var damageOnLeekBeforeShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
-					var shield = (effect == EFFECT_ABSOLUTE_SHIELD) ? ABSOLUTE_SHIELD : RELATIVE_SHIELD;
-					// /!\ on suppose que la cible n'a pas déjà la puce !!! => rajouter un controle avant dans getTargetEffectou bien ici
-					INFO_LEEKS[leek][shield] += value;
-					var damageOnLeekAfterShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
-					INFO_LEEKS[leek][shield] -= value;
-					
-					coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * bonus; // normalement c'est toujours sur des alliés donc je met pas de controlle sur la team
-					var bonus = damageOnLeekBeforeShield - damageOnLeekAfterShield;
-				} else {
-					// Par default
-					value = (isAlreadyShacle (leek, effect)) ? 0 : value ;
-					var coeffTeam = isAlly(leek) ? 1 : -1;
-					coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
-					coeffReturned += coeffTeam * coeffHealthy * infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
+		for (var effect : var turn_values in effectLeek) {
+			for (var turn : var value in turn_values) {
+				var infoEffect = ALL_EFFECTS[effect];
+				if (!infoEffect[IS_SPECIAL]) {
+					if (inArray([EFFECT_ABSOLUTE_SHIELD, EFFECT_RELATIVE_SHIELD], effect)) {
+						// on calcule la protection que ça apporte
+						initDangerousEnnemis();
+						var damageOnLeekBeforeShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
+						var shield = (effect == EFFECT_ABSOLUTE_SHIELD) ? ABSOLUTE_SHIELD : RELATIVE_SHIELD;
+						// /!\ on suppose que la cible n'a pas déjà la puce !!! => rajouter un controle avant dans getTargetEffect ou bien ici
+						INFO_LEEKS[leek][shield] += value;
+						var damageOnLeekAfterShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
+						INFO_LEEKS[leek][shield] -= value;
+						var bonus = damageOnLeekBeforeShield - damageOnLeekAfterShield;
+						coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * bonus; // normalement c'est toujours sur des alliés donc je mets pas de controle sur la team
+					} else {
+						// Par defaut
+						value = (isAlreadyShacle (leek, effect)) ? 0 : value;
+						var coeffNbTurn = sqrt(turn); //TODO: vérifier que turn != 0 sinon erreur de math
+						var coeffTeam = isAlly(leek) ? 1 : -1;
+						coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
+						coeffReturned += coeffTeam * coeffHealthy * infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
+					}
+				} else { // IS_SPECIAL
+					//TODO : faire une fonction spéciale pour l'inversion, ...
 				}
-			} else {
-				//TODO : faire une fonction spéciale pour l'inversion
 			}
 		}
 	}
@@ -185,6 +204,7 @@ function getValueOfTargetEffect(aTargetEffect) {
 }
 
 
+// ------------------- Leek ennemis et arme de référence pour caluler les gains des puces de shield -----------------
 
 global dangerousEnnemis;
 global bestWeapon;
@@ -230,3 +250,22 @@ function initDangerousEnnemis() {
 }
 
 
+// ---------------- Fonction pour stopper la répétition d'une action sur un Leek --------------------------- 
+
+
+function isAlreadyShackle(leek, effect) {
+	// TODO: améliorer la fonction : en prenant en compte les effets qui vont se finir avant le tour de la cible
+	if(effect == EFFECT_SHACKLE_MAGIC) {
+		return INFO_LEEKS[leek][MAGIC] <= 0;
+	}
+	if (effect == EFFECT_SHACKLE_STRENGTH) {
+		return INFO_LEEKS[leek][STRENGTH] <= 0;
+	}
+	if (effect == EFFECT_SHACKLE_MP) {
+		return INFO_LEEKS[leek][MP] <= 0;
+	}
+	if (effect == EFFECT_SHACKLE_TP) {
+		return INFO_LEEKS[leek][PT] <= 0;
+	}
+	return false ;
+}
