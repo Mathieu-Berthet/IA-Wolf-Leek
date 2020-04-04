@@ -1,17 +1,16 @@
 include("getArea");
 include("getCellToUse");
 include("Debug");
+include("Utils);
+
 /**
  *		Fonctions :
  *		- pvLost => Calcule le nombre de PV infligé pour une attaque (avec le renvoit de dégat et le vol de vie)
- *		- knapsack => Sert à trouver le meilleur combo
- *		- getCellToUseToolsOnCell => trouve une cell pour utiliser une arme //TODO
  *		- attaqueTypePoint => remplit un tableau permettant la "meilleur" action pour une arme de type point
  *		- AttaqueTypeAOE => remplit un tableau permettant la "meilleur" action pour une arme de type AOE
  *		- getAttackAction => mets à jour le tableau des actions avec les actions d'attaque
  *		- attaqueTypeLigne => remplit un tableau permettant la "meilleur" action pour une arme de type laser
  *		- frappeDuDemon => remplit un tableau permettant la "meilleur" action pour la frappe du demon
- 		- Chatiment => remplit un tableau permettant la meilleur action pour chatiment
  **/
 
 
@@ -19,15 +18,15 @@ include("Debug");
 
 
 /**
-*	@auteur : Caneton
-*	getAttackAction => mets à jour le tableau des actions avec les actions d'attaque
-*	Paramètres :
-*			- actions : le tableau des actions à remplir
-*			- toutEnnemis : tableau comportant les leeks sur lesquels on autorise à tirer
-*			- cellsAccessible : tableau associatif des cases accessibles avec leur distance
-*
-*
-**/
+ *	@auteur : Caneton
+ *	getAttackAction => mets à jour le tableau des actions avec les actions d'attaque
+ *	Paramètres :
+ *			- actions : le tableau des actions à remplir
+ *			- toutEnnemis : tableau comportant les leeks sur lesquels on autorise à tirer
+ *			- cellsAccessible : tableau associatif des cases accessibles avec leur distance
+ *
+ *
+ **/
 function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack_tools) {
 	//On reccupère armes et chip qui font des dommages
 	var ope = getOperations();
@@ -124,6 +123,7 @@ function attaqueTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 
 	for (var cell in cellToCheck) {
 		if (lineOfSight(cell[from], cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], ME)) {
+			/*
 			var cell_affecter = getAreaLine(tool,cell[from], cell[withOrientation]);
 			var sommeDegat = 0;
 			var sommeVolVie = 0;
@@ -141,6 +141,9 @@ function attaqueTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 				}
 			}
 			var valeur = sommeDegat + min(getTotalLife() - getLife(), sommeVolVie) - sommeRenvoi;
+			*/
+			var aTargetEffect = getTargetEffect(ME, tool, cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], true, true);
+			var valeur = getValueOfTargetEffect(aTargetEffect);
 			if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell[from]] < distanceBestAction) {
 				bestAction[CELL_DEPLACE] = cell[from];
 				bestAction[CELL_VISE] = cell[from] + MIN_RANGE[tool]* orientation[cell[withOrientation]];
@@ -171,9 +174,10 @@ function frappeDuDemon(toutEnnemis, @cellsAccessible) {
 	var distanceBestAction = 0;
 	var valeurMax = 0;
 	var deja_fait = [];
-	var lost=[];
+	/*var lost=[];
 	pvLost(INFO_LEEKS[ME], INFO_LEEKS[ME], CHIP_DEVIL_STRIKE, getCell(), lost, null, null);
-	lost=lost[MIN];
+	lost=lost[MIN];*/
+	var lost = getTargetEffect(ME, CHIP_DEVIL_STRIKE, getCell(), false, false)[ME][EFFECT_DAMAGE][0];
 	if (lost < 100) {
 		for (var i = 0; i < count(toutEnnemis); i++) {
 			var cellE = getCell(toutEnnemis[i]);
@@ -182,6 +186,7 @@ function frappeDuDemon(toutEnnemis, @cellsAccessible) {
 				if(!deja_fait[j] && (isEmptyCell(j) || j==getCell())) {
 					deja_fait[j]=true;
 					if (cellsAccessible[j] !== null) {
+						/*
 						var ennemis = getChipTargets(CHIP_DEVIL_STRIKE, j);
 						var totpv = 0;
 						var totrenvoi = 0;
@@ -199,6 +204,9 @@ function frappeDuDemon(toutEnnemis, @cellsAccessible) {
 							}
 						}
 						var valeur = totpv + min(getTotalLife() - getLife(), totvoldevie) - totrenvoi;
+						*/
+						var aTargetEffect = getTargetEffect(ME, CHIP_DEVIL_STRIKE, j, true, true);
+						var valeur = getValueOfTargetEffect(aTargetEffect);
 						if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[j] < distanceBestAction) {
 							bestAction[CELL_DEPLACE] = j;
 							bestAction[CELL_VISE] = j;
@@ -250,7 +258,7 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 						var sommeVolVie = 0;
 						var degat, degat_renvoyer, volDeVie;
 						if (cell_deplace != -2) {
-							var cibles = getTarget(tool, cell);
+							/*var cibles = getTarget(tool, cell);
 							if (cibles != []) {
 								for (var leek in cibles) {
 									if (leek != getLeek()) {
@@ -263,6 +271,9 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 								}
 							}
 							var valeur = sommeDegat + min(getTotalLife() - getLife(), sommeVolVie) - sommeRenvoi;
+							*/
+							var aTargetEffect = getTargetEffect(ME, tool, cell, true, true);
+							var valeur = getValueOfTargetEffect(aTargetEffect);
 							if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
 								bestAction[CELL_DEPLACE] = cell_deplace;
 								bestAction[CELL_VISE] = cell;
@@ -317,12 +328,16 @@ function attaqueTypePoint(toutEnnemis, tool, @cellsAccessible) {
 		}
 
 		if (ok) { //la cellule doit être atteignable
+			/*
 			var degat = [0, 0],
 				degat_renvoyer = 0,
 				volDeVie = 0;
 			pvLost(INFO_LEEKS[ME], INFO_LEEKS[ennemis], tool, null, degat, degat_renvoyer, volDeVie);
 			degat[MOYEN] *= SCORE[ennemis];
 			valeur = degat[MOYEN] + min(getTotalLife() - getLife(), volDeVie) - degat_renvoyer;
+			*/
+			var aTargetEffect = getTargetEffect(ME, tool, cellEnnemis, true, true);
+			var valeur = getValueOfTargetEffect(aTargetEffect);
 			if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
 				bestAction[CELL_DEPLACE] = cell_deplace;
 				bestAction[CELL_VISE] = cellEnnemis;
@@ -351,20 +366,20 @@ function getTarget(tool, cell) {
 /**
  * @auteur : Caneton
  * Proccédure pvLost => Calcule le nombre de PV infligé pour une attaque (avec le renvoit de dégat et le vol de vie, ainsi que le retour de chatiment)
- *	TODO: - généraliser pour le poison
- *				- faire les tests (j'en ai fait aucun pour l'instant) pour arme classique, AOE, frappe du démon, burning,...
  *
  *	paramètre :
- *							- tireur et cible => tableau de la forme : [Leek, AbsoluteShield, RelativeShield, force, RenvoiDegat]
- *							- arme_chip => l'arme ou la chip utilisée
- *	 						- cellVisee => la cellule cible (peut-être mis à null si ce n'est pas pour calculer les AOE)
+ *		- tireur et cible => tableau de la forme : [Leek, AbsoluteShield, RelativeShield, force, RenvoiDegat]
+ *		- arme_chip => l'arme ou la chip utilisée
+ *	 	- cellVisee => la cellule cible (peut-être mis à null si ce n'est pas pour calculer les AOE)
  *			/!\ paramètres passés par adresse(@) => la valeur est initialisée avant l'appel de la fonction puis modifié dans la fonction !
- *							- degat : tableau contenant les degats minimum et moyen : [degatMin, degatMoyen]
- *							- degat_renvoyer : valeur des renvois de dégat
- *							- volDeVie : valeur du vol de vie
+ *		- degat : tableau contenant les degats minimum et moyen : [degatMin, degatMoyen]
+ *		- degat_renvoyer : valeur des renvois de dégat
+ *		- volDeVie : valeur du vol de vie
  *
+ * @DEPRECIATED
  */
 function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @volDeVie) {
+	debugW('La fonction pvLost est dépréciée');
 	/*	Tireur et cible sont des tableaux de la forme :*/
 	var Leek = 0;
 	var AbsoluteShield = 1;

@@ -1,4 +1,4 @@
-// dernière mise à jour le 17/02/18 par Caneton
+include("Utils);
 include("Attaque");
 include("Debug");
 
@@ -50,8 +50,8 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
 
 	var orientation = [-17, 17, -18, 18];
 
-	var absoluteVulne = 0;
-	//var absoluteShield = 0;
+	// var absoluteVulne = 0;
+	// var absoluteShield = 0;
 
 	var valeurMax = 0;
 	var distanceBestAction = 100;
@@ -61,7 +61,7 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
 	{
 		if (lineOfSight(cell[from], cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], ME))
 		{
-			var cell_affecter = getAreaLine(tool,cell[from], cell[withOrientation]);
+			/*var cell_affecter = getAreaLine(tool,cell[from], cell[withOrientation]);
 			var sommeShield = 0;
 			for (var i in cell_affecter)
 			{
@@ -75,13 +75,15 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
 						absoluteVulne += team * SCORE[leek];
 					}
 				}
-			}
-			if ((absoluteVulne > valeurMax || absoluteVulne == valeurMax && cellsAccessible[cell[from]] < distanceBestAction))
+			}*/
+			var aTargetEffect = getTargetEffect(ME, tool, cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], true, true);
+			var valeur = getValueOfTargetEffect(aTargetEffect);
+			if ((valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell[from]] < distanceBestAction))
 			{
 				bestAction[CELL_DEPLACE] = cell[from];
 				bestAction[CELL_VISE] = cell[from] + MIN_RANGE[tool]* orientation[cell[withOrientation]];
-				bestAction[VALEUR] = absoluteVulne;
-				valeurMax = absoluteVulne;
+				bestAction[VALEUR] = valeur;
+				valeurMax = valeur;
 				distanceBestAction = cellsAccessible[cell[from]];
 			}
 		}
@@ -118,8 +120,10 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 						cellAllie = getCell(allie);
 						cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
 						if (cell_deplace != -2) { //la cellule doit être atteignable
-							var resist = ResistVal(tool, allie);
-							valeur = SCORE_RESISTANCE[allie]*(resist);
+							/*var resist = ResistVal(tool, allie);
+							valeur = SCORE_RESISTANCE[allie]*(resist);*/
+							var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true, true);
+							var valeur = getValueOfTargetEffect(aTargetEffect);
 							if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
 								if(getLeekOnCell(cellAllie)==ME) {
 									bestAction[CELL_DEPLACE] = -1;
@@ -142,7 +146,12 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 	return @bestAction;
 }
 
+
+/**
+ * @DEPRECIATED
+ */
 function ResistVal(tool, leek){
+	debugW('La fonction ResistVal est dépréciée');
 	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS];
 	var resistance = getResistance();
 	var agility = getAgility();

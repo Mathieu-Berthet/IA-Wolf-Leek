@@ -1,8 +1,8 @@
-// dernière mise à jour le 17/02/18 par Caneton
+
 include("getArea");
 include("getCellToUse");
 include("Debug");
-
+include("Utils);
 
 
 /*
@@ -92,6 +92,7 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 
 	for (var cell in cellToCheck) {
 		if (lineOfSight(cell[from], cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], ME)) {
+			/*
 			var cell_affecter = getAreaLine(tool,cell[from], cell[withOrientation]);
 			var sommeHeal = 0;
 			var killAllie = false;
@@ -106,12 +107,19 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 						if(degat>getLife(leek)&&isAlly(leek)) killAllie = true;
 					}
 				}
+			}*/
+			var aTargetEffect = getTargetEffect(ME, tool, cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], true, true);
+			for(var leek : var effects in aTargetEffect) {
+				if(isAlly(leek) && effects[EFFECT_DAMAGE] != null && effects[EFFECT_DAMAGE][0] >= getLife(leek)) {
+					killAllie = true
+				}
 			}
-			if (!killAllie && (sommeHeal > valeurMax || sommeHeal == valeurMax && cellsAccessible[cell[from]] < distanceBestAction)) {
+			var valeur = getValueOfTargetEffect(aTargetEffect);
+			if (!killAllie && (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell[from]] < distanceBestAction)) {
 				bestAction[CELL_DEPLACE] = cell[from];
 				bestAction[CELL_VISE] = cell[from] + MIN_RANGE[tool]* orientation[cell[withOrientation]];
-				bestAction[VALEUR] = sommeHeal;
-				valeurMax = sommeHeal;
+				bestAction[VALEUR] = valeur;
+				valeurMax = valeur;
 				distanceBestAction = cellsAccessible[cell[from]];
 			}
 		}
@@ -137,12 +145,13 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 					cellAllie = getCell(allie);
 					cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
 					if (cell_deplace != -2) { //la cellule doit être atteignable
-						var heal, boostMaxLife, dammage;
+						/*var heal, boostMaxLife, dammage;
 						var nbCibles = 0;
-						healVal(tool, allie, null, heal, boostMaxLife, dammage, nbCibles);
-						
+						healVal(tool, allie, null, heal, boostMaxLife, dammage, nbCibles);*/
+						var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true, true);
+						var valeur = getValueOfTargetEffect(aTargetEffect);
 						if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= heal) {
-							valeur = SCORE_HEAL[allie] * (boostMaxLife + heal);
+							// valeur = SCORE_HEAL[allie] * (boostMaxLife + heal);
 							if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
 								if (getLeekOnCell(cellAllie) == ME) {
 									bestAction[CELL_DEPLACE] = -1;
@@ -198,8 +207,8 @@ function healTypeAOE(toutPoireau, tool, @cellsAccessible)
 						deja_fait[cell] = true;
 						cell_deplace = getCellToUseToolsOnCell(tool, cell, cellsAccessible);
 						var sommeHeal = 0;
-						if (cell_deplace != -2) 
-						{
+						if (cell_deplace != -2) {
+							/*
 							var cibles = getTargetHeal(tool, cell);
 							if (cibles != []) 
 							{
@@ -214,7 +223,9 @@ function healTypeAOE(toutPoireau, tool, @cellsAccessible)
 									}
 								}
 							}
-							var valeur = sommeHeal;
+							var valeur = sommeHeal;*/
+							var aTargetEffect = getTargetEffect(ME, tool, cell, true, true);
+							var valeur = getValueOfTargetEffect(aTargetEffect);
 							if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
 								bestAction[CELL_DEPLACE] = cell_deplace;
 								bestAction[CELL_VISE] = cell;
@@ -234,9 +245,11 @@ function healTypeAOE(toutPoireau, tool, @cellsAccessible)
 
 
 
-
-function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife, @dammage, nbCibles)
-{
+/**
+ * @DEPRECIATED
+ */
+function healVal(tool, leek, coeffReduction, @heal, @boostMaxLife, @dammage, nbCibles) {
+	debugW('La fonction HealVal est dépréciée');
 	heal = 0; boostMaxLife = 0; dammage = 0;
 	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS] ;
 	var sagesse = getWisdom();

@@ -1,13 +1,15 @@
-// dernière mise à jour le 25/02/18 par Rayman
+
 include("getArea");
 include("getCellToUse");
 include("Debug");
+include("Utils);
 
 /*
- *  *50 pour les TP
-		*30 pour les PM
-		*1 pour la force
-		*0.7 pour l'agi
+ * 
+ * 50 pour les TP
+ * 30 pour les PM
+ * 1 pour la force
+ * 0.7 pour l'agi
  *
  * */
 
@@ -94,17 +96,15 @@ function Booster(tool, allies, @cellsAccessible)
 				{
           			cellAllie = getCell(allie);
           			cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
-          			if (cell_deplace != -2)
-					{ //la cellule doit être atteignable
-            			var boost;
+          			if (cell_deplace != -2) { //la cellule doit être atteignable
+		       			/*var boost;
 						var nbCibles = 0;
-            			boostVal(tool, allie, null, boost, nbCibles);
-            			var coeff = SCORE_BOOST[allie][eff[TOOL_EFFECT_TYPE]];
-						if(coeff===null)
-						{
-							debugEP("["+ALL_INGAME_TOOLS[tool][TOOL_NAME]+"]Pas de valeur pour : "+ eff[TOOL_EFFECT_TYPE]);
-						}
-						valeur = coeff*(boost);
+		       			boostVal(tool, allie, null, boost, nbCibles);
+		       			var coeff = SCORE_BOOST[allie][eff[TOOL_EFFECT_TYPE]];
+						if(coeff===null) debugEP("["+ALL_INGAME_TOOLS[tool][TOOL_NAME]+"]Pas de valeur pour : "+ eff[TOOL_EFFECT_TYPE]);
+						valeur = coeff*(boost);*/
+						var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true, true);
+						var valeur = getValueOfTargetEffect(aTargetEffect);
 						if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction)
 						{
 							if(getLeekOnCell(cellAllie)==ME)
@@ -160,7 +160,7 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 						var sommeBoostMP = 0;
 						var boost;
 						if (cell_deplace != -2)
-						{
+						{/*
 							var cibles = getTargetBoost(tool, cell);
 							if (cibles != [])
 							{
@@ -175,7 +175,10 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 									}
 								}
 							}
-							var valeur = sommeBoostTP + sommeBoostMP;
+							var valeur = sommeBoostTP + sommeBoostMP;*/
+							// hmmm... je comprends pas tout du code existant... 
+							var aTargetEffect = getTargetEffect(ME, tool, cell, true, true);
+							var valeur = getValueOfTargetEffect(aTargetEffect);
 							if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
 								bestAction[CELL_DEPLACE] = cell_deplace;
 								bestAction[CELL_VISE] = cell;
@@ -194,9 +197,11 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 }
 
 
-
-function boostVal(tool, leek, coeffReduction, @boost, nbCibles)
-{
+/**
+ * @DEPRECIATED
+ */
+function boostVal(tool, leek, coeffReduction, @boost, nbCibles) {
+	debugW('la fonction boostVal est dépréciée');
 	boost = 0;
 	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS];
 	var science = getScience();
