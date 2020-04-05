@@ -2,7 +2,7 @@
 include("getArea");
 include("getCellToUse");
 include("Debug");
-include("Utils);
+include("Utils");
 
 /*
  * 
@@ -104,7 +104,7 @@ function Booster(tool, allies, @cellsAccessible)
 						if(coeff===null) debugEP("["+ALL_INGAME_TOOLS[tool][TOOL_NAME]+"]Pas de valeur pour : "+ eff[TOOL_EFFECT_TYPE]);
 						valeur = coeff*(boost);*/
 						var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true, true);
-						var valeur = getValueOfTargetEffect(aTargetEffect);
+						valeur = getValueOfTargetEffect(aTargetEffect);
 						if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction)
 						{
 							if(getLeekOnCell(cellAllie)==ME)

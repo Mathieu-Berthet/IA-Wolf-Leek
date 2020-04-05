@@ -1,7 +1,7 @@
 include("getArea");
 include("getCellToUse");
 include("Debug");
-include("Utils);
+include("Utils");
 
 /**
  *		Fonctions :
@@ -337,7 +337,7 @@ function attaqueTypePoint(toutEnnemis, tool, @cellsAccessible) {
 			valeur = degat[MOYEN] + min(getTotalLife() - getLife(), volDeVie) - degat_renvoyer;
 			*/
 			var aTargetEffect = getTargetEffect(ME, tool, cellEnnemis, true, true);
-			var valeur = getValueOfTargetEffect(aTargetEffect);
+			valeur = getValueOfTargetEffect(aTargetEffect);
 			if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
 				bestAction[CELL_DEPLACE] = cell_deplace;
 				bestAction[CELL_VISE] = cellEnnemis;

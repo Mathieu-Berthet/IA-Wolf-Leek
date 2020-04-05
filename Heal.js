@@ -2,7 +2,7 @@
 include("getArea");
 include("getCellToUse");
 include("Debug");
-include("Utils);
+include("Utils");
 
 
 /*
@@ -109,9 +109,10 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 				}
 			}*/
 			var aTargetEffect = getTargetEffect(ME, tool, cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], true, true);
+			var killAllie = false;
 			for(var leek : var effects in aTargetEffect) {
 				if(isAlly(leek) && effects[EFFECT_DAMAGE] != null && effects[EFFECT_DAMAGE][0] >= getLife(leek)) {
-					killAllie = true
+					killAllie = true;
 				}
 			}
 			var valeur = getValueOfTargetEffect(aTargetEffect);
@@ -149,8 +150,8 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 						var nbCibles = 0;
 						healVal(tool, allie, null, heal, boostMaxLife, dammage, nbCibles);*/
 						var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true, true);
-						var valeur = getValueOfTargetEffect(aTargetEffect);
-						if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= heal) {
+						valeur = getValueOfTargetEffect(aTargetEffect);
+						if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= valeur) {
 							// valeur = SCORE_HEAL[allie] * (boostMaxLife + heal);
 							if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
 								if (getLeekOnCell(cellAllie) == ME) {

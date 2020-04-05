@@ -254,12 +254,14 @@ global 	CHARACTERISTIC_LIFE = 'LIFE',
 global	COEFF_EFFECT = 'COEFF_EFFECT',
 		BOOSTED_BY = 'BOOSTED_BY',
 		IS_RELATIF = 'IS_RELATIF',
+		IS_SPECIAL = 'IS_SPECIAL',
+		IS_HEALTHY = 'IS_HEALTHY',
 		INTERACT_WITH = 'INTERACT_WITH';
 		
 global	INTERACT_SHIELD = 'INTERACT_SHIELD',
 		INTERACT_STEAL_LIFE = 'INTERACT_STEAL_LIFE',
 		INTERACT_RETURN_DAMAGE = 'INTERACT_RETURN_DAMAGE',
-		INTERACT_NOVA_DAMAGE = 'INTERACT_NOVA_DAMAGE',
+		INTERACT_NOVA_DAMAGE = 'INTERACT_NOVA_DAMAGE';
 		
 
 
@@ -270,7 +272,7 @@ global	INTERACT_SHIELD = 'INTERACT_SHIELD',
 		IS_RELATIF : Boolean
 		IS_SPECIAL : Boolean
 		IS_HEALTHY : Boolean
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : Boolean
 			INTERACT_STEAL_LIFE : Boolean
 			INTERACT_RETURN_DAMAGE : Boolean
@@ -285,7 +287,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : true,
 			INTERACT_STEAL_LIFE : true,
 			INTERACT_RETURN_DAMAGE : true,
@@ -298,7 +300,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false, 
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -311,7 +313,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -324,7 +326,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : true,
 			INTERACT_STEAL_LIFE : true,
 			INTERACT_RETURN_DAMAGE : true,
@@ -338,7 +340,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -351,7 +353,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -364,7 +366,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -377,7 +379,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -391,7 +393,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -404,7 +406,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -417,7 +419,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -430,7 +432,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -443,7 +445,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -456,7 +458,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -470,7 +472,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -484,7 +486,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -497,7 +499,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -511,7 +513,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -524,7 +526,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -537,7 +539,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -550,7 +552,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -563,7 +565,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -576,7 +578,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -591,7 +593,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -604,7 +606,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -617,7 +619,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
 		IS_HEALTHY : null,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -630,7 +632,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -643,7 +645,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
 		IS_HEALTHY : null,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -656,7 +658,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -669,7 +671,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -687,7 +689,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -700,7 +702,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -713,7 +715,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -726,7 +728,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -741,20 +743,20 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	]:
+	],
 	EFFECT_RAW_BUFF_MAGIC : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -767,7 +769,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -780,7 +782,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -793,7 +795,7 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
@@ -806,15 +808,27 @@ global ALL_EFFECTS = [
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
-		INTERACT_WITH [
+		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	],
-	
-]
+	]
+];
+
+// TODO: Mettre à jour avec les autres variables COEFF_*
+global COEFF_LEEK_EFFECT;
+COEFF_LEEK_EFFECT = (function (){
+		var tab = [];
+		var leeks = getAliveAllies() + getAliveEnemies();
+		for (var leek in leeks) {
+			tab[leek] = [];
+			for (var effect : var tabEffect in ALL_EFFECTS) {
+				tab[leek][effect] = 1;
+			}
+		}
+})();
 
 /******************************************************************/
 

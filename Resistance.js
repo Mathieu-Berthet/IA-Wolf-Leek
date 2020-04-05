@@ -1,4 +1,4 @@
-include("Utils);
+include("Utils");
 include("Attaque");
 include("Debug");
 
@@ -123,7 +123,7 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 							/*var resist = ResistVal(tool, allie);
 							valeur = SCORE_RESISTANCE[allie]*(resist);*/
 							var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true, true);
-							var valeur = getValueOfTargetEffect(aTargetEffect);
+							valeur = getValueOfTargetEffect(aTargetEffect);
 							if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
 								if(getLeekOnCell(cellAllie)==ME) {
 									bestAction[CELL_DEPLACE] = -1;

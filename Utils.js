@@ -14,9 +14,9 @@ include('GLOBALS');
 function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, multiTarget) {
 	var cibles = multiTarget ? getTarget(tool, cellVise) : getLeekOnCell(cellVise);
 	var nbCible = count(cibles);
-	var infoTool = ALL_INGAME_TOOLS[arme_chip];
+	var infoTool = ALL_INGAME_TOOLS[tool];
 	var effects = infoTool[TOOL_ATTACK_EFFECTS];
-	var area = infoTool[TOOL_AREA_TYPE];
+	var area = infoTool[TOOL_AOE_TYPE];
 	
 	var returnTab = [];
 	
@@ -26,13 +26,13 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 			// si leek == caster : On fait parti des cibles mais on suppose que l'on va se déplacer et donc que l'on ne fera pas parti des cibles (cas limite pour certains tools comme pour le gazor => pour éviter d'être dans les cibles on a changé la MIN_RANGE de ces tools)
 				if (	(
 						(
-							effect[TOOL_TARGET_SUMMON] && isSummon(leek)
+							effect[TOOL_TARGET_SUMMONS] && isSummon(leek)
 						) || (
-							effect[TOOL_TARGET_NON_SUMMON] && !isSummon(leek)
+							effect[TOOL_TARGET_NON_SUMMONS] && !isSummon(leek)
 						)
 					) && (
 						(
-							effect[TOOL_TARGET_ENEMIS] && isEnemy(leek)
+							effect[TOOL_TARGET_ENEMIES] && isEnemy(leek)
 						) || (
 							effect[TOOL_TARGET_ALLIES] && isAlly(leek)
 						)
@@ -51,10 +51,10 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						}
 					
 						var coeffAOE;
-						if (area == AREA_POINT || area == AREA_LASER_LINE || cellVisee === null) {
+						if (area == AREA_POINT || area == AREA_LASER_LINE || cellVise === null) {
 							coeffAOE = 1;
 						} else {
-							var distance = getDistance(cellVisee, getCell(cible));
+							var distance = getDistance(cellVise, getCell(cible));
 							if(inArray([AREA_X_1, AREA_X_2, AREA_X_3], area)) {
 								distance /= sqrt(2);
 							}
@@ -69,7 +69,8 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						var coeffMoyen = effect[TOOL_AVERAGE_POWER];
 						
 						var coeffCharacteristic = 1;
-						if(var characteristic = ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][BOOSTED_BY] !== null) {
+						var characteristic = ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][BOOSTED_BY];
+						if(characteristic !== null) {
 							if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][IS_RELATIF]) {
 								coeffCharacteristic = 1 + (getCharacteristiqueFunction(characteristic))(caster);
 							} else {
@@ -98,7 +99,7 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						
 						var degatNova;
 						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_NOVA_DAMAGE]) {
-							degatNova = min(getMaxLife(cible) - getLife(cible), 5 * value * (1 + getScience(caster)) / 100);
+							degatNova = min(getTotalLife(cible) - getLife(cible), 5 * value * (1 + getScience(caster)) / 100);
 							// TODO: il me semble que c'est ça la formule. c'est peut-être différent si c'est un effect_damage ou bie du poison... a vérifier
 						}
 						
@@ -120,14 +121,14 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						if(damageReturn) {
 							if(returnTab[caster] === null) returnTab[caster] = [];
 							if(returnTab[caster][EFFECT_LIFE_DAMAGE] === null) returnTab[caster][EFFECT_LIFE_DAMAGE] = [];
-							var oldValue = (returnTab[caster][EFFECT_LIFE_DAMAGE][1] === null) ? 0 : returnTab[caster][EFFECT_LIFE_DAMAGE][1];
+							oldValue = (returnTab[caster][EFFECT_LIFE_DAMAGE][1] === null) ? 0 : returnTab[caster][EFFECT_LIFE_DAMAGE][1];
 							returnTab[caster][EFFECT_LIFE_DAMAGE][1] = oldValue + damageReturn;
 						}
 						
 						if(degatNova) {
 							if(returnTab[caster] === null) returnTab[caster] = [];
 							if(returnTab[caster][EFFECT_NOVA_DAMAGE] === null) returnTab[caster][EFFECT_NOVA_DAMAGE] = [];
-							var oldValue = (returnTab[caster][EFFECT_NOVA_DAMAGE][1] === null) ? 0 : returnTab[caster][EFFECT_NOVA_DAMAGE][1];
+							oldValue = (returnTab[caster][EFFECT_NOVA_DAMAGE][1] === null) ? 0 : returnTab[caster][EFFECT_NOVA_DAMAGE][1];
 							returnTab[caster][EFFECT_NOVA_DAMAGE][1] = oldValue + degatNova;
 						}
 					} else {
@@ -156,7 +157,7 @@ function getCharacteristiqueFunction(characteristic) {
 		CHARACTERISTIC_FREQUENCY : getFrequency,
 		CHARACTERISTIC_MOVEMENT : getMP,
 		CHARACTERISTIC_TURN_POINT : getTP
-	][charactetistic];
+	][characteristic];
 }
 
 
@@ -185,14 +186,14 @@ function getValueOfTargetEffect(aTargetEffect) {
 						var damageOnLeekAfterShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
 						INFO_LEEKS[leek][shield] -= value;
 						var bonus = damageOnLeekBeforeShield - damageOnLeekAfterShield;
-						coeffReturned += infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * bonus; // normalement c'est toujours sur des alliés donc je mets pas de controle sur la team
+						coeffReturned += infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * bonus; // normalement c'est toujours sur des alliés donc je mets pas de controle sur la team
 					} else {
 						// Par defaut
-						value = (isAlreadyShacle (leek, effect)) ? 0 : value;
+						value = (isAlreadyShackle(leek, effect)) ? 0 : value;
 						var coeffNbTurn = sqrt(turn); //TODO: vérifier que turn != 0 sinon erreur de math
 						var coeffTeam = isAlly(leek) ? 1 : -1;
-						coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
-						coeffReturned += coeffTeam * coeffHealthy * infoEffect[COEFF] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
+						var coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
+						coeffReturned += coeffTeam * coeffHealthy * infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
 					}
 				} else { // IS_SPECIAL
 					//TODO : faire une fonction spéciale pour l'inversion, ...
@@ -268,4 +269,11 @@ function isAlreadyShackle(leek, effect) {
 		return INFO_LEEKS[leek][PT] <= 0;
 	}
 	return false ;
+}
+
+
+// ---------------------------------------------------------------------
+
+function getTarget(tool, cell) {
+	return (!ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON]) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
 }
