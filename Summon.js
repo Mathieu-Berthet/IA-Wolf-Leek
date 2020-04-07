@@ -3,7 +3,7 @@ include("IA_Bulbe");
 include("Debug");
 
 
-global bulbeOffensif = [CHIP_ROCKY_BULB: 90, CHIP_ICED_BULB: 120, CHIP_FIRE_BULB: 225, CHIP_LIGHTNING_BULB: 240];
+global bulbeOffensif = [CHIP_ROCKY_BULB: 90, CHIP_ICED_BULB: 120, CHIP_FIRE_BULB: 225, CHIP_LIGHTNING_BULB: 240, CHIP_WIZARD_BULB: 180];
 global bulbeDefensif = [CHIP_HEALER_BULB: 300, CHIP_METALLIC_BULB: 270, CHIP_PUNY_BULB: 60];
 
 
@@ -142,7 +142,8 @@ function getBulbValue(CHIP, ennemie) {
 	}
 	value += ALL_INGAME_TOOLS[CHIP][TOOL_PT_COST] * 15;
 	var countBulbe = compteurBulbe();
-	if (getFightType() !== FIGHT_TYPE_SOLO and getFightType() !== FIGHT_TYPE_BATTLE_ROYALE) {
+	if (getFightType() !== FIGHT_TYPE_SOLO and getFightType() !== FIGHT_TYPE_BATTLE_ROYALE)
+	{
 		value /= 2;
 	}
 	if ((absResistance >= 100 or relatResistance >= 20) and Attaque == 1) {

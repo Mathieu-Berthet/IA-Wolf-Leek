@@ -49,7 +49,7 @@ function IA_Collective() {
 			var cellsAccessible = accessible(getCell(), getMP());
 			var toutEnnemis = getAliveEnemies();
 			var toutAllies = getAliveAllies();
-			if (getStrength() > 0) {
+			if (getStrength() > 0 || getMagic() > 0) {
 				getAttackAction(actions, cellsAccessible, toutEnnemis, getTP(), bulb_attack_tools);
 			}
 			if (getScience() > 0) {
