@@ -3,6 +3,7 @@
 include("Debug");
 
 /********************** Globals *********************************/
+global NUMBER_OF_INGAME_ITEMS = 150 ;
 global CACHER;
 global ME = getLeek();
 global PHRASE_A_DIRE = [];
@@ -156,7 +157,7 @@ global MOYEN = 3;
 
 global MIN_RANGE = (function () {
 	var min_range = [];
-	for (var i=1; i<130; i++) {
+	for (var i=1; i< NUMBER_OF_INGAME_ITEMS; i++) {
 		min_range[i] = (isChip(i)) ? getChipMinRange(i) : getWeaponMinRange(i);
 	}
 	min_range[CHIP_TRANQUILIZER] = 2;
@@ -169,7 +170,7 @@ global MIN_RANGE = (function () {
 
 global MAX_RANGE = (function () {
 	var max_range = [];
-	for (var i=1; i<130; i++) {
+	for (var i=1; i< NUMBER_OF_INGAME_ITEMS; i++) {
 		max_range[i] = (isChip(i)) ? getChipMaxRange(i) : getWeaponMaxRange(i);
 	}
 	return @max_range;
@@ -406,7 +407,6 @@ function can_use_tool( tool_id , TPmax )
 
 // ajout ordonnateur
 
-global NUMBER_OF_INGAME_ITEMS = 150 ;
 global ALL_INGAME_TOOLS = [] ;
 global TOOL_NAME = "name" ; // sert juste à simplifier la lecture lors des debugs, supprimable sinon
 global TOOL_IS_WEAPON = "is weapon" ; // il faudra rajouter ischip si un jour il y a trois types d'actif
