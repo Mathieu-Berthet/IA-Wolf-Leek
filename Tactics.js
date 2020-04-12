@@ -45,6 +45,7 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies, @tactics_
 					tir[PT_USE] =  o* coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
 					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE] ;
+					tir[CALLBACK] = updateInfoLeeks;
 					actions[nb_action] = tir;
 					nb_action++;
 				}

@@ -49,7 +49,7 @@ while (continu) { // Pour l'instant on ne fait qu'une action
 	var combo = getBestCombo(actions, getTP());
 	//debugP(combo);
 	if(combo != []) {
-		var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
+		var action = getActionFromCombo[ORDONNANCEMENT_LIBERATION_FIRST](combo); // ORDONNANCEMENT_LIBERATION_FIRST -> ORDONNANCEMENT_SCIENCE -> ORDONNANCEMENT_DEFAULT -> ORDONNANCEMENT_SUMMON_LAST 
 		for(var i = 1; i <= action[4]; i++){
 			push(COMBO, action[3]);
 		}

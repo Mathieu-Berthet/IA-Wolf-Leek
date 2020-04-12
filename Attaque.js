@@ -524,7 +524,16 @@ function pvLost(tireur, cible, arme_chip, cellVisee, @degat, @degat_renvoyer, @v
 			degatMin = effect[TOOL_MIN_POWER] ;
 			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Science] / 100);
 			var degatBrutMin = aoe * degatMin * (1 + tireur[Science] / 100);
-
+			if(cible[LIFE] == cible[MAX_LIFE])
+			{
+				degatBrutMoyen *= 0;
+				degatBrutMin *= 0;
+			}
+			else if(cible[LIFE] < cible[MAX_LIFE] && cible[SAGESSE] > 200)
+			{
+				degatBrutMoyen *= 6;
+				degatBrutMin *= 6;
+			}
 			degat[MOYEN] = degat[MOYEN] + degatBrutMoyen;
 			degat[MIN] = degat[MIN] + degatBrutMin;
 		}
