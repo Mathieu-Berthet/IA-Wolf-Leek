@@ -1,6 +1,49 @@
 include("GLOBALS");
 include("Debug");
 
+
+
+// TODO: Mettre à jour avec les autres variables COEFF_*
+
+COEFF_LEEK_EFFECT = (function (){
+		var tab = [];
+		var leeks = getAliveAllies() + getAliveEnemies();
+		for (var leek in leeks) {
+			tab[leek] = [];
+			for (var effect : var tabEffect in ALL_EFFECTS) {
+				tab[leek][effect] = (isSummon(leek) || isStatic(leek)) ? 0.5 : 1;
+			}
+		}
+		return @tab;
+})();
+
+
+
+// SCORE_RESISTANCE 
+(function () {
+	var leeks = getAliveAllies();
+	for(var leek in leeks) {
+		var value;
+		if(getFightType() == FIGHT_TYPE_SOLO) {
+			var ennemy = getNearestEnemy();
+			if(isSummon(ennemy)) ennemy = getSummoner(ennemy);
+			if(getMagic(ennemy) >= 300 && getStrength(ennemy) < 100) {
+				value =(isSummon(leek)) ? 0 : 0.2;
+			} else {
+				value =(isSummon(leek)) ? 0.4 : 1;
+			}
+		} else {
+			 value = (isSummon(leek) || isStatic(leek)) ? 0.2 : 1;
+		}
+		COEFF_LEEK_EFFECT[leek][EFFECT_DAMAGE_RETURN] = value;
+		COEFF_LEEK_EFFECT[leek][EFFECT_ABSOLUTE_SHIELD] = value;
+		COEFF_LEEK_EFFECT[leek][EFFECT_RELATIVE_SHIELD] = value;
+		COEFF_LEEK_EFFECT[leek][EFFECT_RAW_ABSOLUTE_SHIELD] = value;
+	}
+})();
+
+
+
 function getOpponent(enemies) {
 	var dangerousEnemies = [];
 	var coeffAllies = [];
@@ -46,23 +89,25 @@ function getOpponent(enemies) {
 		if(degatPoisonPris >= getLife(enemy)) {
 			coeffDangereux *= 0.2; // j'évite le 0, si un poireau n'a rien a faire autant le kill avant qu'il reçoive un antidote
 		}
-        if (isSummon(enemy)) {
+		if (isSummon(enemy)) {
 			coeffDangereux *= 0.5;
 		}
 		if (isStatic(enemy)) {
-          //debugP(getLeekName(enemy) + "is static");
-          if(isStatic(ME)){
-          	coeffDangereux =1;
-          } else {
-			coeffDangereux = 0.45; // avec ces stat la tourelle a un coeff bcp trop élevé
-			coeffDangereux *= getTotalLife(enemy) / getLife(enemy); // si il n'y a plus beaucoup de vie, on se focus dessus
+		     //debugP(getLeekName(enemy) + "is static");
+		     if(isStatic(ME)){
+		     	coeffDangereux =1;
+		     } else {
+				coeffDangereux = 0.45; // avec ces stat la tourelle a un coeff bcp trop élevé
+				coeffDangereux *= getTotalLife(enemy) / getLife(enemy); // si il n'y a plus beaucoup de vie, on se focus dessus
 			}
 		}
 		dangerousEnemies[enemy] = coeffDangereux;
 		coeffDangereux = 0;
 	}
 
-	SCORE = [];
+	var score = [];
+	getEchantillonCentre(SCORE, dangerousEnemies);
+	
 	for (var allie in getAliveAllies())
 	{/*
 		strength = getStrength(allie);
@@ -79,11 +124,16 @@ function getOpponent(enemies) {
 		coeffAllies[allie] = coeffAllie;
 		coeffAllie = 0;
 		*/
-		SCORE[allie] = 1; // je remet 1, sinon avec la tourelle on risque d'être complétement décalé par rapport aux ennemis
+		score[allie] = (isSummon(allie) || isStatic(allie)) ? 0.5 : 1; // je remet 1, sinon avec la tourelle on risque d'être complétement décalé par rapport aux ennemis
 	}
 	//TODO: center les résultats sur 1
 
-	getEchantillonCentre(SCORE, dangerousEnemies);
+	for (var leek : var value in score) {
+		COEFF_LEEK_EFFECT[leek][EFFECT_DAMAGE] = value;
+		COEFF_LEEK_EFFECT[leek][EFFECT_POISON] = value;
+		COEFF_LEEK_EFFECT[leek][EFFECT_NOVA_DAMAGE] = value;
+		COEFF_LEEK_EFFECT[leek][EFFECT_LIFE_DAMAGE] = value;
+	}
 	//getEchantillonCentre(SCORE, coeffAllies);
 }
 

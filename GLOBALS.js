@@ -27,6 +27,9 @@ function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des 
 }
  updateInfoLeeks();
 
+global COEFF_LEEK_EFFECT;
+
+// --------------------------- Les fonction suivante sont à supprimer en même temps que getHealValue, ... 
 
 global SCORE; //TODO: faire une fonction plus précise  <= ok fait par ray dans le ciblage
 SCORE = (function () {
@@ -80,6 +83,8 @@ SCORE_RESISTANCE = (function () {
 	}
 	return tab;
 })();
+
+// ------------------------------------------------------------------------------
 
 
 function compteurPuceEffect(tools, effect) {
@@ -819,20 +824,6 @@ global ALL_EFFECTS = [
 		]
 	]
 ];
-
-// TODO: Mettre à jour avec les autres variables COEFF_*
-global COEFF_LEEK_EFFECT;
-COEFF_LEEK_EFFECT = (function (){
-		var tab = [];
-		var leeks = getAliveAllies() + getAliveEnemies();
-		for (var leek in leeks) {
-			tab[leek] = [];
-			for (var effect : var tabEffect in ALL_EFFECTS) {
-				tab[leek][effect] = 1;
-			}
-		}
-		return @tab;
-})();
 
 /******************************************************************/
 
