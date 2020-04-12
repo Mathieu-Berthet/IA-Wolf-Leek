@@ -12,7 +12,7 @@ include('GLOBALS');
  * @return : array						| [LEEK : [EFFECT : [TURN : VALUE]]]
  */
 function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, multiTarget) {
-	var cibles = multiTarget ? getTarget(tool, cellVise) : getLeekOnCell(cellVise);
+	var cibles = multiTarget ? getTarget(tool, cellVise) : [getLeekOnCell(cellVise)];
 	var nbCible = count(cibles);
 	var infoTool = ALL_INGAME_TOOLS[tool];
 	var effects = infoTool[TOOL_ATTACK_EFFECTS];
