@@ -42,6 +42,10 @@ getActionFromCombo[ORDONNANCEMENT_SCIENCE] = function(@combo) {
 	if (action[CELL_DEPLACE] == -1) {
 		return action;
 	}
+	action = getActionInComboByTool(combo, CHIP_COVETOUSNESS);
+	if (action != null) {
+		return action;
+	}
 	if (getFightType() == FIGHT_TYPE_SOLO || getFightType() == FIGHT_TYPE_BATTLE_ROYALE) {
 		action = getActionInComboByTool(combo, CHIP_DOPING);
 		if (action[CELL_DEPLACE] == -1) {

@@ -355,12 +355,6 @@ function attaqueTypePoint(toutEnnemis, tool, @cellsAccessible) {
 
 
 
-function getTarget(tool, cell) {
-	return (!ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON]) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
-}
-
-
-
 
 
 /**
