@@ -105,7 +105,7 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						var degatNova;
 						var interactWithNova = ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_NOVA_DAMAGE];
 						if(interactWithNova) {
-							degatNova = interactWithNova * value / 100);
+							degatNova = interactWithNova * value / 100;
 						}
 						
 						// on sauvegarde les valeurs
