@@ -87,6 +87,11 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						//		- on met la value à 0 pour éviter le précédent ?
 						//		- on fait la différence entre les 2 valeurs + prendre en compte le nombre de tours restant ?
 						// ou alors on le prends en compte dans getValueOfTargetEffect => je préfère garder les vrai valeurs dans cette fonction
+						
+						
+						// Limiter la value
+						value = getRealValue(effect, leek, value);
+						
 						var stealLife;
 						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_STEAL_LIFE]) {
 							stealLife = getWisdom(caster) * value / 1000;
@@ -98,9 +103,9 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						}
 						
 						var degatNova;
-						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_NOVA_DAMAGE]) {
-							degatNova = min(getTotalLife(cible) - getLife(cible), 5 * value * (1 + getScience(caster)) / 100);
-							// TODO: il me semble que c'est ça la formule. c'est peut-être différent si c'est un effect_damage ou bie du poison... a vérifier
+						var interactWithNova = ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_NOVA_DAMAGE];
+						if(interactWithNova) {
+							degatNova = interactWithNova * value / 100);
 						}
 						
 						// on sauvegarde les valeurs
@@ -114,7 +119,7 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						if(stealLife) {
 							if(returnTab[caster] === null) returnTab[caster] = [];
 							if(returnTab[caster][EFFECT_HEAL] === null) returnTab[caster][EFFECT_HEAL] = [];
-							var oldValue = (returnTab[caster][EFFECT_HEAL][1] === null) ? 0 : returnTab[caster][EFFECT_HEAL][1];
+							oldValue = (returnTab[caster][EFFECT_HEAL][1] === null) ? 0 : returnTab[caster][EFFECT_HEAL][1];
 							returnTab[caster][EFFECT_HEAL][1] = oldValue + stealLife;
 						}
 						
@@ -160,6 +165,15 @@ function getCharacteristiqueFunction(characteristic) {
 	][characteristic];
 }
 
+function getRealValue(effect, leek, value) {
+  if(inArray(effect, [EFFECT_HEAL, EFFECT_NOVA_DAMAGE])) {
+    value = min(value, INFO_LEEKS[leek][MAX_LIFE] - INFO_LEEKS[leek][LIFE]);
+  }
+  // TODO : Rajouter d'autre effets si besoin;
+  // Dans l'absolu faudrait rajouter EFFECT_DAMAGE mais IA ne met de 'bonus' si on tue un leek => on risquerait de ne pas tirer sur les ennemis si il leur reste 10pv
+  
+  return value;
+}
 
 /**
  * @autor : Caneton

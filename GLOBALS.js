@@ -12,13 +12,13 @@ global ERROR_TOOLS;
 global COMBO = [];
 
 global INFO_LEEKS = [];
-global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7, CELL = 8;
+global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7, CELL = 8, LIFE = 9, MAX_LIFE = 10;
 
 function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des constantes associées
 	var tab = [];
 	var leeks = getAliveAllies()+ getAliveEnemies();
 	for (var leek in leeks) {
-		tab[leek] = [leek, getAbsoluteShield(leek), getRelativeShield(leek),  max(0,getStrength(leek)), getDamageReturn(leek), max(0,getMagic(leek)), getTP(leek), getMP(leek), getCell(leek)];
+		tab[leek] = [leek, getAbsoluteShield(leek), getRelativeShield(leek),  max(0,getStrength(leek)), getDamageReturn(leek), max(0,getMagic(leek)), getTP(leek), getMP(leek), getCell(leek), getLife(leek), getTotalLife(leek)];
 	}
 	INFO_LEEKS = tab;
 }
@@ -291,7 +291,7 @@ global ALL_EFFECTS = [
 			INTERACT_SHIELD : true,
 			INTERACT_STEAL_LIFE : true,
 			INTERACT_RETURN_DAMAGE : true,
-			INTERACT_NOVA_DAMAGE : true
+			INTERACT_NOVA_DAMAGE : 5
 		]
 	],
 	EFFECT_POISON : [
@@ -304,7 +304,7 @@ global ALL_EFFECTS = [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
-			INTERACT_NOVA_DAMAGE : true
+			INTERACT_NOVA_DAMAGE : 10
 		]
 	],
 	EFFECT_NOVA_DAMAGE : [
@@ -330,7 +330,7 @@ global ALL_EFFECTS = [
 			INTERACT_SHIELD : true,
 			INTERACT_STEAL_LIFE : true,
 			INTERACT_RETURN_DAMAGE : true,
-			INTERACT_NOVA_DAMAGE : true
+			INTERACT_NOVA_DAMAGE : 5
 		]
 	],
 	// EFFET SHACKLE
@@ -383,7 +383,7 @@ global ALL_EFFECTS = [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
-			INTERACT_NOVA_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	], 
 	// EFFECT BUFF
@@ -397,7 +397,7 @@ global ALL_EFFECTS = [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
-			INTERACT_NOVA_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
 		]
 	],
 	EFFECT_BUFF_MP : [
@@ -476,7 +476,7 @@ global ALL_EFFECTS = [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
-			INTERACT_NOVA_DAMAGE : true
+			INTERACT_NOVA_DAMAGE : 5
 		]
 	],
 	// HEAL
@@ -543,7 +543,7 @@ global ALL_EFFECTS = [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
-			INTERACT_NOVA_DAMAGE : true,
+			INTERACT_NOVA_DAMAGE : 5,
 		]
 	],
 	EFFECT_ABSOLUTE_VULNERABILITY : [
