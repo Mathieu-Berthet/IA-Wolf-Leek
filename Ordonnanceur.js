@@ -1,12 +1,15 @@
 include("GLOBALS");
 include("Debug");
 
-global ORDONNANCEMENT_DEFAULT = ORDONNANCEMENT_BVF;
+
 global ORDONNANCEMENT_BVF = 0; // Big Value First
 global ORDONNANCEMENT_SCIENCE = 1; //Spécial pour la science //Ne pas être un ordonnancement par defaut
 global ORDONNANCEMENT_SUMMON_FIRST = 2; // Summon les bulbes en premier
 global ORDONNANCEMENT_SUMMON_LAST = 3; // Summon les bulbes à la fin
 global ORDONNANCEMENT_DEBUFF = 4;
+global ORDONNANCEMENT_LIBERATION_FIRST = 5;
+
+global ORDONNANCEMENT_DEFAULT = ORDONNANCEMENT_BVF;
 
 global getActionFromCombo = [];
 getActionFromCombo[ORDONNANCEMENT_BVF] = function(@combo) {
@@ -54,7 +57,9 @@ getActionFromCombo[ORDONNANCEMENT_SCIENCE] = function(@combo) {
 };
 
 
-
+/**
+ * Note : à priori ne fait rien car on ne peut pas lancer les debuffs sur soi même
+ */
 getActionFromCombo[ORDONNANCEMENT_DEBUFF] = function(@combo) {
 	var action = getActionInComboByTool(combo, CHIP_SOPORIFIC);
 	if(action[CELL_DEPLACE]==-1) {// -1 si utilisation de la puce sur soi
@@ -88,6 +93,22 @@ getActionFromCombo[ORDONNANCEMENT_DEBUFF] = function(@combo) {
 	return getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
 };
 
+/**
+ * Applique l'antidote et la libération au début
+ */
+getActionFromCombo[ORDONNANCEMENT_LIBERATION_FIRST] = function(@combo) {
+	var action = getActionInComboByTool(combo, CHIP_ANTIDOTE);
+	if (action != null) {
+		return @action;
+	}
+
+	action = getActionInComboByTool(combo, CHIP_LIBERATION);
+	if (action != null) {
+		return @action;
+	}
+	return @getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
+};
+
 
 getActionFromCombo[ORDONNANCEMENT_SUMMON_FIRST] = function(@combo) {
 	for (var i = 0; i < count(combo); i++) {
@@ -118,11 +139,12 @@ getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST] = function(@combo) {
 };
 
 function getActionInComboByTool(@combo, tool) {
-	for (var action in combo) {
-		if (action[CHIP_WEAPON] == tool) {
-			return action;
+	for (var i = 0; i < count(combo); i++) {
+		if (combo[i][CHIP_WEAPON] == tool) {
+			return @combo[i];
 		}
 	}
+	return null;
 }
 
 function getComboValue(@combo) {
