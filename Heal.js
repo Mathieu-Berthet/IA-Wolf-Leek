@@ -61,6 +61,7 @@ function getHealAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @hea
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
 					tir[EFFECT] = !ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] ? ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE] : EFFECT_HEAL;
+					tir[CALLBACK] = updateInfoLeeks;
 					actions[nb_action] = tir;
 					nb_action++;
 				}

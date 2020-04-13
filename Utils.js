@@ -90,7 +90,7 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						
 						
 						// Limiter la value
-						value = getRealValue(effect, leek, value);
+						value = getRealValue(effect[TOOL_EFFECT_TYPE], leek, value);
 						
 						var stealLife;
 						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_STEAL_LIFE]) {
@@ -166,7 +166,7 @@ function getCharacteristiqueFunction(characteristic) {
 }
 
 function getRealValue(effect, leek, value) {
-  if(inArray(effect, [EFFECT_HEAL, EFFECT_NOVA_DAMAGE])) {
+  if(inArray([EFFECT_HEAL, EFFECT_NOVA_DAMAGE], effect)) {
     value = min(value, INFO_LEEKS[leek][MAX_LIFE] - INFO_LEEKS[leek][LIFE]);
   }
   // TODO : Rajouter d'autre effets si besoin;
