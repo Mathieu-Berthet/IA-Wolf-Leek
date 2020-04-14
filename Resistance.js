@@ -112,6 +112,7 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 	var valeur;
 	var bestValeur = 0;
 	var distanceBestAction = 0;
+	if(tool == CHIP_INVERSION) allies = getAliveEnemies(); // c'est pas très beau, je verrais plus tard pour généraliser toutes les actions 
 	for (var allie in allies) {
 		if ((ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_SUMMONS] && isSummon(allie)) || (ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_NON_SUMMONS] && !isSummon(allie))) {
 			if (!(MIN_RANGE[tool] != 0 && allie == ME)) {

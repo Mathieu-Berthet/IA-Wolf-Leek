@@ -874,14 +874,11 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		var effectShield = getValeurEffect(Tools[i],EFFECT_ABSOLUTE_SHIELD, ME,"moy");
 		var effectRenvoie = getValeurEffect(Tools[i],EFFECT_DAMAGE_RETURN, ME,"moy");
 		var effectStealShield = getValeurEffect(Tools[i], EFFECT_STEAL_ABSOLUTE_SHIELD, ME, "moy");
-		var AllShield = effRelaShield + effectShield + effectRenvoie + effectStealShield;
+		var effectVulnerability = getValeurEffect(Tools[i], EFFECT_VULNERABILITY, ME, "moy");
+		var AllShield = effRelaShield + effectShield + effectRenvoie + effectStealShield + effectVulnerability;
 
 		//Pour les soins
-		var effectSoin;
-		if(Tools[i] != CHIP_INVERSION) //Pour ne pas avoir inversion dans les puces de soins
-		{
-			effectSoin = getValeurEffect(Tools[i],EFFECT_HEAL, ME,"moy");
-		}
+		var effectSoin = getValeurEffect(Tools[i],EFFECT_HEAL, ME,"moy"); // Prend en compte l'inversion 
 		var effectBoostLife = getValeurEffect(Tools[i],EFFECT_BOOST_MAX_LIFE, ME,"moy");
 		var AllSoin = effectSoin + effectBoostLife;
 

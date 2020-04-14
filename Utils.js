@@ -90,7 +90,7 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						
 						
 						// Limiter la value
-						value = getRealValue(effect[TOOL_EFFECT_TYPE], leek, value);
+						value = getRealValue(effect[TOOL_EFFECT_TYPE], cible, value);
 						
 						var stealLife;
 						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_STEAL_LIFE]) {
