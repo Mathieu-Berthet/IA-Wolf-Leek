@@ -5,7 +5,7 @@ include("Debug");
 /********************** Globals *********************************/
 global NUMBER_OF_INGAME_ITEMS = 150 ;
 global CACHER;
-global ME = getLeek();
+global ME; ME = getLeek();
 global PHRASE_A_DIRE = [];
 global STOP_ACTION;
 global ERROR_TOOLS;
