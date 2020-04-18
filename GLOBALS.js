@@ -273,21 +273,23 @@ global	INTERACT_SHIELD = 'INTERACT_SHIELD',
 		
 
 
-/* TODO: faire un tableau de la forme : 
-	ALL_EFFECTS = [
-		COEFF_EFFECT : aNumber
-		BOOSTED_BY : aCaracteristic
-		IS_RELATIF : Boolean
-		IS_SPECIAL : Boolean
-		IS_HEALTHY : Boolean
-		INTERACT_WITH : [
-			INTERACT_SHIELD : Boolean
-			INTERACT_STEAL_LIFE : Boolean
-			INTERACT_RETURN_DAMAGE : Boolean
-			INTERACT_NOVA_DAMAGE : Boolean
-		]
-	]
-*/
+/** Tableau de la forme : 
+ * 	ALL_EFFECTS = [
+ *		COEFF_EFFECT : aNumber
+ *		BOOSTED_BY : aCaracteristic
+ *		IS_RELATIF : Boolean
+ *		IS_SPECIAL : Boolean
+ *		IS_HEALTHY : Boolean
+ *		INTERACT_WITH : [
+ *			INTERACT_SHIELD : Boolean
+ *			INTERACT_STEAL_LIFE : Boolean
+ * 			INTERACT_RETURN_DAMAGE : Boolean 
+ *			INTERACT_NOVA_DAMAGE : Boolean / aNumber (en %) 
+ *		]
+ *	]
+ *
+ * COEFF_EFFECT est à ajouster, le reste est supposé correspondre au 'modèle de LeekWars'
+ */
 global ALL_EFFECTS = [
 	EFFECT_DAMAGE : [
 		COEFF_EFFECT : 1,

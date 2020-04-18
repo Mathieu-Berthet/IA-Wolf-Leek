@@ -44,11 +44,13 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						)
 					)
 				){ 
+					var cible = leek;
+					if(effect[TOOL_MODIFIER_ON_CASTER]) {
+						cible = caster;
+					}
+						
 					if (!effect[IS_SPECIAL]) {
-						var cible = leek;
-						if(effect[TOOL_MODIFIER_ON_CASTER]) {
-							cible = caster;
-						}
+						
 					
 						var coeffAOE;
 						if (area == AREA_POINT || area == AREA_LASER_LINE || cellVise === null) {
@@ -119,25 +121,29 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 						if(stealLife) {
 							if(returnTab[caster] === null) returnTab[caster] = [];
 							if(returnTab[caster][EFFECT_HEAL] === null) returnTab[caster][EFFECT_HEAL] = [];
-							oldValue = (returnTab[caster][EFFECT_HEAL][1] === null) ? 0 : returnTab[caster][EFFECT_HEAL][1];
-							returnTab[caster][EFFECT_HEAL][1] = oldValue + stealLife;
+							oldValue = (returnTab[caster][EFFECT_HEAL][0] === null) ? 0 : returnTab[caster][EFFECT_HEAL][0];
+							returnTab[caster][EFFECT_HEAL][0] = oldValue + stealLife;
 						}
 						
 						if(damageReturn) {
 							if(returnTab[caster] === null) returnTab[caster] = [];
-							if(returnTab[caster][EFFECT_LIFE_DAMAGE] === null) returnTab[caster][EFFECT_LIFE_DAMAGE] = [];
-							oldValue = (returnTab[caster][EFFECT_LIFE_DAMAGE][1] === null) ? 0 : returnTab[caster][EFFECT_LIFE_DAMAGE][1];
-							returnTab[caster][EFFECT_LIFE_DAMAGE][1] = oldValue + damageReturn;
+							if(returnTab[caster][EFFECT_DAMAGE] === null) returnTab[caster][EFFECT_DAMAGE] = [];
+							oldValue = (returnTab[caster][EFFECT_DAMAGE][0] === null) ? 0 : returnTab[caster][EFFECT_DAMAGE][0];
+							returnTab[caster][EFFECT_DAMAGE][0] = oldValue + damageReturn;
 						}
 						
 						if(degatNova) {
 							if(returnTab[caster] === null) returnTab[caster] = [];
 							if(returnTab[caster][EFFECT_NOVA_DAMAGE] === null) returnTab[caster][EFFECT_NOVA_DAMAGE] = [];
-							oldValue = (returnTab[caster][EFFECT_NOVA_DAMAGE][1] === null) ? 0 : returnTab[caster][EFFECT_NOVA_DAMAGE][1];
-							returnTab[caster][EFFECT_NOVA_DAMAGE][1] = oldValue + degatNova;
+							oldValue = (returnTab[caster][EFFECT_NOVA_DAMAGE][0] === null) ? 0 : returnTab[caster][EFFECT_NOVA_DAMAGE][1];
+							returnTab[caster][EFFECT_NOVA_DAMAGE][0] = oldValue + degatNova;
 						}
-					} else {
-						// TODO : antidote & summon & libé...
+					} else { // IS_SPECIAL
+						if (effect[TOOL_EFFECT_TYPE] == EFFECT_KILL) {
+							if (returnTab[cible] == null) returnTab[cible] = [];
+							if (returnTab[cible][EFFECT_DAMAGE] == null) returnTab[cible][EFFECT_DAMAGE] = [];
+							returnTab[cible][EFFECT_DAMAGE][0] = getLife(cible);
+						}
 					}
 				}
 			}
@@ -170,7 +176,7 @@ function getRealValue(effect, leek, value) {
     value = min(value, INFO_LEEKS[leek][MAX_LIFE] - INFO_LEEKS[leek][LIFE]);
   }
   // TODO : Rajouter d'autre effets si besoin;
-  // Dans l'absolu faudrait rajouter EFFECT_DAMAGE mais IA ne met de 'bonus' si on tue un leek => on risquerait de ne pas tirer sur les ennemis si il leur reste 10pv
+  // Dans l'absolu faudrait rajouter EFFECT_DAMAGE mais IA ne met pas de 'bonus' si on tue un leek => on risquerait de ne pas tirer sur les ennemis si il leur reste 10pv
   
   return value;
 }
@@ -204,10 +210,10 @@ function getValueOfTargetEffect(aTargetEffect) {
 					} else {
 						// Par defaut
 						value = (isAlreadyShackle(leek, effect)) ? 0 : value;
-						var coeffNbTurn = sqrt(turn); //TODO: vérifier que turn != 0 sinon erreur de math
+						var coeffNbTurn = turn == 0 ? 1 ; sqrt(turn);
 						var coeffTeam = isAlly(leek) ? 1 : -1;
 						var coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
-						coeffReturned += coeffTeam * coeffHealthy * infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * value; // TODO : Creer une nouvelle variable dans les globals et inclure ce qui a ete fait dedans.
+						coeffReturned += coeffNbTurn * coeffTeam * coeffHealthy * infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * value;
 					}
 				} else { // IS_SPECIAL
 					//TODO : faire une fonction spéciale pour l'inversion, ...
