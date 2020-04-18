@@ -885,9 +885,9 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		//Pour les puces tactiques
 		var effectLibe = getValeurEffect(Tools[i],EFFECT_DEBUFF, ME,"moy");
 		var effectAntidote = getValeurEffect(Tools[i],EFFECT_ANTIDOTE, ME,"moy");
-		var effectInvert = getValeurEffect(Tools[i],EFFECT_INVERT, ME,"moy");
+		// var effectInvert = getValeurEffect(Tools[i],EFFECT_INVERT, ME,"moy"); // Déjà compris dans heal & resistance (pour les allies et les enemmis)
 		var effectTeleport = getValeurEffect(Tools[i],EFFECT_TELEPORT, ME,"moy");
-		var AllTatics = effectLibe + effectAntidote + effectInvert + effectTeleport;
+		var AllTatics = effectLibe + effectAntidote /*+ effectInvert*/ + effectTeleport;
 
     //Pour les boosts
 		var effectBuffStrength = getValeurEffect(Tools[i],  EFFECT_BUFF_STRENGTH,  ME,  "moy");
