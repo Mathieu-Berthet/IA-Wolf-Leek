@@ -199,11 +199,11 @@ function getValueOfTargetEffect(aTargetEffect) {
 					if (inArray([EFFECT_ABSOLUTE_SHIELD, EFFECT_RELATIVE_SHIELD], effect)) {
 						// on calcule la protection que ça apporte
 						initDangerousEnnemis();
-						var damageOnLeekBeforeShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
+						var damageOnLeekBeforeShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE][0];
 						var shield = (effect == EFFECT_ABSOLUTE_SHIELD) ? ABSOLUTE_SHIELD : RELATIVE_SHIELD;
 						// /!\ on suppose que la cible n'a pas déjà la puce !!! => rajouter un controle avant dans getTargetEffect ou bien ici
 						INFO_LEEKS[leek][shield] += value;
-						var damageOnLeekAfterShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE];
+						var damageOnLeekAfterShield = getTargetEffect(dangerousEnnemis, bestWeapon, getCell(leek), true, false)[leek][EFFECT_DAMAGE][0];
 						INFO_LEEKS[leek][shield] -= value;
 						var bonus = damageOnLeekBeforeShield - damageOnLeekAfterShield;
 						coeffReturned += infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * bonus; // normalement c'est toujours sur des alliés donc je mets pas de controle sur la team
