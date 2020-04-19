@@ -210,7 +210,7 @@ function getValueOfTargetEffect(aTargetEffect) {
 					} else {
 						// Par defaut
 						value = (isAlreadyShackle(leek, effect)) ? 0 : value;
-						var coeffNbTurn = turn == 0 ? 1 ; sqrt(turn);
+						var coeffNbTurn = turn == 0 ? 1 : sqrt(turn);
 						var coeffTeam = isAlly(leek) ? 1 : -1;
 						var coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
 						coeffReturned += coeffNbTurn * coeffTeam * coeffHealthy * infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * value;
