@@ -1021,6 +1021,15 @@ if ( getTurn() == 1 ) // je n'ai pas ultra compris l'idée des globales fonction
 	create_all_tools_tab() ;
 	//debugEP( getOperations()-op_ordo ) ;
 	//debugEP( ALL_INGAME_TOOLS ) ;
+	
+	
+	
+	
+	// Modification pour le EFFECT_STEAL_ABSOLUTE_SHIELD
+	// J'ai pas tout compris sur comment marchait le effets STEAL_* mais si on change l'effet par EFFECT_RAW_ABSOLUTE_SHIELD et que l'on ajoute le modifier multiplied by targets on aura le même résultat (et l'IA devrait marcher)
+	// cf https://leekwars.com/forum/category-3/topic-9714
+	ALL_INGAME_TOOLS[WEAPON_J_LASER][TOOL_ATTACK_EFFECTS][1][TOOL_MODIFIER_MULTIPLIED_BY_TARGETS] = true;
+	ALL_INGAME_TOOLS[WEAPON_J_LASER][TOOL_ATTACK_EFFECTS][1][TOOL_EFFECT_TYPE] = EFFECT_RAW_ABSOLUTE_SHIELD;
 }
 
 function create_all_tools_tab()
