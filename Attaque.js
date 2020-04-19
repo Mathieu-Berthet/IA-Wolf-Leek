@@ -142,8 +142,16 @@ function attaqueTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			}
 			var valeur = sommeDegat + min(getTotalLife() - getLife(), sommeVolVie) - sommeRenvoi;
 			*/
-			var aTargetEffect = getTargetEffect(ME, tool, cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], true, true);
+			var cellVise = [
+				'cell' : cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]],
+				'from' : cell[from],
+				'orientation' : cell[withOrientation]
+			];
+			var oldPosition = INFO_LEEKS[ME][CELL];
+			INFO_LEEKS[ME][CELL] = cell[from]; // on simule le déplacement
+			var aTargetEffect = getTargetEffect(ME, tool, cellVise, true, true);
 			var valeur = getValueOfTargetEffect(aTargetEffect);
+			INFO_LEEKS[ME][CELL] = oldPosition;
 			if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell[from]] < distanceBestAction) {
 				bestAction[CELL_DEPLACE] = cell[from];
 				bestAction[CELL_VISE] = cell[from] + MIN_RANGE[tool]* orientation[cell[withOrientation]];
@@ -205,8 +213,11 @@ function frappeDuDemon(toutEnnemis, @cellsAccessible) {
 						}
 						var valeur = totpv + min(getTotalLife() - getLife(), totvoldevie) - totrenvoi;
 						*/
+						var oldPosition = INFO_LEEKS[ME][CELL];
+						INFO_LEEKS[ME][CELL] = cellsAccessible[j]; // on simule le déplacement
 						var aTargetEffect = getTargetEffect(ME, CHIP_DEVIL_STRIKE, j, true, true);
 						var valeur = getValueOfTargetEffect(aTargetEffect);
+						INFO_LEEKS[ME][CELL] = oldPosition;
 						if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[j] < distanceBestAction) {
 							bestAction[CELL_DEPLACE] = j;
 							bestAction[CELL_VISE] = j;
@@ -272,8 +283,11 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 							}
 							var valeur = sommeDegat + min(getTotalLife() - getLife(), sommeVolVie) - sommeRenvoi;
 							*/
+							var oldPosition = INFO_LEEKS[ME][CELL];
+							INFO_LEEKS[ME][CELL] = cell_deplace; // on simule le déplacement
 							var aTargetEffect = getTargetEffect(ME, tool, cell, true, true);
 							var valeur = getValueOfTargetEffect(aTargetEffect);
+							INFO_LEEKS[ME][CELL] = oldPosition;
 							if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
 								bestAction[CELL_DEPLACE] = cell_deplace;
 								bestAction[CELL_VISE] = cell;
@@ -318,7 +332,7 @@ function attaqueTypePoint(toutEnnemis, tool, @cellsAccessible) {
 	for (var ennemis in toutEnnemis) {
 		cellEnnemis = getCell(ennemis);
 		if(tool == CHIP_SPARK) {
-			cell_deplace = getCellToUseChip(tool, ennemis);
+			cell_deplace = getCellToUseChip(tool, ennemis); // TODO : ah bah la fonction de leekwars ne prends pas en compte que la puce n'a pas besoin de LOS... il va falloir coder quelque chose qui vérifie juste la cellDistance 
 			var length = getPathLength(getCell(), cell_deplace);
 			ok = length <= getMP() && length !== null;
 
@@ -336,8 +350,12 @@ function attaqueTypePoint(toutEnnemis, tool, @cellsAccessible) {
 			degat[MOYEN] *= SCORE[ennemis];
 			valeur = degat[MOYEN] + min(getTotalLife() - getLife(), volDeVie) - degat_renvoyer;
 			*/
+			
+			var oldPosition = INFO_LEEKS[ME][CELL];
+			INFO_LEEKS[ME][CELL] = cell_deplace; // on simule le déplacement
 			var aTargetEffect = getTargetEffect(ME, tool, cellEnnemis, true, true);
 			valeur = getValueOfTargetEffect(aTargetEffect);
+			INFO_LEEKS[ME][CELL] = oldPosition;
 			if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
 				bestAction[CELL_DEPLACE] = cell_deplace;
 				bestAction[CELL_VISE] = cellEnnemis;

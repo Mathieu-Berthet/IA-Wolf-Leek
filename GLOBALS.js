@@ -21,11 +21,25 @@ function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des 
 	var tab = [];
 	var leeks = getAliveAllies()+ getAliveEnemies();
 	for (var leek in leeks) {
-		tab[leek] = [leek, getAbsoluteShield(leek), getRelativeShield(leek),  max(0,getStrength(leek)), getDamageReturn(leek), max(0,getMagic(leek)), getTP(leek), getMP(leek), getCell(leek), getLife(leek), getTotalLife(leek), getWisdom(leek)];
+		tab[leek] = [
+			ID 			 : leek, 
+			ABSOLUTE_SHIELD : getAbsoluteShield(leek), 
+			RELATIVE_SHIELD : getRelativeShield(leek),  
+			STRENGTH		 : max(0,getStrength(leek)), 
+			DAMAGE_RETURN	 : getDamageReturn(leek), 
+			MAGIC		 : max(0,getMagic(leek)), 
+			PT			 : getTP(leek), 
+			MP			 : getMP(leek), 
+			CELL			 : getCell(leek), 
+			LIFE			 : getLife(leek), 
+			MAX_LIFE		 : getTotalLife(leek), 
+			SAGESSE		 : getWisdom(leek)
+		];
 	}
 	INFO_LEEKS = tab;
 }
- updateInfoLeeks();
+
+updateInfoLeeks();
 
 global COEFF_LEEK_EFFECT;
 

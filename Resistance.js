@@ -76,8 +76,17 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible)
 					}
 				}
 			}*/
-			var aTargetEffect = getTargetEffect(ME, tool, cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]], true, true);
+			
+			var cellVise = [
+				'cell' : cell[from] + MIN_RANGE[tool] * orientation[cell[withOrientation]],
+				'from' : cell[from],
+				'orientation' : cell[withOrientation]
+			];
+			var oldPosition = INFO_LEEKS[ME][CELL];
+			INFO_LEEKS[ME][CELL] = cell[from]; // on simule le déplacement
+			var aTargetEffect = getTargetEffect(ME, tool, cellVise, true, true);
 			var valeur = getValueOfTargetEffect(aTargetEffect);
+			INFO_LEEKS[ME][CELL] = oldPosition;
 			if ((valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell[from]] < distanceBestAction))
 			{
 				bestAction[CELL_DEPLACE] = cell[from];
@@ -123,8 +132,11 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 						if (cell_deplace != -2) { //la cellule doit être atteignable
 							/*var resist = ResistVal(tool, allie);
 							valeur = SCORE_RESISTANCE[allie]*(resist);*/
+							var oldPosition = INFO_LEEKS[ME][CELL];
+							INFO_LEEKS[ME][CELL] = cell_deplace; // on simule le déplacement
 							var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true, true);
 							valeur = getValueOfTargetEffect(aTargetEffect);
+							INFO_LEEKS[ME][CELL] = oldPosition;
 							if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
 								if(getLeekOnCell(cellAllie)==ME) {
 									bestAction[CELL_DEPLACE] = -1;

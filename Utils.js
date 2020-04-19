@@ -5,15 +5,23 @@ include('GLOBALS');
  *
  * castel : ID Leek 					| Le poireau qui fait l'action
  * Tool : ID of chip / weapon				| l'arme utilisé
- * cellVise : ID cell 					| la cell sur laquelle on va tirer
+ * cellVise : ID cell (ou un array)		| la cell sur laquelle on va tirer
  * ignoreCasterOnNonePointArea : Boolean 	| permet de ne pas prendre en compte le caster dans les dégats d'AOE (généralement on se déplace on ne fera donc pas parti des cibles)
  * multiTarget Boolean					| permet de prendre en compte plusieurs cible grâce à l'AOE
  *									|
  * @return : array						| [LEEK : [EFFECT : [TURN : VALUE]]]
  */
 function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, multiTarget) {
-	var cibles = multiTarget ? getTarget(tool, cellVise) : [getLeekOnCell(cellVise)];
-	var nbCible = count(cibles);
+	
+	var cibles = getCibles(tool, cellVise); // leek se trouvant dans la L'AOE de l'arme
+	if(isArray(cellVise)){
+		cellVise = cellVise['cell'];
+	}
+	var targets = multiTarget ? getTarget(tool, cellVise) : [getLeekOnCell(cellVise)]; // leek affecté par les effets de l'arme
+	
+	// Note : cibles et targets peuvent être différent si l'arme possède un effet avec le modifieur on caster  
+	
+	var nbCible;
 	var infoTool = ALL_INGAME_TOOLS[tool];
 	var effects = infoTool[TOOL_ATTACK_EFFECTS];
 	var area = infoTool[TOOL_AOE_TYPE];
@@ -21,37 +29,31 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 	var returnTab = [];
 	
 	for(var effect in effects) {
-		for(var leek in cibles) {
+		if(effect(TOOL_MODIFIER_MULTIPLIED_BY_TARGETS)) nbCible = count(arrayFilter(cibles, getFunctionToFilterTarget(effect, caster)));
+		for(var leek in targets) {
 			if(leek != caster || !ignoreCasterOnNonePointArea || effect[TOOL_MODIFIER_ON_CASTER] || area == AREA_POINT ) { 
 			// si leek == caster : On fait parti des cibles mais on suppose que l'on va se déplacer et donc que l'on ne fera pas parti des cibles (cas limite pour certains tools comme pour le gazor => pour éviter d'être dans les cibles on a changé la MIN_RANGE de ces tools)
-				if (	(
-						(
-							effect[TOOL_TARGET_SUMMONS] && isSummon(leek)
-						) || (
-							effect[TOOL_TARGET_NON_SUMMONS] && !isSummon(leek)
-						)
-					) && (
-						(
-							effect[TOOL_TARGET_ENEMIES] && isEnemy(leek)
-						) || (
-							effect[TOOL_TARGET_ALLIES] && isAlly(leek)
-						)
-					) && (
-						(
-							effect[TOOL_TARGET_CASTER]
-						) || (
-							leek != caster
-						)
-					)
-				){ 
+			
+			/* 
+				Note : avec l'ajout de la fonction 'getCibles' on récupère les cibles en prenant en compte la position 'fictive' du leek qui est entrain de jouer (donc la variable caster pour l'utilisation actuelle de la fonction)
+				On pourrait donc normalement se passer de la variable 'ignoreCasterOnNonePointArea' si on parvient à instancier 'targets' avec la même valeur que le retour de 'getTarget'
+					( => en plus ça fait 'bugger' les renvois de dégat car ça doit être les seules puces qui ont une min_range de 0 avec une AOE (sauf pour DEVIL_STRIKE mais qui a du coup une fonction bien spécifique pour gérér ça) )
+				
+					à priori : targets == cible 
+					sauf si on a : effect[TOOL_MODIFIER_ON_CASTER] 
+						dans ce cas targets == cible + [ME]
+					 
+					 @Rayman tu confirmes ? :)
+			*/
+			
+				if (	(getFunctionToFilterTarget(effect, caster)) (leek) ) { 
+					
 					var cible = leek;
 					if(effect[TOOL_MODIFIER_ON_CASTER]) {
 						cible = caster;
 					}
 						
 					if (!effect[IS_SPECIAL]) {
-						
-					
 						var coeffAOE;
 						if (area == AREA_POINT || area == AREA_LASER_LINE || cellVise === null) {
 							coeffAOE = 1;
@@ -158,15 +160,15 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
  */
 function getCharacteristiqueFunction(characteristic) {
 	return [
-		CHARACTERISTIC_LIFE : getLife,
-		CHARACTERISTIC_STRENGTH : getStrength,
-		CHARACTERISTIC_WISDOM : getWisdom,
-		CHARACTERISTIC_AGILITY : getAgility,
+		CHARACTERISTIC_LIFE		 : getLife,
+		CHARACTERISTIC_STRENGTH	 : getStrength,
+		CHARACTERISTIC_WISDOM	 : getWisdom,
+		CHARACTERISTIC_AGILITY	 : getAgility,
 		CHARACTERISTIC_RESISTANCE : getResistance,
-		CHARACTERISTIC_SCIENCE : getScience,
-		CHARACTERISTIC_MAGIC : getMagic,
-		CHARACTERISTIC_FREQUENCY : getFrequency,
-		CHARACTERISTIC_MOVEMENT : getMP,
+		CHARACTERISTIC_SCIENCE	 : getScience,
+		CHARACTERISTIC_MAGIC	 : getMagic,
+		CHARACTERISTIC_FREQUENCY	 : getFrequency,
+		CHARACTERISTIC_MOVEMENT	 : getMP,
 		CHARACTERISTIC_TURN_POINT : getTP
 	][characteristic];
 }
@@ -180,6 +182,69 @@ function getRealValue(effect, leek, value) {
   
   return value;
 }
+
+
+/**
+ * Retourne les leeks se trouvant dans une zone d'action de l'item tool  
+ */
+function getCibles(tool, cellVise); // leek se trouvant dans la L'AOE de l'arme
+	var from, orientation;
+	if(isArray(cellVise)){
+		from = cellVise['from'];
+		orientation = cellVise['orientation'];
+		cellVise = cellVise['cell'];
+		if(!(cellVise !== null && orientation && from !== null)) debugE("getTargetEffect : Erreur dans le paramètre 'cellVise'");
+	}
+	var area = ALL_INGAME_TOOLS[tool][TOOL_AOE_TYPE];
+	var cell_AOE = (area == AREA_LASER_LINE) ? getAreaLine(tool, from, orientation) : 
+					(area == AREA_POINT) ? [cellVise] : getEffectiveArea(tool, cellVise);
+					
+	var cibles = [];
+	for(var cell in cell_AOE) {
+		var leek = getLeekOnCell(cell);
+		if(leek != -1 && leek != ME) {
+			push(cibles, leek);
+		}
+		
+		if(INFO_LEEKS[ME][CELL] == cell) {
+			push(cibles, ME);
+		}
+	}
+	
+	return cibles;
+}
+
+/**
+ *
+ *
+ */
+function getFunctionToFilterTarget(effect, caster) {
+	return (function (leek) {
+		return (
+			(
+				(
+					effect[TOOL_TARGET_SUMMONS] && isSummon(leek)
+				) || (
+					effect[TOOL_TARGET_NON_SUMMONS] && !isSummon(leek)
+				)
+			) && (
+				(
+					effect[TOOL_TARGET_ENEMIES] && isEnemy(leek)
+				) || (
+					effect[TOOL_TARGET_ALLIES] && isAlly(leek)
+				)
+			) && (
+				(
+					effect[TOOL_TARGET_CASTER]
+				) || (
+					leek != caster
+				)
+			)
+		);
+	});
+}
+
+
 
 /**
  * @autor : Caneton

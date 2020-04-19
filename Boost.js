@@ -103,8 +103,11 @@ function Booster(tool, allies, @cellsAccessible)
 		       			var coeff = SCORE_BOOST[allie][eff[TOOL_EFFECT_TYPE]];
 						if(coeff===null) debugEP("["+ALL_INGAME_TOOLS[tool][TOOL_NAME]+"]Pas de valeur pour : "+ eff[TOOL_EFFECT_TYPE]);
 						valeur = coeff*(boost);*/
+						var oldPosition = INFO_LEEKS[ME][CELL];
+						INFO_LEEKS[ME][CELL] = cell_deplace;
 						var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true, true);
 						valeur = getValueOfTargetEffect(aTargetEffect);
+						INFO_LEEKS[ME][CELL] = oldPosition;
 						if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction)
 						{
 							if(getLeekOnCell(cellAllie)==ME)
@@ -177,8 +180,12 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 							}
 							var valeur = sommeBoostTP + sommeBoostMP;*/
 							// hmmm... je comprends pas tout du code existant... 
+							
+							var oldPosition = INFO_LEEKS[ME][CELL];
+							INFO_LEEKS[ME][CELL] = cell_deplace;
 							var aTargetEffect = getTargetEffect(ME, tool, cell, true, true);
 							var valeur = getValueOfTargetEffect(aTargetEffect);
+							INFO_LEEKS[ME][CELL] = oldPosition;
 							if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
 								bestAction[CELL_DEPLACE] = cell_deplace;
 								bestAction[CELL_VISE] = cell;
