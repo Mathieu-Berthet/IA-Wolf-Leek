@@ -1,4 +1,5 @@
 include('GLOBALS');
+include('getArea');
 
 /**
  * @auteur : Caneton
@@ -14,7 +15,7 @@ include('GLOBALS');
 function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, multiTarget) {
 	
 	var cibles = getCibles(tool, cellVise); // leek se trouvant dans la L'AOE de l'arme
-	if(isArray(cellVise)){
+	if(typeOf(cellVise) == TYPE_ARRAY){
 		cellVise = cellVise['cell'];
 	}
 	var targets = multiTarget ? getTarget(tool, cellVise) : [getLeekOnCell(cellVise)]; // leek affecté par les effets de l'arme
@@ -187,9 +188,9 @@ function getRealValue(effect, leek, value) {
 /**
  * Retourne les leeks se trouvant dans une zone d'action de l'item tool  
  */
-function getCibles(tool, cellVise); // leek se trouvant dans la L'AOE de l'arme
+function getCibles(tool, cellVise) { // leek se trouvant dans la L'AOE de l'arme
 	var from, orientation;
-	if(isArray(cellVise)){
+	if(typeOf(cellVise) == TYPE_ARRAY){
 		from = cellVise['from'];
 		orientation = cellVise['orientation'];
 		cellVise = cellVise['cell'];
