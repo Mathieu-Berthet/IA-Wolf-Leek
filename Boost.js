@@ -1,4 +1,3 @@
-
 include("getArea");
 include("getCellToUse");
 include("Debug");
@@ -147,51 +146,53 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 	var maxRange = ALL_INGAME_TOOLS[tool][TOOL_MAX_RANGE] ;
 	var deja_fait = [];
 	for (var poireau in toutPoireau) {
-		var distance = getCellDistance(getCell(), getCell(poireau));
-		if (distance <= maxRange + getMP())
-		{
-			var zone = getEffectiveArea(tool, getCell(poireau));
-			if (zone != null)
+		if(!(MIN_RANGE[tool] != 0 && poireau == ME)) {
+			var distance = getCellDistance(getCell(), getCell(poireau));
+			if (distance <= maxRange + getMP())
 			{
-				for (var cell in zone)
+				var zone = getEffectiveArea(tool, getCell(poireau));
+				if (zone != null)
 				{
-					if (!deja_fait[cell])
+					for (var cell in zone)
 					{
-						deja_fait[cell] = true;
-						cell_deplace = getCellToUseToolsOnCell(tool, cell, cellsAccessible);
-						var sommeBoostTP = 0;
-						var sommeBoostMP = 0;
-						var boost;
-						if (cell_deplace != -2)
-						{/*
-							var cibles = getTargetBoost(tool, cell);
-							if (cibles != [])
-							{
-								var nbCibles = count(cibles);
-								for (var leek in cibles)
+						if (!deja_fait[cell])
+						{
+							deja_fait[cell] = true;
+							cell_deplace = getCellToUseToolsOnCell(tool, cell, cellsAccessible);
+							var sommeBoostTP = 0;
+							var sommeBoostMP = 0;
+							var boost;
+							if (cell_deplace != -2)
+							{/*
+								var cibles = getTargetBoost(tool, cell);
+								if (cibles != [])
 								{
-									if (leek != getLeek())
+									var nbCibles = count(cibles);
+									for (var leek in cibles)
 									{
-										boostVal(tool,  leek,  null,  boost, nbCibles);
-										sommeBoostTP += boost;
-										sommeBoostMP += boost;
+										if (leek != getLeek())
+										{
+											boostVal(tool,  leek,  null,  boost, nbCibles);
+											sommeBoostTP += boost;
+											sommeBoostMP += boost;
+										}
 									}
 								}
-							}
-							var valeur = sommeBoostTP + sommeBoostMP;*/
-							// hmmm... je comprends pas tout du code existant... 
-							
-							var oldPosition = INFO_LEEKS[ME][CELL];
-							INFO_LEEKS[ME][CELL] = cell_deplace;
-							var aTargetEffect = getTargetEffect(ME, tool, cell, true, true);
-							var valeur = getValueOfTargetEffect(aTargetEffect);
-							INFO_LEEKS[ME][CELL] = oldPosition;
-							if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
-								bestAction[CELL_DEPLACE] = cell_deplace;
-								bestAction[CELL_VISE] = cell;
-								bestAction[VALEUR] = valeur;
-								valeurMax = valeur;
-								distanceBestAction = cellsAccessible[cell_deplace];
+								var valeur = sommeBoostTP + sommeBoostMP;*/
+								// hmmm... je comprends pas tout du code existant... 
+								
+								var oldPosition = INFO_LEEKS[ME][CELL];
+								INFO_LEEKS[ME][CELL] = cell_deplace;
+								var aTargetEffect = getTargetEffect(ME, tool, cell, true, true);
+								var valeur = getValueOfTargetEffect(aTargetEffect);
+								INFO_LEEKS[ME][CELL] = oldPosition;
+								if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
+									bestAction[CELL_DEPLACE] = cell_deplace;
+									bestAction[CELL_VISE] = cell;
+									bestAction[VALEUR] = valeur;
+									valeurMax = valeur;
+									distanceBestAction = cellsAccessible[cell_deplace];
+								}
 							}
 						}
 					}
