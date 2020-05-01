@@ -111,7 +111,8 @@ SCORE_BOOST = (function ()
 	return tab;
 })();
 
-// ------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
 
 
 //informations concernant une action
@@ -287,7 +288,7 @@ global ALL_EFFECTS = [
 	EFFECT_NOVA_DAMAGE : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
-		IS_RELATIF : true,
+		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
 		INTERACT_WITH : [
@@ -487,7 +488,7 @@ global ALL_EFFECTS = [
 	EFFECT_RELATIVE_SHIELD : [
 		COEFF_EFFECT : 3,
 		BOOSTED_BY : CHARACTERISTIC_RESISTANCE,
-		IS_RELATIF : true,
+		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
 		INTERACT_WITH : [
@@ -513,14 +514,14 @@ global ALL_EFFECTS = [
 	EFFECT_DAMAGE_RETURN : [
 		COEFF_EFFECT : 3,
 		BOOSTED_BY : CHARACTERISTIC_AGILITY,
-		IS_RELATIF : true,
+		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : true,
 		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : false,
-			INTERACT_NOVA_DAMAGE : 5,
+			INTERACT_NOVA_DAMAGE : false,
 		]
 	],
 	EFFECT_ABSOLUTE_VULNERABILITY : [
@@ -552,7 +553,7 @@ global ALL_EFFECTS = [
 	EFFECT_VULNERABILITY : [
 		COEFF_EFFECT : 3,
 		BOOSTED_BY : null,
-		IS_RELATIF : true,
+		IS_RELATIF : false,
 		IS_SPECIAL : false,
 		IS_HEALTHY : false,
 		INTERACT_WITH : [

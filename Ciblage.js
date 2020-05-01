@@ -44,6 +44,7 @@ COEFF_LEEK_EFFECT = (function (){
 
 
 
+
 function compteurPuceEffect(tools, effect) {
   var compteur = 0;
   for(var tool in tools) {
@@ -64,13 +65,12 @@ function setBoostCoeff() { // Méthode du nombre de puce
 		var nbResiTool = compteurPuceEffect(tools, EFFECT_ABSOLUTE_SHIELD)+compteurPuceEffect(tools, EFFECT_RELATIVE_SHIELD);
 		var nbReturnDamageTool = compteurPuceEffect(tools, EFFECT_DAMAGE_RETURN);
 		var nbScienceTool =   compteurPuceEffect(tools, EFFECT_BUFF_STRENGTH)
-	    					+ compteurPuceEffect(tools, EFFECT_BUFF_WISDOM)
-	    					+ compteurPuceEffect(tools, EFFECT_BUFF_RESISTANCE)
-	    					+ compteurPuceEffect(tools, EFFECT_BUFF_AGILITY)
-	    					+ compteurPuceEffect(tools, EFFECT_BUFF_TP)
-	    					+ compteurPuceEffect(tools, EFFECT_BUFF_MP);
-
-		COEFF_LEEK_EFFECT[allie] = [];
+						+ compteurPuceEffect(tools, EFFECT_BUFF_WISDOM)
+						+ compteurPuceEffect(tools, EFFECT_BUFF_RESISTANCE)
+						+ compteurPuceEffect(tools, EFFECT_BUFF_AGILITY)
+						+ compteurPuceEffect(tools, EFFECT_BUFF_TP)
+						+ compteurPuceEffect(tools, EFFECT_BUFF_MP);
+						
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_STRENGTH] = nbDamageTool == 0 ? 0 : sqrt(nbDamageTool);
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_WISDOM] = nbHealTool == 0 ? 0 : sqrt(nbHealTool);
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_RESISTANCE] = nbResiTool == 0 ? 0 : sqrt(nbResiTool);
@@ -78,16 +78,16 @@ function setBoostCoeff() { // Méthode du nombre de puce
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_TP] = 1.7;
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_MP] = 1.7;
 		
+		
 		if(isSummon(allie)) {
 			for (var cle : var val in COEFF_LEEK_EFFECT[allie]) {
-				if (inArray([EFFECT_BUFF_STRENGTH, EFFECT_BUFF_RESISTANCE, EFFECT_BUFF_WISDOM, EFFECT_BUFF_AGILITY, EFFECT_BUFF_TP, EFFECT_BUFF_MP], cle)) { 
+				if (inArray([EFFECT_BUFF_STRENGTH, EFFECT_BUFF_RESISTANCE, EFFECT_BUFF_WISDOM, EFFECT_BUFF_AGILITY, EFFECT_BUFF_TP, EFFECT_BUFF_MP], cle)) {
 					COEFF_LEEK_EFFECT[allie][cle] *= 0.7;
 				}
 			}
 		}
 	}
 }
-
 
 
 function getOpponent(enemies) {

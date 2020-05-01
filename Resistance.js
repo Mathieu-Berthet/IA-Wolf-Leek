@@ -16,7 +16,7 @@ function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax, @shield_
 				tir = proteger(tool, Allies, cellsAccessible);
 			}
 
-			if ((tir != [] || tir != null) && tir[VALEUR] > 15) {
+			if ((tir != [] || tir != null) && tir[VALEUR] > 1) {
 				tir[CHIP_WEAPON] = tool;
 				var valeur = tir[VALEUR];
 				var change_weapon =  ( ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] && tool != getWeapon()) ? 1 : 0;
@@ -29,11 +29,11 @@ function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax, @shield_
 					tir[PT_USE] = o * coutPT + change_weapon;
 					tir[VALEUR] = o * valeur;
 					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE] ;
-					tir[CALLBACK] = (function (leek) {
+					tir[CALLBACK] = updateInfoLeeks;/*(function (leek) {
 						INFO_LEEKS[leek][ABSOLUTE_SHIELD] = getAbsoluteShield(leek);
 						INFO_LEEKS[leek][RELATIVE_SHIELD] = getRelativeShield(leek);
 					});
-					tir[PARAM] = tir[CELL_VISE] == -1 ? getLeek() : getLeekOnCell(tir[CELL_VISE]);
+					tir[PARAM] = tir[CELL_VISE] == -1 ? getLeek() : getLeekOnCell(tir[CELL_VISE]);*/
 					actions[nb_action] = tir;
 					nb_action++;
 				}
@@ -132,6 +132,7 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 						if (cell_deplace != -2) { //la cellule doit être atteignable
 							/*var resist = ResistVal(tool, allie);
 							valeur = SCORE_RESISTANCE[allie]*(resist);*/
+							
 							var oldPosition = INFO_LEEKS[ME][CELL];
 							INFO_LEEKS[ME][CELL] = cell_deplace; // on simule le déplacement
 							var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true, true);
@@ -199,7 +200,4 @@ function ResistVal(tool, leek){
 		}
     }
 }
-
-
-
 

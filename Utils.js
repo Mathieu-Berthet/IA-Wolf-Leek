@@ -13,15 +13,14 @@ include('getArea');
  * @return : array						| [LEEK : [EFFECT : [TURN : VALUE]]]
  */
 function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, multiTarget) {
+	ignoreCasterOnNonePointArea = false; //  on en a plus besoin car on gère mieux les cibles qu'avant
 	
-	var cibles = getCibles(tool, cellVise); // leek se trouvant dans la L'AOE de l'arme
+	var cibles = multiTarget ? getCibles(tool, cellVise) : [getLeekOnCell(cellVise)]; // leeks se trouvant dans l'AOE de l'arme
+	
 	if(typeOf(cellVise) == TYPE_ARRAY){
 		cellVise = cellVise['cell'];
 	}
-	var targets = multiTarget ? getTarget(tool, cellVise) : [getLeekOnCell(cellVise)]; // leek affecté par les effets de l'arme
-	
-	// Note : cibles et targets peuvent être différent si l'arme possède un effet avec le modifieur on caster  
-	
+		
 	var nbCible;
 	var infoTool = ALL_INGAME_TOOLS[tool];
 	var effects = infoTool[TOOL_ATTACK_EFFECTS];
@@ -30,124 +29,106 @@ function getTargetEffect(caster, tool, cellVise, ignoreCasterOnNonePointArea, mu
 	var returnTab = [];
 	
 	for(var effect in effects) {
-		if(effect(TOOL_MODIFIER_MULTIPLIED_BY_TARGETS)) nbCible = count(arrayFilter(cibles, getFunctionToFilterTarget(effect, caster)));
-		for(var leek in targets) {
-			if(leek != caster || !ignoreCasterOnNonePointArea || effect[TOOL_MODIFIER_ON_CASTER] || area == AREA_POINT ) { 
-			// si leek == caster : On fait parti des cibles mais on suppose que l'on va se déplacer et donc que l'on ne fera pas parti des cibles (cas limite pour certains tools comme pour le gazor => pour éviter d'être dans les cibles on a changé la MIN_RANGE de ces tools)
-			
-			/* 
-				Note : avec l'ajout de la fonction 'getCibles' on récupère les cibles en prenant en compte la position 'fictive' du leek qui est entrain de jouer (donc la variable caster pour l'utilisation actuelle de la fonction)
-				On pourrait donc normalement se passer de la variable 'ignoreCasterOnNonePointArea' si on parvient à instancier 'targets' avec la même valeur que le retour de 'getTarget'
-					( => en plus ça fait 'bugger' les renvois de dégat car ça doit être les seules puces qui ont une min_range de 0 avec une AOE (sauf pour DEVIL_STRIKE mais qui a du coup une fonction bien spécifique pour gérér ça) )
+		var targets = arrayFilter(cibles, getFunctionToFilterTarget(effect, caster));
+		nbCible = count(targets);
+		if (effect[TOOL_MODIFIER_ON_CASTER]) targets = [caster];
+		for(var cible in targets) {
+			if (!effect[IS_SPECIAL]) {
+				var coeffAOE;
+				if (area == AREA_POINT || area == AREA_LASER_LINE || cellVise === null) {
+					coeffAOE = 1;
+				} else {
+					var distance = getDistance(cellVise, getCell(cible));
+					if(inArray([AREA_X_1, AREA_X_2, AREA_X_3], area)) {
+						distance /= sqrt(2);
+					}
+					coeffAOE = 1 - (ceil(distance) * 0.2);
+				}
+						
+				var coeffNbCible = 1;
+				if(effect[TOOL_MODIFIER_MULTIPLIED_BY_TARGETS]) {
+					coeffNbCible = nbCible;
+				}
+						
+				var coeffMoyen = effect[TOOL_AVERAGE_POWER];
+				if (ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][IS_RELATIF]) {
+					coeffMoyen /= 100;
+				}
+						
+				var coeffCharacteristic = 1;
+				var characteristic = ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][BOOSTED_BY];
+				if(characteristic !== null) {
+					if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][IS_RELATIF]) {
+						coeffCharacteristic = (getCharacteristiqueFunction(characteristic))(caster);
+					} else {
+						coeffCharacteristic = 1 + (getCharacteristiqueFunction(characteristic))(caster) / 100;
+					}
+				}
+						
+				var value = round(coeffMoyen * coeffCharacteristic * coeffAOE * coeffNbCible);
 				
-					à priori : targets == cible 
-					sauf si on a : effect[TOOL_MODIFIER_ON_CASTER] 
-						dans ce cas targets == cible + [ME]
-					 
-					 @Rayman tu confirmes ? :)
-			*/
-			
-				if (	(getFunctionToFilterTarget(effect, caster)) (leek) ) { 
+				
+				if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_SHIELD]) {
+					value = max(0, value * (1 - INFO_LEEKS[cible][RELATIVE_SHIELD] / 100) - INFO_LEEKS[cible][ABSOLUTE_SHIELD]);
+				}
+				// TODO: si le tool est non cumulable et que la cible le possède déjà il faut faire quelque chose...
+				//		- on met la value à 0 pour éviter le précédent ?
+				//		- on fait la différence entre les 2 valeurs + prendre en compte le nombre de tours restant ?
+				// ou alors on le prends en compte dans getValueOfTargetEffect => je préfère garder les vrai valeurs dans cette fonction
+						
+						
+				// Limiter la value
+				value = getRealValue(effect[TOOL_EFFECT_TYPE], cible, value);
 					
-					var cible = leek;
-					if(effect[TOOL_MODIFIER_ON_CASTER]) {
-						cible = caster;
-					}
+				var stealLife;
+				if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_STEAL_LIFE]) {
+					stealLife = getWisdom(caster) * value / 1000;
+				}
 						
-					if (!effect[IS_SPECIAL]) {
-						var coeffAOE;
-						if (area == AREA_POINT || area == AREA_LASER_LINE || cellVise === null) {
-							coeffAOE = 1;
-						} else {
-							var distance = getDistance(cellVise, getCell(cible));
-							if(inArray([AREA_X_1, AREA_X_2, AREA_X_3], area)) {
-								distance /= sqrt(2);
-							}
-							coeffAOE = 1 - (ceil(distance) * 0.2);
-						}
+				var damageReturn;
+				if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_RETURN_DAMAGE]) {
+					damageReturn = INFO_LEEKS[cible][DAMAGE_RETURN] * value / 1000;
+				}
 						
-						var coeffNbCible = 1;
-						if(effect(TOOL_MODIFIER_MULTIPLIED_BY_TARGETS)) {
-							coeffNbCible = nbCible;
-						}
+				var degatNova;
+				var interactWithNova = ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_NOVA_DAMAGE];
+				if(interactWithNova) {
+					degatNova = interactWithNova * value / 100;
+				}
 						
-						var coeffMoyen = effect[TOOL_AVERAGE_POWER];
+				// on sauvegarde les valeurs
+				var turnNumber = effect[TOOL_NUMBER_TURN_EFFECT_LAST];
 						
-						var coeffCharacteristic = 1;
-						var characteristic = ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][BOOSTED_BY];
-						if(characteristic !== null) {
-							if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][IS_RELATIF]) {
-								coeffCharacteristic = 1 + (getCharacteristiqueFunction(characteristic))(caster);
-							} else {
-								coeffCharacteristic = 1 + (getCharacteristiqueFunction(characteristic))(caster) / 100;
-							}
-						}
+				if(returnTab[cible] === null) returnTab[cible] = [];
+				if(returnTab[cible][effect[TOOL_EFFECT_TYPE]] === null) returnTab[cible][effect[TOOL_EFFECT_TYPE]] = [];
+				var oldValue = (returnTab[cible][effect[TOOL_EFFECT_TYPE]][turnNumber] === null) ? 0 : returnTab[cible][effect[TOOL_EFFECT_TYPE]][turnNumber];
+				returnTab[cible][effect[TOOL_EFFECT_TYPE]][turnNumber] = oldValue + value;
 						
-						var value = round(coeffMoyen * coeffCharacteristic * coeffAOE * coeffNbCible);
+				if(stealLife) {
+					if(returnTab[caster] === null) returnTab[caster] = [];
+					if(returnTab[caster][EFFECT_HEAL] === null) returnTab[caster][EFFECT_HEAL] = [];
+					oldValue = (returnTab[caster][EFFECT_HEAL][0] === null) ? 0 : returnTab[caster][EFFECT_HEAL][0];
+					returnTab[caster][EFFECT_HEAL][0] = oldValue + stealLife;
+				}
 						
-						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_SHIELD]) {
-							value = max(0, value * (1 - INFO_LEEKS[cible][RELATIVE_SHIELD] / 100) - INFO_LEEKS[cible][ABSOLUTE_SHIELD]);
-						}
-						// TODO: si le tool est non cumulable et que la cible le possède déjà il faut faire quelque chose...
-						//		- on met la value à 0 pour éviter le précédent ?
-						//		- on fait la différence entre les 2 valeurs + prendre en compte le nombre de tours restant ?
-						// ou alors on le prends en compte dans getValueOfTargetEffect => je préfère garder les vrai valeurs dans cette fonction
+				if(damageReturn) {
+					if(returnTab[caster] === null) returnTab[caster] = [];
+					if(returnTab[caster][EFFECT_DAMAGE] === null) returnTab[caster][EFFECT_DAMAGE] = [];
+					oldValue = (returnTab[caster][EFFECT_DAMAGE][0] === null) ? 0 : returnTab[caster][EFFECT_DAMAGE][0];
+					returnTab[caster][EFFECT_DAMAGE][0] = oldValue + damageReturn;
+				}
 						
-						
-						// Limiter la value
-						value = getRealValue(effect[TOOL_EFFECT_TYPE], cible, value);
-						
-						var stealLife;
-						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_STEAL_LIFE]) {
-							stealLife = getWisdom(caster) * value / 1000;
-						}
-						
-						var damageReturn;
-						if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_RETURN_DAMAGE]) {
-							damageReturn = INFO_LEEKS[cible][DAMAGE_RETURN] * value / 1000;
-						}
-						
-						var degatNova;
-						var interactWithNova = ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_NOVA_DAMAGE];
-						if(interactWithNova) {
-							degatNova = interactWithNova * value / 100;
-						}
-						
-						// on sauvegarde les valeurs
-						var turnNumber = effect[TOOL_NUMBER_TURN_EFFECT_LAST];
-						
-						if(returnTab[cible] === null) returnTab[cible] = [];
-						if(returnTab[cible][effect[TOOL_EFFECT_TYPE]] === null) returnTab[cible][effect[TOOL_EFFECT_TYPE]] = [];
-						var oldValue = (returnTab[cible][effect[TOOL_EFFECT_TYPE]][turnNumber] === null) ? 0 : returnTab[cible][effect[TOOL_EFFECT_TYPE]][turnNumber];
-						returnTab[cible][effect[TOOL_EFFECT_TYPE]][turnNumber] = oldValue + value;
-						
-						if(stealLife) {
-							if(returnTab[caster] === null) returnTab[caster] = [];
-							if(returnTab[caster][EFFECT_HEAL] === null) returnTab[caster][EFFECT_HEAL] = [];
-							oldValue = (returnTab[caster][EFFECT_HEAL][0] === null) ? 0 : returnTab[caster][EFFECT_HEAL][0];
-							returnTab[caster][EFFECT_HEAL][0] = oldValue + stealLife;
-						}
-						
-						if(damageReturn) {
-							if(returnTab[caster] === null) returnTab[caster] = [];
-							if(returnTab[caster][EFFECT_DAMAGE] === null) returnTab[caster][EFFECT_DAMAGE] = [];
-							oldValue = (returnTab[caster][EFFECT_DAMAGE][0] === null) ? 0 : returnTab[caster][EFFECT_DAMAGE][0];
-							returnTab[caster][EFFECT_DAMAGE][0] = oldValue + damageReturn;
-						}
-						
-						if(degatNova) {
-							if(returnTab[caster] === null) returnTab[caster] = [];
-							if(returnTab[caster][EFFECT_NOVA_DAMAGE] === null) returnTab[caster][EFFECT_NOVA_DAMAGE] = [];
-							oldValue = (returnTab[caster][EFFECT_NOVA_DAMAGE][0] === null) ? 0 : returnTab[caster][EFFECT_NOVA_DAMAGE][1];
-							returnTab[caster][EFFECT_NOVA_DAMAGE][0] = oldValue + degatNova;
-						}
-					} else { // IS_SPECIAL
-						if (effect[TOOL_EFFECT_TYPE] == EFFECT_KILL) {
-							if (returnTab[cible] == null) returnTab[cible] = [];
-							if (returnTab[cible][EFFECT_DAMAGE] == null) returnTab[cible][EFFECT_DAMAGE] = [];
-							returnTab[cible][EFFECT_DAMAGE][0] = getLife(cible);
-						}
-					}
+				if(degatNova) {
+					if(returnTab[cible] === null) returnTab[cible] = [];
+					if(returnTab[cible][EFFECT_NOVA_DAMAGE] === null) returnTab[cible][EFFECT_NOVA_DAMAGE] = [];
+					oldValue = (returnTab[cible][EFFECT_NOVA_DAMAGE][0] === null) ? 0 : returnTab[cible][EFFECT_NOVA_DAMAGE][0];
+					returnTab[cible][EFFECT_NOVA_DAMAGE][0] = oldValue + degatNova;
+				}
+			} else { // IS_SPECIAL
+				if (effect[TOOL_EFFECT_TYPE] == EFFECT_KILL) {
+					if (returnTab[cible] == null) returnTab[cible] = [];
+					if (returnTab[cible][EFFECT_DAMAGE] == null) returnTab[cible][EFFECT_DAMAGE] = [];
+					returnTab[cible][EFFECT_DAMAGE][0] = getLife(cible);
 				}
 			}
 		}
@@ -188,18 +169,19 @@ function getRealValue(effect, leek, value) {
 /**
  * Retourne les leeks se trouvant dans une zone d'action de l'item tool  
  */
-function getCibles(tool, cellVise) { // leek se trouvant dans la L'AOE de l'arme
+function getCibles(tool, cellVise){ // leek se trouvant dans la L'AOE de l'arme
 	var from, orientation;
 	if(typeOf(cellVise) == TYPE_ARRAY){
 		from = cellVise['from'];
 		orientation = cellVise['orientation'];
 		cellVise = cellVise['cell'];
-		if(!(cellVise !== null && orientation && from !== null)) debugE("getTargetEffect : Erreur dans le paramètre 'cellVise'");
+		if(!(cellVise !== null && orientation != null && from !== null)) debugE("getTargetEffect : Erreur dans le paramètre 'cellVise' : " + cellVise + " orientation : " + orientation + " from " + from);
 	}
 	var area = ALL_INGAME_TOOLS[tool][TOOL_AOE_TYPE];
 	var cell_AOE = (area == AREA_LASER_LINE) ? getAreaLine(tool, from, orientation) : 
 					(area == AREA_POINT) ? [cellVise] : getEffectiveArea(tool, cellVise);
 					
+	
 	var cibles = [];
 	for(var cell in cell_AOE) {
 		var leek = getLeekOnCell(cell);
@@ -275,14 +257,21 @@ function getValueOfTargetEffect(aTargetEffect) {
 						coeffReturned += infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * bonus; // normalement c'est toujours sur des alliés donc je mets pas de controle sur la team
 					} else {
 						// Par defaut
+						
 						value = (isAlreadyShackle(leek, effect)) ? 0 : value;
 						var coeffNbTurn = turn == 0 ? 1 : sqrt(turn);
 						var coeffTeam = isAlly(leek) ? 1 : -1;
 						var coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
 						coeffReturned += coeffNbTurn * coeffTeam * coeffHealthy * infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * value;
+						
 					}
 				} else { // IS_SPECIAL
 					//TODO : faire une fonction spéciale pour l'inversion, ...
+					if (effect == EFFECT_KILL) {
+						var coeffTeam = isAlly(leek) ? 1 : -1;
+						var coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
+						coeffReturned +=  coeffTeam * coeffHealthy * infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * value;
+					}
 				}
 			}
 		}
