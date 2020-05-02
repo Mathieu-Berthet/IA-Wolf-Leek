@@ -16,9 +16,9 @@ setBoostCoeff();
 
 ERROR_TOOLS = [];
 
-debugP("SCORE :");
-for (var cle: var val in SCORE) {
-	debugP(getName(cle) + " => " + val);
+debugP("SCORE_DAMAGE :");
+for (var leek: var effects in COEFF_LEEK_EFFECT) {
+	debugP(getName(leek) + " => " + effects[EFFECT_DAMAGE]);
 }
 debugP("");
 

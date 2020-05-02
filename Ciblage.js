@@ -2,9 +2,6 @@ include("GLOBALS");
 include("Debug");
 
 
-
-// TODO: Mettre à jour avec les autres variables COEFF_*
-
 COEFF_LEEK_EFFECT = (function (){
 		var tab = [];
 		var leeks = getAliveAllies() + getAliveEnemies();
@@ -19,7 +16,7 @@ COEFF_LEEK_EFFECT = (function (){
 
 
 
-// SCORE_RESISTANCE 
+// SCORE_RESISTANCE
 (function () {
 	var leeks = getAliveAllies();
 	for(var leek in leeks) {
@@ -70,15 +67,15 @@ function setBoostCoeff() { // Méthode du nombre de puce
 						+ compteurPuceEffect(tools, EFFECT_BUFF_AGILITY)
 						+ compteurPuceEffect(tools, EFFECT_BUFF_TP)
 						+ compteurPuceEffect(tools, EFFECT_BUFF_MP);
-						
+
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_STRENGTH] = nbDamageTool == 0 ? 0 : sqrt(nbDamageTool);
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_WISDOM] = nbHealTool == 0 ? 0 : sqrt(nbHealTool);
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_RESISTANCE] = nbResiTool == 0 ? 0 : sqrt(nbResiTool);
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_AGILITY] = 1 + (nbReturnDamageTool == 0 ? 0 : sqrt(nbReturnDamageTool)) + (nbScienceTool == 0 ? 0 : sqrt(nbScienceTool));
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_TP] = 1.7;
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_MP] = 1.7;
-		
-		
+
+
 		if(isSummon(allie)) {
 			for (var cle : var val in COEFF_LEEK_EFFECT[allie]) {
 				if (inArray([EFFECT_BUFF_STRENGTH, EFFECT_BUFF_RESISTANCE, EFFECT_BUFF_WISDOM, EFFECT_BUFF_AGILITY, EFFECT_BUFF_TP, EFFECT_BUFF_MP], cle)) {
@@ -128,7 +125,7 @@ function getOpponent(enemies) {
 				degatPoisonPris -= effect[1];
 			}
 		}
-		if (getCellDistance(getCell(), getCell(enemy)) < 8) 
+		if (getCellDistance(getCell(), getCell(enemy)) < 8)
 		{
 			coeffDangereux *= 3;
 		}
@@ -153,7 +150,7 @@ function getOpponent(enemies) {
 
 	var score = [];
 	getEchantillonCentre(SCORE, dangerousEnemies);
-	
+
 	for (var allie in getAliveAllies())
 	{/*
 		strength = getStrength(allie);

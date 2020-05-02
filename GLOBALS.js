@@ -22,17 +22,17 @@ function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des 
 	var leeks = getAliveAllies()+ getAliveEnemies();
 	for (var leek in leeks) {
 		tab[leek] = [
-			ID 			 : leek, 
-			ABSOLUTE_SHIELD : getAbsoluteShield(leek), 
-			RELATIVE_SHIELD : getRelativeShield(leek),  
-			STRENGTH		 : max(0,getStrength(leek)), 
-			DAMAGE_RETURN	 : getDamageReturn(leek), 
-			MAGIC		 : max(0,getMagic(leek)), 
-			PT			 : getTP(leek), 
-			MP			 : getMP(leek), 
-			CELL			 : getCell(leek), 
-			LIFE			 : getLife(leek), 
-			MAX_LIFE		 : getTotalLife(leek), 
+			ID 			 : leek,
+			ABSOLUTE_SHIELD : getAbsoluteShield(leek),
+			RELATIVE_SHIELD : getRelativeShield(leek),
+			STRENGTH		 : max(0,getStrength(leek)),
+			DAMAGE_RETURN	 : getDamageReturn(leek),
+			MAGIC		 : max(0,getMagic(leek)),
+			PT			 : getTP(leek),
+			MP			 : getMP(leek),
+			CELL			 : getCell(leek),
+			LIFE			 : getLife(leek),
+			MAX_LIFE		 : getTotalLife(leek),
 			SAGESSE		 : getWisdom(leek)
 		];
 	}
@@ -43,29 +43,7 @@ updateInfoLeeks();
 
 global COEFF_LEEK_EFFECT;
 
-// --------------------------- Les fonction suivante sont à supprimer en même temps que getHealValue, ... 
-
-global SCORE; //TODO: faire une fonction plus précise  <= ok fait par ray dans le ciblage
-SCORE = (function () {
-		var tab = [];
-		var leeks = getAliveAllies() + getAliveEnemies();
-		for (var leek in leeks) {
-			tab[leek] = (isSummon(leek)) ? 0.5 : 1;
-		}
-		return tab;
-})();
-
-
-global SCORE_HEAL; //TODO: faire une fonction plus précise
-SCORE_HEAL = (function () {
-		var tab = [];
-		var leeks = getAliveAllies() + getAliveEnemies();
-		for (var leek in leeks) {
-			tab[leek] = (isSummon(leek)) ? 0.5 : 1;
-		}
-		return tab;
-})();
-
+// --------------------------- A Supprimer un fois que les effects "Tactic" seront pris en compte dans le fichier Utils.js  ...
 
 global SCORE_TACTIC;
 SCORE_TACTIC = (function() {
@@ -77,47 +55,13 @@ SCORE_TACTIC = (function() {
 	return tab;
 })();
 
-
-global SCORE_RESISTANCE;
-SCORE_RESISTANCE = (function () {
-	var tab = [];
-	var leeks = getAliveAllies();
-	for(var leek in leeks) {
-		if(getFightType() == FIGHT_TYPE_SOLO) {
-			var ennemy = getNearestEnemy();
-			if(isSummon(ennemy)) ennemy = getSummoner(ennemy);
-			if(getMagic(ennemy) >= 300 && getStrength(ennemy) < 100) {
-				tab[leek] =(isSummon(leek)) ? 0 : 0.2;
-			} else {
-				tab[leek] =(isSummon(leek)) ? 0.4 : 1;
-			}
-		} else {
-			tab[leek] =(isSummon(leek)) ? 0.2 : 1;
-		}
-	}
-	return tab;
-})();
-
-
-global SCORE_BOOST;
-SCORE_BOOST = (function ()
-{
-	var tab = [];
-	var leeks = getAliveAllies();
-	for(var leek in leeks)
-	{
-		tab[leek] =(isSummon(leek)) ? 0.5 : 1;
-	}
-	return tab;
-})();
-
-
 // ---------------------------------------------------------------------------
 
 
 //informations concernant une action
 global CELL_DEPLACE=0, CELL_VISE=1, VALEUR=2, CHIP_WEAPON=3, NB_TIR=4, PT_USE=5, EFFECT=6, CALLBACK = 7, PARAM = 8;
 
+// orientation pour le laser
 global NE_laser = 0;
 global SO_laser = 1;
 global NO_laser = 2;
@@ -130,6 +74,7 @@ global MIN = 1, MAX = 2, TARGETS = 4;
 
 global MOYEN = 3;
 
+// Permet de ne pas se faire prendre sois même dans l'AOE
 global MIN_RANGE = (function () {
 	var min_range = [];
 	for (var i=1; i< NUMBER_OF_INGAME_ITEMS; i++) {
@@ -139,7 +84,7 @@ global MIN_RANGE = (function () {
 	min_range[CHIP_TOXIN] = 3;
 	min_range[CHIP_SOPORIFIC] = 4;
 	min_range[WEAPON_GAZOR] = 4;
-  	min_range[CHIP_PLAGUE] = 4;
+  min_range[CHIP_PLAGUE] = 4;
 	return @min_range;
 })();
 
@@ -151,7 +96,8 @@ global MAX_RANGE = (function () {
 	return @max_range;
 })();
 
-
+// Permet de ne pas utiliser une arme / puce si la valeur est trop faible
+// Note : le contrôle sur la vatiable MINIMUM_TO_USE n'est pas fait dans tout les fichiers
 global MINIMUM_TO_USE = (function(){
 	var tab = [];
 	tab[CHIP_REGENERATION] = 1 * (1 + getWisdom()/100) * getChipEffects(CHIP_REGENERATION)[0][MIN];
@@ -161,6 +107,9 @@ global MINIMUM_TO_USE = (function(){
 	return tab;
 })();
 
+
+// permet de ne pas utiliser une arme / chip sur une entitée précise
+// Note : le contrôle sur la vatiable NOT_USE_ON n'est pas fait dans tout les fichiers
 global NOT_USE_ON;
 NOT_USE_ON = (function() {
 	var tab = [];
@@ -179,6 +128,7 @@ NOT_USE_ON = (function() {
 	return tab;
 })();
 
+// compte le nombre d'entitées de type ENTITY_LEEK
 function countLeekAllie() {
 	var cpt = 0;
 	for(var leek in getAliveAllies()) {
@@ -199,9 +149,9 @@ global _RESU_PRIORITY = [
 
 global LEEK_VALUE = 3;
 global TERRITOIRE_PARAM;
-TERRITOIRE_PARAM = (function() {  // j'ai mis les valeurs un peu au pifomètre 
+TERRITOIRE_PARAM = (function() {  // j'ai mis les valeurs un peu au pifomètre
 	var tab = [];
-	for(var leek in getAliveAllies()+getAliveEnemies()) { 
+	for(var leek in getAliveAllies()+getAliveEnemies()) {
 		if (getType(leek) == ENTITY_LEEK) { // évidemment il faudrait prendre en compte les lvl des poireaux
 			tab[leek] = [MAX : 5, MIN : 9, LEEK_VALUE : 10]; // Les scores Max sont à courte distance
 		}
@@ -216,7 +166,8 @@ TERRITOIRE_PARAM = (function() {  // j'ai mis les valeurs un peu au pifomètre
 })();
 
 
-global 	CHARACTERISTIC_LIFE = 'LIFE',
+global
+		CHARACTERISTIC_LIFE = 'LIFE',
 		CHARACTERISTIC_STRENGTH = 'STRENGTH',
 		CHARACTERISTIC_WISDOM = 'WISDOM',
 		CHARACTERISTIC_AGILITY = 'AGILITY',
@@ -226,33 +177,37 @@ global 	CHARACTERISTIC_LIFE = 'LIFE',
 		CHARACTERISTIC_FREQUENCY = 'FREQUENCY',
 		CHARACTERISTIC_MOVEMENT = 'MOVEMENT',
 		CHARACTERISTIC_TURN_POINT = 'TURN_POINT';
-		
-global	COEFF_EFFECT = 'COEFF_EFFECT',
+
+global
+		COEFF_EFFECT = 'COEFF_EFFECT',
 		BOOSTED_BY = 'BOOSTED_BY',
 		IS_RELATIF = 'IS_RELATIF',
 		IS_SPECIAL = 'IS_SPECIAL',
 		IS_HEALTHY = 'IS_HEALTHY',
 		INTERACT_WITH = 'INTERACT_WITH';
-		
-global	INTERACT_SHIELD = 'INTERACT_SHIELD',
+
+global
+		INTERACT_SHIELD = 'INTERACT_SHIELD',
 		INTERACT_STEAL_LIFE = 'INTERACT_STEAL_LIFE',
 		INTERACT_RETURN_DAMAGE = 'INTERACT_RETURN_DAMAGE',
 		INTERACT_NOVA_DAMAGE = 'INTERACT_NOVA_DAMAGE';
-		
 
 
-/** Tableau de la forme : 
+
+/** Tableau de la forme :
  * 	ALL_EFFECTS = [
- *		COEFF_EFFECT : aNumber
- *		BOOSTED_BY : aCaracteristic
- *		IS_RELATIF : Boolean
- *		IS_SPECIAL : Boolean
- *		IS_HEALTHY : Boolean
- *		INTERACT_WITH : [
- *			INTERACT_SHIELD : Boolean
- *			INTERACT_STEAL_LIFE : Boolean
- * 			INTERACT_RETURN_DAMAGE : Boolean 
- *			INTERACT_NOVA_DAMAGE : Boolean / aNumber (en %) 
+ *		EFFECT_ID : [
+ *			COEFF_EFFECT : aNumber
+ *			BOOSTED_BY : aCaracteristic
+ *			IS_RELATIF : Boolean
+ *			IS_SPECIAL : Boolean
+ *			IS_HEALTHY : Boolean
+ *			INTERACT_WITH : [
+ *				INTERACT_SHIELD : Boolean
+ *				INTERACT_STEAL_LIFE : Boolean
+ * 				INTERACT_RETURN_DAMAGE : Boolean
+ *				INTERACT_NOVA_DAMAGE : Boolean / aNumber (en %)
+ *			]
  *		]
  *	]
  *
@@ -277,7 +232,7 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : CHARACTERISTIC_MAGIC,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
-		IS_HEALTHY : false, 
+		IS_HEALTHY : false,
 		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
@@ -297,7 +252,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	], 
+	],
 	EFFECT_LIFE_DAMAGE : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : CHARACTERISTIC_LIFE,
@@ -350,7 +305,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	], 
+	],
 	EFFECT_SHACKLE_MAGIC : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : CHARACTERISTIC_MAGIC,
@@ -363,7 +318,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	], 
+	],
 	// EFFECT BUFF
 	EFFECT_BUFF_TP : [
 		COEFF_EFFECT : 80,
@@ -416,7 +371,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	], 
+	],
 	EFFECT_BUFF_RESISTANCE : [
 		COEFF_EFFECT : 0.7,
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
@@ -429,7 +384,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	], 
+	],
 	EFFECT_BUFF_WISDOM : [
 		COEFF_EFFECT : 0.7,
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
@@ -443,7 +398,7 @@ global ALL_EFFECTS = [
 			INTERACT_NOVA_DAMAGE : false
 		]
 	],
-	 
+
 	EFFECT_AFTEREFFECT : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
@@ -470,7 +425,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false,
 		]
-	], 
+	],
 	EFFECT_BOOST_MAX_LIFE : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : CHARACTERISTIC_WISDOM,
@@ -483,7 +438,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false,
 		]
-	], 
+	],
 	// RESISTANCE
 	EFFECT_RELATIVE_SHIELD : [
 		COEFF_EFFECT : 3,
@@ -497,7 +452,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	],  
+	],
 	EFFECT_ABSOLUTE_SHIELD : [
 		COEFF_EFFECT : 3,
 		BOOSTED_BY : CHARACTERISTIC_RESISTANCE,
@@ -510,7 +465,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	], 
+	],
 	EFFECT_DAMAGE_RETURN : [
 		COEFF_EFFECT : 3,
 		BOOSTED_BY : CHARACTERISTIC_AGILITY,
@@ -536,7 +491,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false,
 		]
-	], 
+	],
 	EFFECT_STEAL_ABSOLUTE_SHIELD : [
 		COEFF_EFFECT : 3,
 		BOOSTED_BY : null,
@@ -549,7 +504,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	], 
+	],
 	EFFECT_VULNERABILITY : [
 		COEFF_EFFECT : 3,
 		BOOSTED_BY : null,
@@ -563,8 +518,8 @@ global ALL_EFFECTS = [
 			INTERACT_NOVA_DAMAGE : false
 		]
 	],
-	
-	// EFFET SPECIAUX 
+
+	// EFFET SPECIAUX
 	EFFECT_SUMMON : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : null,
@@ -629,7 +584,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	], 
+	],
 	EFFECT_RESURRECT : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : null,
@@ -655,12 +610,12 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	], 
-	
+	],
+
 	// EFFETS PASSIF
-	// Pour l'instant l'IA ne les prends pas en compte les effets passif 
+	// Pour l'instant l'IA ne les prends pas en compte les effets passif
 	// Mettre un EFFET dans le boosted by ?
-	// Je mets is_special à 1 pour l'intant => faudrait peut être mets un is_passif 
+	// Je mets is_special à 1 pour l'intant => faudrait peut être mets un is_passif
 	EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD : [
 		COEFF_EFFECT : 0,
 		BOOSTED_BY : null,
@@ -713,7 +668,7 @@ global ALL_EFFECTS = [
 			INTERACT_NOVA_DAMAGE : false
 		]
 	],
-	
+
 	// EFFECT_RAW
 	EFFECT_RAW_ABSOLUTE_SHIELD : [
 		COEFF_EFFECT : 3,
@@ -848,7 +803,7 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		var AllShield = effRelaShield + effectShield + effectRenvoie + effectStealShield + effectVulnerability;
 
 		//Pour les soins
-		var effectSoin = getValeurEffect(Tools[i],EFFECT_HEAL, ME,"moy"); // Prend en compte l'inversion 
+		var effectSoin = getValeurEffect(Tools[i],EFFECT_HEAL, ME,"moy"); // Prend en compte l'inversion
 		var effectBoostLife = getValeurEffect(Tools[i],EFFECT_BOOST_MAX_LIFE, ME,"moy");
 		var AllSoin = effectSoin + effectBoostLife;
 
@@ -989,10 +944,10 @@ if ( getTurn() == 1 ) // je n'ai pas ultra compris l'idée des globales fonction
 	create_all_tools_tab() ;
 	//debugEP( getOperations()-op_ordo ) ;
 	//debugEP( ALL_INGAME_TOOLS ) ;
-	
-	
-	
-	
+
+
+
+
 	// Modification pour le EFFECT_STEAL_ABSOLUTE_SHIELD
 	// J'ai pas tout compris sur comment marchait le effets STEAL_* mais si on change l'effet par EFFECT_RAW_ABSOLUTE_SHIELD et que l'on ajoute le modifier multiplied by targets on aura le même résultat (et l'IA devrait marcher)
 	// cf https://leekwars.com/forum/category-3/topic-9714

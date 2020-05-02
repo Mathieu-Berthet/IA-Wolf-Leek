@@ -23,9 +23,9 @@ ERROR_TOOLS = [];
 getOpponent(getAliveEnemies());
 SetupAll();
 
-debugP("SCORE :");
-for (var cle: var val in SCORE) {
-	debugP(getName(cle) + " => " + val);
+debugP("SCORE_DAMAGE :");
+for (var leek: var effects in COEFF_LEEK_EFFECT) {
+	debugP(getName(leek) + " => " + effects[EFFECT_DAMAGE]);
 }
 debugP("");
 
@@ -49,14 +49,13 @@ while (continu) { // Pour l'instant on ne fait qu'une action
 	var combo = getBestCombo(actions, getTP());
 	//debugP(combo);
 	if(combo != []) {
-		var action = getActionFromCombo[ORDONNANCEMENT_LIBERATION_FIRST](combo); // ORDONNANCEMENT_LIBERATION_FIRST -> ORDONNANCEMENT_SCIENCE -> ORDONNANCEMENT_DEFAULT -> ORDONNANCEMENT_SUMMON_LAST 
+		var action = getActionFromCombo[ORDONNANCEMENT_LIBERATION_FIRST](combo); // ORDONNANCEMENT_LIBERATION_FIRST -> ORDONNANCEMENT_SCIENCE -> ORDONNANCEMENT_DEFAULT -> ORDONNANCEMENT_SUMMON_LAST
 		for(var i = 1; i <= action[4]; i++){
 			push(COMBO, action[3]);
 		}
 		var isUseSucess = doAction(action);
 		if(!isUseSucess) {
 			debugEP('Action non effectué : ' + action + '\n Attention à la boucle infinie');
-			// TODO : mettre en place un mécanisme pour ne pas refaire la même action
 			ERROR_TOOLS[action[CHIP_WEAPON]] = true;
 		}
 	} else {
