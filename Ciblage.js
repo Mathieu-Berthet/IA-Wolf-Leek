@@ -149,7 +149,7 @@ function getOpponent(enemies) {
 	}
 
 	var score = [];
-	getEchantillonCentre(SCORE, dangerousEnemies);
+	getEchantillonCentre(score, dangerousEnemies);
 
 	for (var allie in getAliveAllies())
 	{/*
@@ -193,11 +193,11 @@ function getEchantillonCentre(@resultat, tab) {
 	var nb = count(tab);
 	var ecartType;
 
-    for (var x in tab) moy += x;
-    moy /= nb;
+	for (var x in tab) moy += x;
+	moy /= nb;
 
-    var somme2 = 0;
-    for (var x in tab) somme2 += (x - moy) ** 2;
+	var somme2 = 0;
+	for (var x in tab) somme2 += (x - moy) ** 2;
 
 	if(nb>1) {
 		var s2prim = somme2 / (nb - 1);
@@ -205,12 +205,12 @@ function getEchantillonCentre(@resultat, tab) {
 	} else {
 		ecartType = 0;
 	}
-    debugP("ecart-type = " + ecartType);
+	debugP("ecart-type = " + ecartType);
 	for(var cle : var valeur in tab) {
 		resultat[cle] = (ecartType==0) ? 1 : ((valeur - moy) / ecartType) + 1;
 		if (resultat[cle] <= 0) {
 			// on remet le résultat en positif, sinon ça risque de fausser les résultats
 			resultat[cle] = 0.1;
 		}
-    }
+	}
 }
