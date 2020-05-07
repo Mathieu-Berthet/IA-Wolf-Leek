@@ -52,7 +52,9 @@ function CellsToUseTool (tool, cellVisee, @allCells) {
 	}
 	if (inLine) {
 		for (var i = mini; i <= maxi ; i++) {
-			allCells = allCells + _initInLineCell[cellVisee][i];
+			if(_initInLineCell[cellVisee][i] !== null) {
+				allCells = allCells + _initInLineCell[cellVisee][i];
+			}
 		}
 	}
 }
@@ -164,7 +166,7 @@ function initialisationInLineCell() {
 					LOSNE = false;
 					LOSSE = false;
 				}
-				while ((LOSNE || LOSSO || LOSNO || LOSSE) && x <= 12) {
+				while ((LOSNE || LOSSO || LOSNO || LOSSE) && x <= 16) { // 16 : portée maximal pour l'inversion
 					var card = 0;
 					if (LOSNE) {
 						cell=i+x*NE;

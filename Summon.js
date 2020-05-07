@@ -115,6 +115,8 @@ function summonBulb(CHIP, IA, ennemie, @cellsAccessible) {
 		}
 		var code_return = summon(param[0], cellOuSummon, param[1]);
   	/* Mise à jour des variables globales pour pouvoir booster et ne pas kill le bulbe */
+		var bulbe = getLeekOnCell(cellOuSummon);
+		addCoeffEffectBulbe(bulbe);
 		updateInfoLeeks();
 		getOpponent(getAliveEnemies());
 		setBoostCoeff();
@@ -124,6 +126,16 @@ function summonBulb(CHIP, IA, ennemie, @cellsAccessible) {
   return tir;
 }
 
+/**
+ * initialise tout les coefficients des effets pour le bulbe
+ * 0.5 par défaut
+ */
+function addCoeffEffectBulbe(bulbe) {
+	COEFF_LEEK_EFFECT[bulbe] = [];
+	for (var effect : var value in ALL_EFFECTS) {
+		COEFF_LEEK_EFFECT[bulbe][effect] = 0.5;
+	}  
+}
 
 //Si vous voyez d'autres situations à distinguer, dites le, j'en vois plus pour l'instant
 function getBulbValue(CHIP, ennemie) {

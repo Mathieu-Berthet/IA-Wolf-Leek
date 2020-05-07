@@ -43,7 +43,7 @@ function getAreaLine(tool, from, orientation) {
 
 
 // retourne les cellules qui seront affectée si l'arme est utilisée sur la cell
-// /!\ Ne fonction que pour les AOE !!! Ne pas utiliser pour les armes en ligne !!!
+// /!\ Ne fonctionne que pour les AOE !!! Ne pas utiliser pour les armes en ligne !!!
 function getEffectiveArea(arme, cell) {
 	var typeArea = ALL_INGAME_TOOLS[arme][TOOL_AOE_TYPE] ;
 	var tailleAOE;

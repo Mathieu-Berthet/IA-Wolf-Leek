@@ -12,6 +12,7 @@ include("Debug");
 
 
 function IA_Collective() {
+	ME = getLeek();
 	var bulb_attack_tools = [] ;
 	var bulb_shield_tools = [] ;
 	var bulb_heal_tools = [] ;
