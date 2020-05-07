@@ -33,10 +33,10 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 		for(var cible in targets) {
 			if (!effect[IS_SPECIAL]) {
 				var coeffAOE;
-				if (area == AREA_POINT || area == AREA_LASER_LINE || cellVise === null) {
+				if (effect[TOOL_MODIFIER_ON_CASTER] || inArray([AREA_POINT, AREA_LASER_LINE], area) || cellVise === null) {
 					coeffAOE = 1;
 				} else {
-					var distance = getDistance(cellVise, getCell(cible));
+					var distance = getDistance(cellVise, INFO_LEEKS[cible][CELL]);
 					if(inArray([AREA_X_1, AREA_X_2, AREA_X_3], area)) {
 						distance /= sqrt(2);
 					}
