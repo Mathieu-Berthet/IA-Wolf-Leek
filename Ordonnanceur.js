@@ -66,32 +66,22 @@ getActionFromCombo[ORDONNANCEMENT_SCIENCE] = function(@combo) {
  */
 getActionFromCombo[ORDONNANCEMENT_DEBUFF] = function(@combo) {
 	var action = getActionInComboByTool(combo, CHIP_SOPORIFIC);
-	if(action[CELL_DEPLACE]==-1) {// -1 si utilisation de la puce sur soi
-		return action;
+	if (action != null) {
+		return @action;
 	}
 	action = getActionInComboByTool(combo, CHIP_TRANQUILIZER);
-	if(action[CELL_DEPLACE]==-1) {
-		return action;
+	if (action != null) {
+		return @action;
 	}
-
-	/*action = getActionInComboByTool(combo, CHIP_TRANQUILIZER);
-	if(action[CELL_DEPLACE]==-1) {
-		return action;
-	}
-
-	action = getActionInComboByTool(combo, CHIP_TRANQUILIZER);
-	if(action[CELL_DEPLACE]==-1) {
-		return action;
-	}*/
 
 	action = getActionInComboByTool(combo, CHIP_COVETOUSNESS);
-	if(action[CELL_DEPLACE]==-1) {
-		return action;
+	if (action != null) {
+		return @action;
 	}
 
 	action = getActionInComboByTool(combo, CHIP_VENOM);
-	if(action[CELL_DEPLACE]==-1) {
-		return action;
+	if (action != null) {
+		return @action;
 	}
 	//TODO: Rajouter des choses si besoin
 	return getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
