@@ -66,6 +66,7 @@ function resu() {
 	tir[NB_TIR] = 0; // 0 pour ne pas passer dans le useChipOnCell du doAction dans l'ordonnanceur
 	tir[CHIP_WEAPON] = CHIP_RESURRECTION;
 	tir[PT_USE] = getChipCost(CHIP_RESURRECTION);
+	tir[PM_USE] = 0; // Note:  Le calcul est fait dans la callback sans ordonanceur pour la résu, l'action sera faite en premier si on utilise l'ordancement NearestFirst
 	tir[EFFECT] = EFFECT_RESURRECT;
 	tir[CALLBACK] = (function(param) {
 		var code_return = resurrect(param[0], getSaferCell());
@@ -87,6 +88,7 @@ function summonBulb(CHIP, IA, ennemie, @cellsAccessible) {
 	tir[CHIP_WEAPON] = CHIP;
 	tir[NB_TIR] = 0; // 0 pour ne pas passer dans le useChipOnCell du doAction dans l'ordonnanceur
 	tir[PT_USE] = ALL_INGAME_TOOLS[CHIP][TOOL_PT_COST] ;
+	tir[PM_USE] = tir[CELL_DEPLACE] >= 0 ? cellsAccessible[tir[CELL_DEPLACE]] : 0;
 	tir[EFFECT] = EFFECT_SUMMON;
 	tir[CALLBACK] = (function(param) { //param = [chip, IA, cellsAccessible]
 		// appeler la fonction cache-cache si on veux se cacher avant le summon !
@@ -134,7 +136,7 @@ function addCoeffEffectBulbe(bulbe) {
 	COEFF_LEEK_EFFECT[bulbe] = [];
 	for (var effect : var value in ALL_EFFECTS) {
 		COEFF_LEEK_EFFECT[bulbe][effect] = 0.5;
-	}  
+	}
 }
 
 //Si vous voyez d'autres situations à distinguer, dites le, j'en vois plus pour l'instant

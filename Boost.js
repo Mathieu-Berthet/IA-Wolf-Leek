@@ -52,6 +52,7 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @bo
 				{
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
+					tir[PM_USE] = tir[CELL_DEPLACE] >= 0 ? cellsAccessible[tir[CELL_DEPLACE]] : 0;
 					tir[VALEUR] = o * valeur;
 					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE] ;
 					actions[nb_action] = tir;

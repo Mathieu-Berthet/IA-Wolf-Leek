@@ -5,10 +5,9 @@ include("Utils");
 
 /**
  *		Fonctions :
- *		- pvLost => Calcule le nombre de PV infligé pour une attaque (avec le renvoit de dégat et le vol de vie)
+ *		- getAttackAction => mets à jour le tableau des actions avec les actions d'attaque
  *		- attaqueTypePoint => remplit un tableau permettant la "meilleur" action pour une arme de type point
  *		- AttaqueTypeAOE => remplit un tableau permettant la "meilleur" action pour une arme de type AOE
- *		- getAttackAction => mets à jour le tableau des actions avec les actions d'attaque
  *		- attaqueTypeLigne => remplit un tableau permettant la "meilleur" action pour une arme de type laser
  *		- frappeDuDemon => remplit un tableau permettant la "meilleur" action pour la frappe du demon
  **/
@@ -75,6 +74,7 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack
 				for (var o = 1; o <= n; o++) {
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
+					tir[PM_USE] = tir[CELL_DEPLACE] >= 0 ? cellsAccessible[tir[CELL_DEPLACE]] : 0;
 					tir[VALEUR] = o * valeur;
 					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE];
 					tir[CALLBACK] = (function (params) {
@@ -249,7 +249,6 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
-
 
 
 

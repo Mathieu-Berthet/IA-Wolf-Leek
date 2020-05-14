@@ -27,6 +27,7 @@ function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax, @shield_
 				for (var o = 1; o <= n; o++) {
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
+					tir[PM_USE] = tir[CELL_DEPLACE] >= 0 ? cellsAccessible[tir[CELL_DEPLACE]] : 0;
 					tir[VALEUR] = o * valeur;
 					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE] ;
 					tir[CALLBACK] = updateInfoLeeks;/*(function (leek) {

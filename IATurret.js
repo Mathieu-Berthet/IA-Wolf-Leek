@@ -41,7 +41,7 @@ while (continu) {// Pour l'instant on ne fait qu'une action
 	//debugP(combo);
 	if(combo != []) {
 
-		var action = getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST](combo);
+		var action = getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONANCEMENT_START]](combo);
 		var isUseSucess = doAction(action);
 		if(!isUseSucess) {
 			debugEP('Action non effectué : ' + action + '\n Attention à la boucle infinie');

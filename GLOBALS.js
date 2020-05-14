@@ -59,7 +59,7 @@ SCORE_TACTIC = (function() {
 
 
 //informations concernant une action
-global CELL_DEPLACE=0, CELL_VISE=1, VALEUR=2, CHIP_WEAPON=3, NB_TIR=4, PT_USE=5, EFFECT=6, CALLBACK = 7, PARAM = 8;
+global CELL_DEPLACE=0, CELL_VISE=1, VALEUR=2, CHIP_WEAPON=3, NB_TIR=4, PT_USE=5, EFFECT=6, CALLBACK = 7, PARAM = 8; PM_USE = 9;
 
 // orientation pour le laser
 global NE_laser = 0;

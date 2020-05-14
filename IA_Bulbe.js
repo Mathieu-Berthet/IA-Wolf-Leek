@@ -40,7 +40,7 @@ function IA_Collective() {
 				useChip(action, ally);
 			}
 		}
-	} else {	// tous les autres bulbes	
+	} else {	// tous les autres bulbes
 		if (getScience() > 0) {
 			setBoostCoeff();
 		}
@@ -64,7 +64,7 @@ function IA_Collective() {
 			}
 			var combo = getBestCombo(actions, getTP());
 			if (combo != []) {
-				var action = getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
+				var action = getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONANCEMENT_START]]](combo);
 				var isUseSucess = doAction(action);
 				if(!isUseSucess) {
 					debugEP('Action non effectué : ' + action + '\n Attention à la boucle infinie');

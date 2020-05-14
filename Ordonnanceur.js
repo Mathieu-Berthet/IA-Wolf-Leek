@@ -2,14 +2,45 @@ include("GLOBALS");
 include("Debug");
 
 
-global ORDONNANCEMENT_BVF = 0; // Big Value First
-global ORDONNANCEMENT_SCIENCE = 1; //Spécial pour la science //Ne pas être un ordonnancement par defaut
-global ORDONNANCEMENT_SUMMON_FIRST = 2; // Summon les bulbes en premier
-global ORDONNANCEMENT_SUMMON_LAST = 3; // Summon les bulbes à la fin
-global ORDONNANCEMENT_DEBUFF = 4;
-global ORDONNANCEMENT_LIBERATION_FIRST = 5;
+global ORDONANCEMENT_START = -1;
 
-global ORDONNANCEMENT_DEFAULT = ORDONNANCEMENT_BVF;
+global ORDONNANCEMENT_BVF = 1; // Big Value First
+global ORDONNANCEMENT_SCIENCE = 2; //Spécial pour la science //Ne pas être un ordonnancement par defaut
+global ORDONNANCEMENT_SUMMON_FIRST = 3; // Summon les bulbes en premier
+global ORDONNANCEMENT_SUMMON_LAST = 4; // Summon les bulbes à la fin
+global ORDONNANCEMENT_DEBUFF = 5;
+global ORDONNANCEMENT_LIBERATION_FIRST = 6;
+global ORDONNANCEMENT_NEAREST_CELL_FIRST = 7;
+
+global ORDONNANCEMENT_DEFAULT = ORDONNANCEMENT_NEAREST_CELL_FIRST; // ORDONNANCEMENT_BVF ou bien ORDONNANCEMENT_NEAREST_CELL_FIRST
+
+/**
+ * Permet de spécifier un ordonancement différent suivant les entitées
+ * L'ordonnanceur dans la partie 'valeur' est appelé après celui qui est dans la partie 'key'
+ */
+global ORDONNANCEMENT_PERSONNALISE = [
+	ORDONANCEMENT_START : ORDONNANCEMENT_LIBERATION_FIRST,
+	ORDONNANCEMENT_LIBERATION_FIRST : ORDONNANCEMENT_SCIENCE,
+	ORDONNANCEMENT_SCIENCE : ORDONNANCEMENT_SUMMON_LAST,
+	ORDONNANCEMENT_SUMMON_LAST : ORDONNANCEMENT_NEAREST_CELL_FIRST
+]; // en 1er la libé puis les boost de science puis les actions en commançant par les plus proches et en fin les bulbes
+
+// Si on veut un ordre différent pour un poireau spécifique il suffit de changer le tableau
+if (getType() == ENTITY_LEEK) {
+	var Basileeek = 54897; // TODO: A adapter suivant les poireaux de chacun
+	if(getLeekID() == Basileeek && getFightType() == FIGHT_TYPE_SOLO) {
+		// TODO: ici c'est un poireau qui invoque des bulbes ; l'ordre idéal serait :
+		// de se buffer -> invoquer un bulbe -> buffer le bulbe -> lancer des vulnérabilités sur l'ennemis
+		ORDONNANCEMENT_PERSONNALISE = [
+			ORDONANCEMENT_START : ORDONNANCEMENT_SCIENCE,
+			ORDONNANCEMENT_SCIENCE : ORDONNANCEMENT_SUMMON_FIRST,
+			// TODO : mettre un ordonanceur 'Vulnérabilité_Last'
+			ORDONNANCEMENT_SUMMON_FIRST : ORDONNANCEMENT_NEAREST_CELL_FIRST
+		];
+	}
+}
+
+
 
 global getActionFromCombo = [];
 getActionFromCombo[ORDONNANCEMENT_BVF] = function(@combo) {
@@ -19,6 +50,18 @@ getActionFromCombo[ORDONNANCEMENT_BVF] = function(@combo) {
 		if (combo[i][VALEUR] > valeur) {
 			best = i;
 			valeur = combo[i][VALEUR];
+		}
+	}
+	return @combo[best];
+};
+
+getActionFromCombo[ORDONNANCEMENT_NEAREST_CELL_FIRST] = function(@combo) {
+	var best;
+	var valeur = 0;
+	for (var i = 0; i < count(combo); i++) {
+		if (combo[i][PM_USE] > valeur) {
+			best = i;
+			valeur = combo[i][PM_USE];
 		}
 	}
 	return @combo[best];
@@ -57,13 +100,15 @@ getActionFromCombo[ORDONNANCEMENT_SCIENCE] = function(@combo) {
 		}
 	}
 	//TODO: Rajouter des choses si besoin
-	return getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST](combo);
+	if (ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_SCIENCE]) {
+		return getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_SCIENCE]](combo);
+	} else {
+		return getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST](combo);
+	}
 };
 
 
-/**
- * Note : à priori ne fait rien car on ne peut pas lancer les debuffs sur soi même
- */
+
 getActionFromCombo[ORDONNANCEMENT_DEBUFF] = function(@combo) {
 	var action = getActionInComboByTool(combo, CHIP_SOPORIFIC);
 	if (action != null) {
@@ -84,7 +129,12 @@ getActionFromCombo[ORDONNANCEMENT_DEBUFF] = function(@combo) {
 		return @action;
 	}
 	//TODO: Rajouter des choses si besoin
-	return getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
+	if (ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_DEBUFF]) {
+		return getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_DEBUFF]](combo);
+	} else {
+		return getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
+	}
+
 };
 
 /**
@@ -100,7 +150,12 @@ getActionFromCombo[ORDONNANCEMENT_LIBERATION_FIRST] = function(@combo) {
 	if (action != null) {
 		return @action;
 	}
-	return @getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
+
+	if (ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_LIBERATION_FIRST]) {
+		return @getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_LIBERATION_FIRST]](combo);
+	} else {
+		return @getActionFromCombo[ORDONNANCEMENT_SCIENCE](combo);
+	}
 };
 
 
@@ -111,7 +166,12 @@ getActionFromCombo[ORDONNANCEMENT_SUMMON_FIRST] = function(@combo) {
 			//TODO: faire une règle de priorité entre plusieurs summon ?
 		}
 	}
-	return @getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
+
+	if (ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_SUMMON_FIRST]) {
+		return @getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_SUMMON_FIRST]](combo);
+	} else {
+		return @getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
+	}
 };
 
 getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST] = function(@combo) {
@@ -125,9 +185,12 @@ getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST] = function(@combo) {
 		}
 	}
 	if(count(nonSummonAction)) {
-		return @getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
+		if (ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_SUMMON_LAST]) {
+			return @getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_SUMMON_LAST]](combo);
+		} else {
+			return @getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
+		}
 	} else {
-		if(!count(summonAction)) debugWP("Actions Vide ???");
 		return @summonAction[0];
 	}
 };
@@ -224,7 +287,7 @@ function doAction(attack) {
 			}
 			if (code_return_callback !== null) code_return &= 0 < code_return_callback;
 		}
-		
+
 		return code_return;
 	} else {
 		return USE_FAILED;
