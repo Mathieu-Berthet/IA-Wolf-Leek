@@ -32,7 +32,6 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack
 	var c = 0;
 	var nb_action = count(actions);
 
-
 	// Calcul
 	for (var tool in attack_tools) {
 		if(ERROR_TOOLS[tool]) continue;
@@ -74,7 +73,7 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack
 				for (var o = 1; o <= n; o++) {
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
-					tir[PM_USE] = tir[CELL_DEPLACE] >= 0 ? cellsAccessible[tir[CELL_DEPLACE]] : 0;
+					tir[PM_USE] = (tir[CELL_DEPLACE] >= 0) ? cellsAccessible[tir[CELL_DEPLACE]] : 0;
 					tir[VALEUR] = o * valeur;
 					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE];
 					tir[CALLBACK] = (function (params) {
@@ -131,6 +130,7 @@ function attaqueTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			var oldPosition = INFO_LEEKS[ME][CELL];
 			INFO_LEEKS[ME][CELL] = cell[from]; // on simule le déplacement
 			var aTargetEffect = getTargetEffect(ME, tool, cellVise, true);
+			checkKill(aTargetEffect);
 			var valeur = getValueOfTargetEffect(aTargetEffect);
 			INFO_LEEKS[ME][CELL] = oldPosition;
 			if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell[from]] < distanceBestAction) {
@@ -175,6 +175,7 @@ function frappeDuDemon(toutEnnemis, @cellsAccessible) {
 						var oldPosition = INFO_LEEKS[ME][CELL];
 						INFO_LEEKS[ME][CELL] = cellsAccessible[j]; // on simule le déplacement
 						var aTargetEffect = getTargetEffect(ME, CHIP_DEVIL_STRIKE, j, true);
+						checkKill(aTargetEffect);
 						var valeur = getValueOfTargetEffect(aTargetEffect);
 						INFO_LEEKS[ME][CELL] = oldPosition;
 						if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[j] < distanceBestAction) {
@@ -231,6 +232,7 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 							var oldPosition = INFO_LEEKS[ME][CELL];
 							INFO_LEEKS[ME][CELL] = cell_deplace; // on simule le déplacement
 							var aTargetEffect = getTargetEffect(ME, tool, cell, true);
+							checkKill(aTargetEffect);
 							var valeur = getValueOfTargetEffect(aTargetEffect);
 							INFO_LEEKS[ME][CELL] = oldPosition;
 							if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {

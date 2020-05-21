@@ -13,6 +13,8 @@ include("Debug");
 
 function IA_Collective() {
 	ME = getLeek();
+	COEFF_LEEK_EFFECT[ME][EFFECT_BUFF_STRENGTH] = 0; // sinon avec after_effect c'est trop juste
+
 	var bulb_attack_tools = [] ;
 	var bulb_shield_tools = [] ;
 	var bulb_heal_tools = [] ;
@@ -64,7 +66,7 @@ function IA_Collective() {
 			}
 			var combo = getBestCombo(actions, getTP());
 			if (combo != []) {
-				var action = getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONANCEMENT_START]]](combo);
+				var action = getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONANCEMENT_START]](combo);
 				var isUseSucess = doAction(action);
 				if(!isUseSucess) {
 					debugEP('Action non effectué : ' + action + '\n Attention à la boucle infinie');

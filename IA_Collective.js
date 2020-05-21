@@ -30,9 +30,20 @@ for (var leek: var effects in COEFF_LEEK_EFFECT) {
 debugP("");
 
 //setBoostCoeff(); //A decommenter si votre poireau joue science
-var continu = true;
 
+if (inArray([FIGHT_TYPE_SOLO, FIGHT_TYPE_BATTLE_ROYALE], getFightType()) || getMagic() > 300 && getStrength()  < 200) {
+	USE_VIE_PREVISIONNEL = true; // Pour prendre en compte si une entité va mourir par le poison ()
+}
+
+
+var continu = true;
 while (continu) { // Pour l'instant on ne fait qu'une action
+
+	if(USE_VIE_PREVISIONNEL) {
+		setViePrevisionel();
+	}
+
+
 	var actions = [null]; // 1er élément à null pour le knapsack
 	var cellsAccessible = accessible(getCell(), getMP());
 	var toutEnnemis = getAliveEnemies();

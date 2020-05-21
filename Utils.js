@@ -270,9 +270,13 @@ function getValueOfTargetEffect(aTargetEffect) {
 				} else { // IS_SPECIAL
 					//TODO : faire une fonction spéciale pour l'inversion, ...
 					if (effect == EFFECT_KILL) {
-						var coeffTeam = isAlly(leek) ? 1 : -1;
-						var coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
-						coeffReturned +=  coeffTeam * coeffHealthy * infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * value;
+						if (!USE_VIE_PREVISIONNEL || INFO_LEEKS[leek][VIE_PREVISIONNEL] > 0) {
+							var coeffTeam = isAlly(leek) ? 1 : -1;
+							var coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
+							coeffReturned +=  coeffTeam * coeffHealthy * infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect] * value;
+						} else {
+							// L'entité meurt déjà par le poison, donc en rajouter ne va rien changer (mis a part consommer des pf pour rien)
+						}
 					}
 				}
 			}
@@ -358,27 +362,22 @@ function getTarget(tool, cell) {
 
 //--------------------------- vérification des cibles mortes -----------------------------------------------
 
-
 /**
- * Recupère les poisons / afterEffect qui devrait s'appliquer au moment du tour du joueur
- * //TODO : prendre en compte le augmentation par le vaccin ???
- * @return array [ Entity : diminution_de_vie]
- *
+ * Calcul la vie qu'aura une entitée au moment de son tour
+ * le résultat est setter dans la variable : INFO_LEEKS[entity][VIE_PREVISIONNEL]
  */
-function getEffectDiminutionLife() {
+function setViePrevisionel() {
 	var allEntities = getAliveAllies() + getAliveEnemies();
 	var turnOrder = getTurnOrder();
 	var nbEntities = count(turnOrder);
 	var myTurnOrder = getEntityTurnOrder();
 
-	var diminutionLife = [];
-
 	for(var entity in allEntities) {
 		var effects = getEffects(entity);
-		var diminution = 0;
+		var vie_previsionel = getLife(entity);
 		for(var effect in effects) {
-			if(inArray([EFFECT_POISON, EFFECT_AFTEREFFECT], effect[TYPE])) { // il me semble que c'est les 2 seuls qui se déroule sur plusieurs tours
-				// l'effect va retirer de la vie
+			if(inArray([EFFECT_POISON, EFFECT_AFTEREFFECT, EFFECT_HEAL], effect[TYPE])) {
+				// l'effect va modifier la vie
 				var ok = false;
 				if (effect[TURNS] > 1) {
 					ok = true;
@@ -386,25 +385,35 @@ function getEffectDiminutionLife() {
 					var caster = effect[CASTER_ID];
 					var leekTurn = ME;
 					var turn = myTurnOrder;
-					while (!inArray([caster, entity], leekTurn)) {
-						turn = (leekTurn+1) % nbEntities;
+					do {
+						turn = (turn + 1) % nbEntities;
 						leekTurn = turnOrder[turn];
-					}
+					} while (!inArray([caster, entity], leekTurn));
+
 					if (leekTurn == entity) {
 						ok = true;
 					} else ok = false;
 				}
 
-				if (ok) {
+				if (ok && vie_previsionel > 0) {
 					// l'effet va s'appliquer
-					diminution += effect[VALEUR];
+					if(effect[TYPE] == EFFECT_HEAL) {
+						var val = min(effect[VALUE], getTotalLife(entity) - vie_previsionel);
+						// debugP("heal : " + val);
+						vie_previsionel += val;
+					} else {
+						// debugP("poison : " + effect[VALUE]);
+						vie_previsionel -= effect[VALUE];
+					}
 				}
 
 			}
 		}
-		diminutionLife[entity] = diminution;
+		INFO_LEEKS[entity][VIE_PREVISIONNEL] = vie_previsionel;
+		if(vie_previsionel <= 0) {
+			debugCP("DEAD : " + getName(entity) + " => Il faudrait faire quelque chose pour le pas lui lancer des boosts autre que antidote et du heal", COLOR_RED);
+		}
 	}
-	return @diminutionLife;
 }
 
 
@@ -443,4 +452,38 @@ function checkKill(@aTargetEffect) {
 			aTargetEffect[leek] = [EFFECT_KILL : [0 : true]];
 		}
 	}
+}
+
+
+
+// ----------------------------------- trouver les cibles pour utiliser une arme -----------------------------------
+
+/**
+ * Détecte les cibles pour utiliser une armes / puces
+ * But : limiter les opérations pour ne pas faire les calculs sur toutes les entités
+ * TODO : Prendre en compte les cibles qui sont déjà morte (poison)
+ * TODO : mettre en place un cache en fonction du effect_target ? => on va l'appeler a chaque fois pour tout les tools
+ */
+function getCibleToUseTool(tool) {
+	var infoTool = ALL_INGAME_TOOLS[tool];
+	var effects = infoTool[TOOL_ATTACK_EFFECTS];
+	var cibles = [];
+	var allEntities = getAliveAllies() + getAliveEnemies();
+
+	var entitiesAffectees;
+	for(var effect in effects) {
+		entitiesAffectees = arrayFilter(allEntities, getFunctionToFilterTarget(effect, ME));
+
+		// on va re fitrer suivant le type de l'effet
+		if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][IS_HEALTHY] !== null && !effect[TOOL_MODIFIER_ON_CASTER]) { //
+			entitiesAffectees = arrayFilter(entitiesAffectees, ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][IS_HEALTHY] ? isAlly : isEnemy);
+		}
+
+		//TODO : rajouter une entité "fantome" pour les effects qui peuvent se jouer sur une case vide ? => glaive par exemple
+
+		for (var entity in entitiesAffectees) {
+			cibles[entity] = entity;
+		}
+	}
+	return cibles;
 }

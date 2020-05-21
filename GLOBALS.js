@@ -575,7 +575,7 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
-		IS_HEALTHY : true,
+		IS_HEALTHY : false,
 		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
@@ -614,7 +614,7 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
-		IS_HEALTHY : true,
+		IS_HEALTHY : false,
 		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,

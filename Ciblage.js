@@ -39,6 +39,29 @@ COEFF_LEEK_EFFECT = (function (){
 	}
 })();
 
+// EFFECT_KILL
+// TODO: à améliorer (notament en fonction des effets qui on été lancé)
+(function () {
+	var leeks = getAliveAllies() + getAliveEnemies();
+	for(var leek in leeks) {
+		var value;
+		if(getFightType() == FIGHT_TYPE_SOLO) {
+			if (getType() == ENTITY_LEEK) {
+				COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = 10000;
+			} else {
+				COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = max(100, getLife(leek));
+			}
+		} else {
+			 if (getType() == ENTITY_LEEK) {
+			 	COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = getTotalLife(leek);
+			 } else if (getType() == ENTITY_TURRET) {
+			 	COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = 10000;
+			 } else {
+			 	COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = max(100, getLife(leek));
+			 }
+		}
+	}
+})();
 
 
 
@@ -82,6 +105,12 @@ function setBoostCoeff() { // Méthode du nombre de puce
 					COEFF_LEEK_EFFECT[allie][cle] *= 0.7;
 				}
 			}
+
+			if (inArray([NAME_METALLIC_BULB, NAME_HEALER_BULB, NAME_PUNY_BULB, NAME_ROCKY_BULB], getName(allie))) {
+				// Avec des PT en plus ils ne vont pas faire grand chose de plus
+				COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_TP] = 0;
+			}
+
 		}
 	}
 }
@@ -183,9 +212,8 @@ function getOpponent(enemies) {
 
 /**
  * @auteur : Caneton
- * recentre les coefficients "sur 1"
+ * recentre les coefficients "sur 1" en suivant la "loi Normal"
  *
- * J'ai pas encore tester...
  * il faut au moins 2 elements dans le tableau
  */
 function getEchantillonCentre(@resultat, tab) {
