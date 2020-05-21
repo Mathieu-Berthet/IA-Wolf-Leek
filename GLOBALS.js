@@ -9,12 +9,12 @@ global ME; ME = getLeek();
 global PHRASE_A_DIRE = [];
 global STOP_ACTION;
 global ERROR_TOOLS;
-
+global USE_VIE_PREVISIONNEL = false; //TODO : vérification des kills ; mettre à true en solo ou si on joue poison
 global COMBO = [];
 
 global INFO_LEEKS = [];
 
-global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7, CELL = 8, LIFE = 9, MAX_LIFE = 10, SAGESSE = 11;
+global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7, CELL = 8, LIFE = 9, MAX_LIFE = 10, SAGESSE = 11, VIE_PREVISIONNEL = 99;;
 
 
 function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des constantes associées
@@ -59,7 +59,7 @@ SCORE_TACTIC = (function() {
 
 
 //informations concernant une action
-global CELL_DEPLACE=0, CELL_VISE=1, VALEUR=2, CHIP_WEAPON=3, NB_TIR=4, PT_USE=5, EFFECT=6, CALLBACK = 7, PARAM = 8; PM_USE = 9;
+global CELL_DEPLACE=0, CELL_VISE=1, VALEUR=2, CHIP_WEAPON=3, NB_TIR=4, PT_USE=5, EFFECT=6, CALLBACK = 7, PARAM = 8, PM_USE = 9;
 
 // orientation pour le laser
 global NE_laser = 0;
@@ -73,6 +73,17 @@ global TYPE = 0, VALUE = 1, CASTER_ID = 2, TURNS = 3, CRITICAL = 4, ITEM_ID = 5,
 global MIN = 1, MAX = 2, TARGETS = 4;
 
 global MOYEN = 3;
+
+global
+	NAME_METALLIC_BULB 	= "metallic_bulb",
+	NAME_HEALER_BULB 	= "healer_bulb",
+	NAME_PUNY_BULB 		= "puny_bulb",
+	NAME_LIGHTING_BULB 	= "lightning_bulb",
+	NAME_ROCKY_BULB 	= "rocky_bulb",
+	NAME_ICED_BULB 		= "iced_bulb",
+	NAME_FIRE_BULB 		= "fire_bulb",
+	NAME_WIZARD_BULB 	= "wizard_bulb";
+
 
 // Permet de ne pas se faire prendre sois même dans l'AOE
 global MIN_RANGE = (function () {

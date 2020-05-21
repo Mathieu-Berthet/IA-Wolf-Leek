@@ -65,7 +65,6 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 
 				var value = round(coeffMoyen * coeffCharacteristic * coeffAOE * coeffNbCible);
 
-
 				if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_SHIELD]) {
 					value = max(0, value * (1 - INFO_LEEKS[cible][RELATIVE_SHIELD] / 100) - INFO_LEEKS[cible][ABSOLUTE_SHIELD]);
 				}
@@ -153,10 +152,15 @@ function getCharacteristiqueFunction(characteristic) {
 	][characteristic];
 }
 
+
+/**
+ * Limite la valeur en fonction de l'effet et des caractéristiques de l'entité
+ */
 function getRealValue(effect, leek, value) {
   if(inArray([EFFECT_HEAL, EFFECT_NOVA_DAMAGE], effect)) {
     value = min(value, INFO_LEEKS[leek][MAX_LIFE] - INFO_LEEKS[leek][LIFE]);
   }
+
   // TODO : Rajouter d'autre effets si besoin;
   // Dans l'absolu faudrait rajouter EFFECT_DAMAGE mais IA ne met pas de 'bonus' si on tue un leek => on risquerait de ne pas tirer sur les ennemis si il leur reste 10pv
 
@@ -196,8 +200,7 @@ function getCibles(tool, cellVise){ // leek se trouvant dans la L'AOE de l'arme
 }
 
 /**
- *
- *
+ * fonction qui filtre les targets en fonction de l'effet
  */
 function getFunctionToFilterTarget(effect, caster) {
 	return (function (leek) {
@@ -229,8 +232,9 @@ function getFunctionToFilterTarget(effect, caster) {
 
 /**
  * @autor : Caneton
- *
- * aTargetEffect : array		| [LEEK : [EFFECT : [TURN : VALUE]]]
+ * Attribut un score à l'action
+ * @aTargetEffect : array		| [LEEK : [EFFECT : [TURN : VALUE]]]
+ * @return : nombre
  */
 function getValueOfTargetEffect(aTargetEffect) {
 	// on parcours les cibles & effect retourné par getTargetEffect
@@ -345,8 +349,98 @@ function isAlreadyShackle(leek, effect) {
 }
 
 
-// ---------------------------------------------------------------------
+// ---------------- fonction raccourci LW  ---------------------------------
 
 function getTarget(tool, cell) {
 	return (!ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON]) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
+}
+
+
+//--------------------------- vérification des cibles mortes -----------------------------------------------
+
+
+/**
+ * Recupère les poisons / afterEffect qui devrait s'appliquer au moment du tour du joueur
+ * //TODO : prendre en compte le augmentation par le vaccin ???
+ * @return array [ Entity : diminution_de_vie]
+ *
+ */
+function getEffectDiminutionLife() {
+	var allEntities = getAliveAllies() + getAliveEnemies();
+	var turnOrder = getTurnOrder();
+	var nbEntities = count(turnOrder);
+	var myTurnOrder = getEntityTurnOrder();
+
+	var diminutionLife = [];
+
+	for(var entity in allEntities) {
+		var effects = getEffects(entity);
+		var diminution = 0;
+		for(var effect in effects) {
+			if(inArray([EFFECT_POISON, EFFECT_AFTEREFFECT], effect[TYPE])) { // il me semble que c'est les 2 seuls qui se déroule sur plusieurs tours
+				// l'effect va retirer de la vie
+				var ok = false;
+				if (effect[TURNS] > 1) {
+					ok = true;
+				} else {
+					var caster = effect[CASTER_ID];
+					var leekTurn = ME;
+					var turn = myTurnOrder;
+					while (!inArray([caster, entity], leekTurn)) {
+						turn = (leekTurn+1) % nbEntities;
+						leekTurn = turnOrder[turn];
+					}
+					if (leekTurn == entity) {
+						ok = true;
+					} else ok = false;
+				}
+
+				if (ok) {
+					// l'effet va s'appliquer
+					diminution += effect[VALEUR];
+				}
+
+			}
+		}
+		diminutionLife[entity] = diminution;
+	}
+	return @diminutionLife;
+}
+
+
+
+/**
+ * Retourne le tableau d'order de jeu
+ * @return array [ turnNumber : Entity]
+ */
+function getTurnOrder() {
+	var allEntities = getAllies() + getEnemies();
+	var turnOrder = [];
+	for(var entity in allEntities) {
+		turnOrder[getEntityTurnOrder(entity)] = entity;
+	}
+	return @turnOrder;
+}
+
+/**
+ * a appeler après getTargetEffect pour remplacer les effets de dégats par EFFECT_KILL
+ * en fonction des coefficents on favorise le faite de tuer une cible
+ * peut faire un gain de PT car on peut avoir le même SCORE avec une éteincelle qu'avec une météorite
+ */
+function checkKill(@aTargetEffect) {
+	for (var leek : var effectLeek in aTargetEffect) {
+		var viePrevisionnel = USE_VIE_PREVISIONNEL ? INFO_LEEKS[leek][VIE_PREVISIONNEL] : INFO_LEEKS[leek][LIFE];
+		for (var effect : var turn_values in effectLeek) {
+			if (inArray([EFFECT_DAMAGE, EFFECT_POISON, EFFECT_AFTEREFFECT, EFFECT_LIFE_DAMAGE], effect)) {
+				for (var turn : var value in turn_values) {
+					viePrevisionnel -= value;
+				}
+			}
+		}
+
+		if (viePrevisionnel < - 50) { // on fait les calculs en fonction des valeurs moyennes des armes ; il faut donc se garder une petite marge
+			// on unset tout les effects et on remplace l'effet par EFFECT_KILL
+			aTargetEffect[leek] = [EFFECT_KILL : [0 : true]];
+		}
+	}
 }
