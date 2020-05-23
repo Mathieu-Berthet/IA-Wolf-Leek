@@ -14,7 +14,7 @@ global COMBO = [];
 
 global INFO_LEEKS = [];
 
-global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7, CELL = 8, LIFE = 9, MAX_LIFE = 10, SAGESSE = 11, VIE_PREVISIONNEL = 99;;
+global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7, CELL = 8, LIFE = 9, MAX_LIFE = 10, SAGESSE = 11, VIE_PREVISIONNEL = 99;
 
 
 function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des constantes associées
@@ -36,7 +36,7 @@ function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des 
 			SAGESSE		 : getWisdom(leek)
 		];
 	}
-	INFO_LEEKS = tab;
+	INFO_LEEKS = @tab;
 }
 
 updateInfoLeeks();
@@ -115,7 +115,7 @@ global MINIMUM_TO_USE = (function(){
 
 	//TODO: rajouter
 
-	return tab;
+	return @tab;
 })();
 
 
@@ -136,7 +136,7 @@ NOT_USE_ON = (function() {
 			}
 		}
 	}
-	return tab;
+	return @tab;
 })();
 
 // compte le nombre d'entitées de type ENTITY_LEEK
@@ -272,7 +272,7 @@ global ALL_EFFECTS = [
 		IS_HEALTHY : false,
 		INTERACT_WITH : [
 			INTERACT_SHIELD : true,
-			INTERACT_STEAL_LIFE : true,
+			INTERACT_STEAL_LIFE : false,
 			INTERACT_RETURN_DAMAGE : true,
 			INTERACT_NOVA_DAMAGE : 5
 		]
@@ -517,7 +517,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_VULNERABILITY : [
-		COEFF_EFFECT : 3,
+		COEFF_EFFECT : 12,
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
