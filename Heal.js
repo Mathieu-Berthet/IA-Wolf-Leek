@@ -129,7 +129,7 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 	var bestValeur = 0;
 	var distanceBestAction = 0;
 	for (var allie in allies) {
-		if ((ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_SUMMONS] && isSummon(allie)) || (ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_NON_SUMMONS] && !isSummon(allie))) {
+		//if ((ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_SUMMONS] && isSummon(allie)) || (ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_NON_SUMMONS] && !isSummon(allie))) {
 			if (!(MIN_RANGE[tool] != 0 && allie == ME)) {
 				if(!NOT_USE_ON[tool][allie]) {
 					cellAllie = getCell(allie);
@@ -156,7 +156,7 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 						}
 					}
 				}
-			}
+			//}
 		}
 	}
 	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
