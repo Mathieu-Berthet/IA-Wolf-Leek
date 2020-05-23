@@ -386,7 +386,7 @@ function setViePrevisionel() {
 					var leekTurn = ME;
 					var turn = myTurnOrder;
 					do {
-						turn = (turn + 1) % nbEntities;
+						turn = (turn + 1) % (nbEntities + 1);
 						leekTurn = turnOrder[turn];
 					} while (!inArray([caster, entity], leekTurn));
 
@@ -447,7 +447,7 @@ function checkKill(@aTargetEffect) {
 			}
 		}
 
-		if (viePrevisionnel < - 50) { // on fait les calculs en fonction des valeurs moyennes des armes ; il faut donc se garder une petite marge
+		if (viePrevisionnel < - 20) { // on fait les calculs en fonction des valeurs moyennes des armes ; il faut donc se garder une petite marge
 			// on unset tout les effects et on remplace l'effet par EFFECT_KILL
 			aTargetEffect[leek] = [EFFECT_KILL : [0 : true]];
 		}
