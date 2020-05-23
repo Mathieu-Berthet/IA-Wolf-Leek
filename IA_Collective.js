@@ -78,14 +78,9 @@ debugWP("Fin Action (tour : " + TOUR + "): opération :" + (getOperations() / OP
 Memorise(COMBO);
 
 
-// Déplacement : TODO : je crois que Leekwiz avais fait de bonne fonction qui mélange cache-cache + centre de gravité
 if(!CACHER) {
-	if(getFightType() == FIGHT_TYPE_SOLO || getFightType() == FIGHT_TYPE_BATTLE_ROYALE || count(getAliveAllies()) == 1) {
-		var mpAdversaire = getMP(getNearestEnemy());
-		moveCacheCache(getCell(getLeek()), getCell(getNearestEnemy()), getMP(), mpAdversaire);
-	} else {
-		moveTowardCell(getCenterOfGravity(getAliveAllies()));
-	}
+	var cell = getCellToGo(getDangerMap(getReachableCells(getCell(), getMP())));
+	moveTowardCell(cell);
 }
 
 if (getTP() >= 1) {
