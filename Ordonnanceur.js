@@ -11,6 +11,7 @@ global ORDONNANCEMENT_SUMMON_LAST = 4; // Summon les bulbes à la fin
 global ORDONNANCEMENT_DEBUFF = 5;
 global ORDONNANCEMENT_LIBERATION_FIRST = 6;
 global ORDONNANCEMENT_NEAREST_CELL_FIRST = 7;
+global ORDONNANCEMENT_VULNERABILITE_FIRST = 8;
 
 global ORDONNANCEMENT_DEFAULT = ORDONNANCEMENT_NEAREST_CELL_FIRST; // ORDONNANCEMENT_BVF ou bien ORDONNANCEMENT_NEAREST_CELL_FIRST
 
@@ -21,9 +22,10 @@ global ORDONNANCEMENT_DEFAULT = ORDONNANCEMENT_NEAREST_CELL_FIRST; // ORDONNANCE
 global ORDONNANCEMENT_PERSONNALISE = [
 	ORDONANCEMENT_START : ORDONNANCEMENT_LIBERATION_FIRST,
 	ORDONNANCEMENT_LIBERATION_FIRST : ORDONNANCEMENT_SCIENCE,
-	ORDONNANCEMENT_SCIENCE : ORDONNANCEMENT_SUMMON_LAST,
+	ORDONNANCEMENT_SCIENCE : ORDONNANCEMENT_VULNERABILITE_FIRST,
+	ORDONNANCEMENT_VULNERABILITE_FIRST : ORDONNANCEMENT_SUMMON_LAST,
 	ORDONNANCEMENT_SUMMON_LAST : ORDONNANCEMENT_NEAREST_CELL_FIRST
-]; // en 1er la libé puis les boost de science puis les actions en commançant par les plus proches et en fin les bulbes
+]; // en 1er la libé puis les boost de science puis les vulnérabilités puis les actions en commançant par les plus proches et en fin les bulbes
 
 // Si on veut un ordre différent pour un poireau spécifique il suffit de changer le tableau
 if (getType() == ENTITY_LEEK) {
@@ -57,11 +59,13 @@ getActionFromCombo[ORDONNANCEMENT_BVF] = function(@combo) {
 
 getActionFromCombo[ORDONNANCEMENT_NEAREST_CELL_FIRST] = function(@combo) {
 	var best;
+	var pm = -1;
 	var valeur = 0;
 	for (var i = 0; i < count(combo); i++) {
-		if (combo[i][PM_USE] > valeur) {
+		if (combo[i][PM_USE] > pm || combo[i][PM_USE] == pm && combo[i][VALEUR] > valeur) {
 			best = i;
-			valeur = combo[i][PM_USE];
+			pm = combo[i][PM_USE];
+			valeur = combo[i][VALEUR];
 		}
 	}
 	return @combo[best];
@@ -108,6 +112,18 @@ getActionFromCombo[ORDONNANCEMENT_SCIENCE] = function(@combo) {
 };
 
 
+getActionFromCombo[ORDONNANCEMENT_VULNERABILITE_FIRST] = function(@combo) {
+	var action = getActionInComboByTool(combo, CHIP_INVERSION);
+	if (action != null && isEnemy(getLeekOnCell(action[CELL_VISE]))) {
+		return @action;
+	}
+
+	if (ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_VULNERABILITE_FIRST]) {
+		return getActionFromCombo[ORDONNANCEMENT_PERSONNALISE[ORDONNANCEMENT_VULNERABILITE_FIRST]](combo);
+	} else {
+		return getActionFromCombo[ORDONNANCEMENT_DEFAULT](combo);
+	}
+};
 
 getActionFromCombo[ORDONNANCEMENT_DEBUFF] = function(@combo) {
 	var action = getActionInComboByTool(combo, CHIP_SOPORIFIC);
