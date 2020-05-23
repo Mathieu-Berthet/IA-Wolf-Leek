@@ -13,7 +13,7 @@ include("Debug");
 
 function IA_Collective() {
 	ME = getLeek();
-	COEFF_LEEK_EFFECT[ME][EFFECT_BUFF_STRENGTH] = 0; // sinon avec after_effect c'est trop juste
+
 
 	var bulb_attack_tools = [] ;
 	var bulb_shield_tools = [] ;
@@ -22,7 +22,7 @@ function IA_Collective() {
 	var bulb_tactics_tools = [] ;
 	var bulb_summon_tools = [] ; // cette variable sert juste pour faire marcher la fonction setuptools, un bulbe ne pourra jamais invoquer un autre bulbe... sauf si pilow devient fou x)
 	SetupTools( bulb_attack_tools , bulb_shield_tools , bulb_heal_tools , bulb_boost_tools , bulb_tactics_tools , bulb_summon_tools ) ;
-	if (getName() == 'healer_bulb') {			// bulbe guerisseur
+	if (false && getName() == 'healer_bulb') {			// bulbe guerisseur
 		var combo = [CHIP_DRIP, CHIP_VACCINE, CHIP_CURE, CHIP_BANDAGE];
 		for (var action in combo) {
 			var ally = getAllyToHeal();
@@ -32,7 +32,7 @@ function IA_Collective() {
 				useChip(action, ally);
 			}
 		}
-	} else if (getName() == 'metallic_bulb') {	// bulbe metallique
+	} else if (false && getName() == 'metallic_bulb') {	// bulbe metallique
 		var combo = [CHIP_ARMOR, CHIP_SHIELD, CHIP_WALL, CHIP_SEVEN_LEAGUE_BOOTS];
 		for (var action in combo) {
 			var ally = getAllyToProtect();
@@ -46,8 +46,14 @@ function IA_Collective() {
 		if (getScience() > 0) {
 			setBoostCoeff();
 		}
+		COEFF_LEEK_EFFECT[ME][EFFECT_BUFF_STRENGTH] = 0; // sinon avec after_effect c'est trop juste
 		var continu = true;
 		while (continu) {
+
+			if(USE_VIE_PREVISIONNEL) {
+				setViePrevisionel();
+			}
+
 			var actions = [null];
 			var cellsAccessible = accessible(getCell(), getMP());
 			var toutEnnemis = getAliveEnemies();
@@ -78,7 +84,7 @@ function IA_Collective() {
 			}
 		}
 	}
-	if(getCellDistance(getCell(), getSummoner()) >= 7 and getCellDistance(getCell(), getSummoner()) < getCellDistance(getCell(), getNearestEnemy())){
+	if(getCellDistance(getCell(), getCell(getSummoner())) >= 7 && getCellDistance(getCell(), getCell(getSummoner())) < getCellDistance(getCell(), getCell(getNearestEnemy()) )){
 		moveToward(getSummoner());
 	} else {
 		var accessibles_cells = getReachableCells(getCell(), getMP());		// Cellules accessibles, array non associatif.
@@ -86,8 +92,7 @@ function IA_Collective() {
 		var map_danger = getDangerMap(accessibles_cells);		// Map de danger v1 ( la v2 consomme trop d'op, pour juste un bulbe )
 		moveTowardCell(getNearestCellToGoFromCell(cellule, map_danger));	// Fonction dans l'ia "Deplacements"
 	}
-  //Solution temporaire by Rayman :
-  //moveTowardCell(getCenterOfGravity(getAliveAllies()));
+
 	parler();
 }
 

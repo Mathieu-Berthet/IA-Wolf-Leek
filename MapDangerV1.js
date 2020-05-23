@@ -13,6 +13,7 @@ function getDangerMap(cells_accessibles) {
 	var tab_danger = [];
 	var toutennemis = [];
 	var coeff_dangerosite = [];
+	var allLeeks = getAliveEnemies() + getAliveAllies();
 	for (var enemy in getAliveEnemies()) {  // on enleve les bulbes guerrisseurs et metalliques des ennemis dangereux ( gain d'operations inutiles )
 		if (isSummon(enemy) and getStrength(enemy) > 200) {
 			push(toutennemis, enemy);
@@ -38,7 +39,8 @@ function getDangerMap(cells_accessibles) {
 				if (tab_scores[cell1] == null) {
 					tab_scores[cell1] = 0;
 				}
-				if (lineOfSight(cell1, cell2) == true) {	// Si il y a une ligne de vue,
+				if (lineOfSight(cell1, cell2, allLeeks) && getDistance(cell1, cell2) <= 8) {	// Si il y a une ligne de vue,
+					// TODO: ajuster la valeur de la distance
 					tab_scores[cell1] = tab_scores[cell1] + coeff_dangerosite[enemy];
 				}
 			}

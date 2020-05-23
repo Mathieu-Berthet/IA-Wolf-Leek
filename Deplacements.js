@@ -215,7 +215,7 @@ function moveCacheCache(me, TheEnemy, mp, mpAdv)
 	}
 	else
 	{
-		//moveToward(getNearestAlly()); //Sert a rien en solo, car a moins d'avoir invoqué un bulbe, on a pas d'alliés 
+		//moveToward(getNearestAlly()); //Sert a rien en solo, car a moins d'avoir invoqué un bulbe, on a pas d'alliés
 		moveToward(getNearestEnemy());
 	}
 }
@@ -234,7 +234,8 @@ function getCellToGo(map_danger_)
 	var cell;
 	if(count(getAliveAllies()) >= 2)
 	{
-		cell = getNearestCellToGoFromCell(getCenterOfGravity(getAliveAllies()), map_danger_);
+		cell = getCenterOfGravity(getAliveAllies());
+		cell = getNearestCellToGoFromCell(cell, map_danger_);
 		return cell;
 	}
 	else
@@ -255,11 +256,15 @@ function getNearestCellToGoFromCell(cellule, map_danger_) //map_danger_ de la fo
 	danger_min = arrayMin(array_values);
 
 	for(var cell:var danger in map_danger_){
-		if(danger == danger_min and isEmptyCell(cell)){
+		if(danger == danger_min && (isEmptyCell(cell) || cell == getCell())){
 			push(SaferCells, cell);
 		}
 	}
-	return getNearestCellFromCell_2(cellule, SaferCells);
+
+	var bestCells = getCellsDistanceOpti(SaferCells, cellule, 4);
+
+	return bestCells[randInt(0, count(bestCells))];
+	// return getNearestCellFromCell_2(cellule, SaferCells);
 }
 
 /// LA FONCTION ! ///
@@ -275,4 +280,23 @@ function getNearestCellFromCell_2(cell, tableau_cellules)
 	position = search(tableau_distances, arrayMin(tableau_distances));
 	var tab_cells = tableau_cellules;
 	return tab_cells[position];
+}
+
+function getCellsDistanceOpti(cells, centre, distanceOpti) {
+	var scoreCells = [];
+	var optiCells = [];
+	for(var cell in cells) {
+		scoreCells[cell] = abs(getCellDistance(cell, centre) - distanceOpti);
+	}
+
+
+	var score_min = arrayMin(scoreCells);
+
+	for(var cell : var score in scoreCells){
+		if(score == score_min){
+			push(optiCells, cell);
+		}
+	}
+
+	return optiCells;
 }
