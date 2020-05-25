@@ -69,9 +69,23 @@ function resu() {
 	tir[PM_USE] = 0; // Note:  Le calcul est fait dans la callback sans ordonanceur pour la résu, l'action sera faite en premier si on utilise l'ordancement NearestFirst
 	tir[EFFECT] = EFFECT_RESURRECT;
 	tir[CALLBACK] = (function(param) {
-		var code_return = resurrect(param[0], getSaferCell());
+		var cellToResurect;
+		if(getMP() > 0) {
+			var cellsAccessible = getReachableCells(getCell(), getMP()); // Note : on pourrait utiliser la résurection sur plus de cells car il y a une portée
+			cellToResurect = getCellToGo(getDangerMap(cellsAccessible));
+			var cellDeplace = getCellToUseToolsOnCell(CHIP_RESURRECTION, cellToResurect, cellsAccessible);
+			moveTowardCell(cellDeplace);
+		} else {
+			var myCell = getCell();
+			var cellsToResurect = [];
+			CellsToUseTool(CHIP_RESURRECTION, myCell, cellsToResurect);
+			cellToResurect = getCellToGo(getDangerMap(cellsToResurect));
+		}
+		var code_return = resurrect(param[0], cellToResurect);
 		/* Mise à jour variable global pour pouvoir booster */
-		getOpponent(getAliveEnemies());
+		// getOpponent(getAliveEnemies());
+		addCoeffEffectLeek(allieToResurrect);
+		updateInfoLeeks();
 		setBoostCoeff();
 		return code_return;
 	});
@@ -137,6 +151,19 @@ function addCoeffEffectBulbe(bulbe) {
 	for (var effect : var value in ALL_EFFECTS) {
 		COEFF_LEEK_EFFECT[bulbe][effect] = 0.5;
 	}
+	COEFF_LEEK_EFFECT[bulbe][EFFECT_KILL] = getLife(bulbe);
+}
+
+/**
+ * initialise tout les coefficients des effets pour le bulbe
+ * 0.5 par défaut
+ */
+function addCoeffEffectLeek(leek) {
+	COEFF_LEEK_EFFECT[leek] = [];
+	for (var effect : var value in ALL_EFFECTS) {
+		COEFF_LEEK_EFFECT[leek][effect] = 1;
+	}
+	COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = getTotalLife(leek);
 }
 
 //Si vous voyez d'autres situations à distinguer, dites le, j'en vois plus pour l'instant
