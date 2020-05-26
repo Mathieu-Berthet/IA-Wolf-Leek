@@ -97,6 +97,7 @@ function Booster(tool, allies, @cellsAccessible)
 						var oldPosition = INFO_LEEKS[ME][CELL];
 						INFO_LEEKS[ME][CELL] = cell_deplace;
 						var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true);
+						checkKill(aTargetEffect);
 						valeur = getValueOfTargetEffect(aTargetEffect);
 						INFO_LEEKS[ME][CELL] = oldPosition;
 
@@ -148,6 +149,7 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 								var oldPosition = INFO_LEEKS[ME][CELL];
 								INFO_LEEKS[ME][CELL] = cell_deplace;
 								var aTargetEffect = getTargetEffect(ME, tool, cell, true);
+								checkKill(aTargetEffect);
 								var valeur = getValueOfTargetEffect(aTargetEffect);
 								INFO_LEEKS[ME][CELL] = oldPosition;
 								if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {

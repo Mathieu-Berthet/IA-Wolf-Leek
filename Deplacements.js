@@ -1,4 +1,3 @@
-
 /**
  * Auteur : Caneton
  * getCenterOfGravity => retourne le centre de gravité d'un goupe de poireau
