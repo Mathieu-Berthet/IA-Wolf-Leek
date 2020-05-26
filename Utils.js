@@ -84,7 +84,7 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 
 				var damageReturn;
 				if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_RETURN_DAMAGE]) {
-					damageReturn = INFO_LEEKS[cible][DAMAGE_RETURN] * value / 1000;
+					damageReturn = INFO_LEEKS[cible][DAMAGE_RETURN] * value / 100;
 				}
 
 				var degatNova;
