@@ -23,12 +23,14 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @bo
 		if (getCooldown(tool) == 0 && getTP() >= ALL_INGAME_TOOLS[tool][TOOL_PT_COST])
 		{
 			var area = ALL_INGAME_TOOLS[tool][TOOL_AOE_TYPE] ;
-			if(area == AREA_POINT)
-			{
-				tir = Booster(tool, Allies, cellsAccessible);
-			}
-			else
-			{
+			if(area == AREA_POINT) {
+				if (tool == WEAPON_BROADSWORD) {
+					tir = taperDansLeVide(tool);
+				} else {
+					tir = Booster(tool, Allies, cellsAccessible);
+				}
+
+			} else {
 				tir = boostTypeAOE(toutPoireau,  tool,  @cellsAccessible);
 			}
 			if ((tir != [] || tir != null) && tir[VALEUR] > 3) // au moins 3 de boost (en moyenne)
@@ -168,4 +170,38 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 	}
 	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
+}
+
+
+/**
+ * Permet de taper dans le vide => les effets AlwaysOnCaster non multiplié par le nombre de cible s'applique
+ * Marche pour les tools avec un range de 1 => WEAPON_BROADSWORD
+ *
+ */
+function taperDansLeVide(tool) {
+	var oper = getOperations();
+	var action = [];
+	var cellReferance = getCell();
+	var X = getCellX(cellReferance);
+	var Y = getCellY(cellReferance);
+	var CaseACote = [getCellFromXY(X + 1, Y), getCellFromXY(X + 1, Y), getCellFromXY(X - 1, Y + 1), getCellFromXY(X, Y - 1)];
+
+	var casesValide = arrayFilter(CaseACote, function (cell) {
+		return cell !== null && isEmptyCell(cell);
+	});
+
+	if(!isEmpty(casesValide)) {
+		var cellVide = casesValide[0];
+		var aTargetEffect = getTargetEffect(ME, tool, cellVide, true);
+		var valeur = getValueOfTargetEffect(aTargetEffect);
+		if(valeur > 0) {
+			action[CELL_DEPLACE] = -1;
+			action[CELL_VISE] = cellVide;
+			action[VALEUR] = valeur;
+		}
+	}
+
+
+	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + action + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	return @action;
 }
