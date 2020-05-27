@@ -14,7 +14,7 @@ function getSummonAction(@actions, @cellsAccessible, TPmax, @summon_tools) {
 		if ( !ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] && getCooldown(tool) == 0 && getTP() >= ALL_INGAME_TOOLS[tool][TOOL_PT_COST] && (bulbeOffensif[tool] !== null or bulbeDefensif[tool] !== null or tool === CHIP_RESURRECTION)) {
 			var tir;
 			if (tool == CHIP_RESURRECTION) {
-				tir = resu();
+				tir = resu(cellsAccessible);
 			} else {
 				if (compteurBulbe() < 6) {
 					tir = summonBulb(tool, IA_Collective, getNearestEnemy(), cellsAccessible);
@@ -35,7 +35,7 @@ function isLeek(entity) {
 }
 
 
-function resu() {
+function resu(@cellsAccessible) {
 	var alliesDead = getDeadAllies();
 	var allieDead = arrayFilter(alliesDead, isLeek);
 	var isScience = [];
@@ -71,15 +71,18 @@ function resu() {
 	tir[CALLBACK] = (function(param) {
 		var cellToResurect;
 		if(getMP() > 0) {
-			var cellsAccessible = getReachableCells(getCell(), getMP()); // Note : on pourrait utiliser la résurection sur plus de cells car il y a une portée
-			cellToResurect = getCellToGo(getDangerMap(cellsAccessible));
+			var tab = [];
+			for (var cell: var dist in cellsAccessible) push(tab, cell); // Note : on pourrait utiliser la résurection sur plus de cells car il y a une portée
+			var map_danger = getDangerMap(tab);
+			cellToResurect = getCellToGo(map_danger);
 			var cellDeplace = getCellToUseToolsOnCell(CHIP_RESURRECTION, cellToResurect, cellsAccessible);
 			moveTowardCell(cellDeplace);
 		} else {
 			var myCell = getCell();
 			var cellsToResurect = [];
 			CellsToUseTool(CHIP_RESURRECTION, myCell, cellsToResurect);
-			cellToResurect = getCellToGo(getDangerMap(cellsToResurect));
+			var map_danger = getDangerMap(cellsToResurect);
+			cellToResurect = getCellToGo(map_danger);
 		}
 		var code_return = resurrect(param[0], cellToResurect);
 		/* Mise à jour variable global pour pouvoir booster */
