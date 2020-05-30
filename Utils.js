@@ -298,6 +298,7 @@ function findDangerousEnnemis() {//TODO: améliorer => avec la tourelle ça faus
 	var ennemis = getAliveEnemies();
 	for (var j = 0; j< count(ennemis); j++) {
 		var saForce = getStrength(ennemis[j]);
+		if(isStatic(ennemis [j])) saForce = 200;
 		if (saForce > maxStrengh || saForce == maxStrengh && getLevel(ennemis[j] > getLevel(dangerousEnnemis))) {
 			dangerousEnnemis = ennemis[j];
 			maxStrengh = saForce;

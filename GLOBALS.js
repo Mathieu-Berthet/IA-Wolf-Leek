@@ -4,6 +4,7 @@ include("Debug");
 
 /********************** Globals *********************************/
 global NUMBER_OF_INGAME_ITEMS = 150 ;
+global TOUR = 0; TOUR ++; // getTurn()
 global CACHER;
 global ME; ME = getLeek();
 global PHRASE_A_DIRE = [];
@@ -85,6 +86,21 @@ global
 	NAME_WIZARD_BULB 	= "wizard_bulb";
 
 
+global TURRET_ALLY;
+global TURRET_ENNEMY;
+if(getFightType() == FIGHT_TYPE_TEAM && TOUR == 1) {
+	for (var entity in getAliveAllies() + getAliveEnemies()) {
+		if(getType(entity) == ENTITY_TURRET) {
+			if(isAlly(entity)) {
+				TURRET_ALLY = entity;
+			} else {
+				TURRET_ENNEMY = entity;
+			}
+		}
+	}
+}
+
+
 // Permet de ne pas se faire prendre sois même dans l'AOE
 global MIN_RANGE = (function () {
 	var min_range = [];
@@ -127,14 +143,32 @@ NOT_USE_ON = (function() {
 	tab[CHIP_REGENERATION] = [];
 	tab[CHIP_FORTRESS] = [];
 	tab[CHIP_RAMPART] = [];
-	for(var leek in getAliveAllies()) {
-		if(isSummon(leek)) {
+	tab[CHIP_INVERSION] = [];
+	tab[CHIP_LIBERATION] = [];
+	for(var leek in getAliveAllies() + getAliveEnemies()) {
+		if(isSummon(leek) && isAlly(leek)) {
 			tab[CHIP_REGENERATION][leek] = true;
 			tab[CHIP_FORTRESS][leek] = true;
 			if (getFightType() != FIGHT_TYPE_SOLO && countLeekAllie() > 1) {
 				tab[CHIP_RAMPART][leek] = true;
 			}
 		}
+
+
+		// Contrainte LW
+		if (isStatic(leek)) {
+			tab[CHIP_INVERSION][leek] = true;
+		}
+
+		if (TOUR == 1) { // Délai initial de 1 tour
+			tab[CHIP_INVERSION][leek] = true;
+			tab[CHIP_TELEPORTATION][leek] = true;
+		}
+
+	}
+	if (TURRET_ENNEMY !== null) {
+		tab[CHIP_LIBERATION][TURRET_ENNEMY] = true;
+		tab[CHIP_LIBERATION][TURRET_ALLY] = true;
 	}
 	return @tab;
 })();
@@ -150,7 +184,7 @@ function countLeekAllie() {
 	return cpt;
  }
 
-global TOUR = 0; TOUR ++; // getTurn()
+
 
 global _RESU_PRIORITY = [
 	"science": 3,

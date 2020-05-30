@@ -14,7 +14,7 @@ include("Debug");
 * Si non pas de cells accessible pour utiliser tool=> valeur du return : -2
 * 	/!\ cellsAccecible est un tableau, avec Tab[i] = longueur du chemin pour aller sur la cell i !
 **/
-function getCellToUseToolsOnCell(tool, cellVisee, cellsAccessible) {
+function getCellToUseToolsOnCell(tool, cellVisee, @cellsAccessible) {
 	var cells = [];
 	CellsToUseTool (tool, cellVisee, cells);
 	var me = getLeek();
