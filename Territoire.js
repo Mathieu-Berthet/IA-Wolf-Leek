@@ -37,7 +37,7 @@ function getTerritoires(team1, team2) {
 		for (var leek in team1) {
 			if (getCellDistance(cell, INFO_LEEKS[leek][CELL]) <= TERRITOIRE_PARAM[leek][MAX]) {
 				cellValue += TERRITOIRE_PARAM[leek][LEEK_VALUE];
-			} else if (getCellDistance(cell, INFO_LEEKS[leek][CELL]) <= TERRITOIRE_PARAM[leek][MIN]) {
+			} else if (getDistance(cell, INFO_LEEKS[leek][CELL]) <= TERRITOIRE_PARAM[leek][MIN]) {
 				cellValue += 0.5 * TERRITOIRE_PARAM[leek][LEEK_VALUE];
 			}
 		}
@@ -46,7 +46,7 @@ function getTerritoires(team1, team2) {
 		for (var leek in team2) {
 			if (getCellDistance(cell, INFO_LEEKS[leek][CELL]) <= TERRITOIRE_PARAM[leek][MAX]) {
 				cellValue += TERRITOIRE_PARAM[leek][LEEK_VALUE];
-			} else if (getCellDistance(cell, INFO_LEEKS[leek][CELL]) <= TERRITOIRE_PARAM[leek][MIN]) {
+			} else if (getDistance(cell, INFO_LEEKS[leek][CELL]) <= TERRITOIRE_PARAM[leek][MIN]) {
 				cellValue += 0.5 * TERRITOIRE_PARAM[leek][LEEK_VALUE];
 			}
 		}
