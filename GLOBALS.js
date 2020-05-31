@@ -998,6 +998,14 @@ if ( getTurn() == 1 ) // je n'ai pas ultra compris l'idée des globales fonction
 	// cf https://leekwars.com/forum/category-3/topic-9714
 	ALL_INGAME_TOOLS[WEAPON_J_LASER][TOOL_ATTACK_EFFECTS][1][TOOL_MODIFIER_MULTIPLIED_BY_TARGETS] = true;
 	ALL_INGAME_TOOLS[WEAPON_J_LASER][TOOL_ATTACK_EFFECTS][1][TOOL_EFFECT_TYPE] = EFFECT_RAW_ABSOLUTE_SHIELD;
+
+
+
+	// Modification pour les STEROID qui ne fonctionne pas comme dans la description
+	// cf https://leekwars.com/forum/category-3/topic-9790
+	ALL_INGAME_TOOLS[CHIP_STEROID][TOOL_ATTACK_EFFECTS][2] = ALL_INGAME_TOOLS[CHIP_STEROID][TOOL_ATTACK_EFFECTS][1];
+	ALL_INGAME_TOOLS[CHIP_STEROID][TOOL_ATTACK_EFFECTS][2][TOOL_NUMBER_TURN_EFFECT_LAST] = 0;
+
 }
 
 function create_all_tools_tab()
