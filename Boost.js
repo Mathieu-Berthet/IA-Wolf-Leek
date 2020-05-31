@@ -20,7 +20,7 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @bo
 	{
 		if(ERROR_TOOLS[tool]) continue;
 		var tir = [];
-		if (getCooldown(tool) == 0 && getTP() >= ALL_INGAME_TOOLS[tool][TOOL_PT_COST])
+		if (can_use_tool( tool , TPmax ))
 		{
 			var area = ALL_INGAME_TOOLS[tool][TOOL_AOE_TYPE] ;
 			if(area == AREA_POINT) {
@@ -39,7 +39,7 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @bo
 				var coutPT;
 				var valeur = tir[VALEUR];
 				var n;
-				var change_weapon = 0;
+				var change_weapon =  (ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON] && tool != getWeapon()) ? 1 : 0;
 				coutPT = ALL_INGAME_TOOLS[tool][TOOL_PT_COST] ;
 				if (ALL_INGAME_TOOLS[tool][TOOL_COOLDOWN_TIME])
 				{
@@ -50,7 +50,7 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @bo
 					n = floor(getTP() / coutPT);
 				}
 				//ajouter le bon nombre de fois dans les actions
-				for (var o = 1; o <= n; o++)
+				for (var o = 1; o <= min(n, 2); o++)
 				{
 					tir[NB_TIR] = o;
 					tir[PT_USE] = o * coutPT + change_weapon;
@@ -184,14 +184,14 @@ function taperDansLeVide(tool) {
 	var cellReferance = getCell();
 	var X = getCellX(cellReferance);
 	var Y = getCellY(cellReferance);
-	var CaseACote = [getCellFromXY(X + 1, Y), getCellFromXY(X + 1, Y), getCellFromXY(X - 1, Y + 1), getCellFromXY(X, Y - 1)];
+	var CaseACote = [getCellFromXY(X + 1, Y), getCellFromXY(X - 1, Y), getCellFromXY(X, Y + 1), getCellFromXY(X, Y - 1)];
 
 	var casesValide = arrayFilter(CaseACote, function (cell) {
 		return cell !== null && isEmptyCell(cell);
 	});
 
 	if(!isEmpty(casesValide)) {
-		var cellVide = casesValide[0];
+		var cellVide; for (var key : var cell in casesValide) {cellVide = cell; break;} // c'est moche mais il y a pas de fonction arrayValues :(
 		var aTargetEffect = getTargetEffect(ME, tool, cellVide, true);
 		var valeur = getValueOfTargetEffect(aTargetEffect);
 		if(valeur > 0) {
