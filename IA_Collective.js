@@ -7,6 +7,7 @@ include("Boost");
 include("Communication");
 include("Summon");
 include("MapDangerV1");
+//include("MapDangerV2");
 include("Resistance");
 include("StatsCombos");
 include("Tactics");
@@ -79,7 +80,10 @@ Memorise(COMBO);
 
 
 if(!CACHER) {
-	var cell = getCellToGo(getDangerMap(getReachableCells(getCell(), getMP())));
+	//var mapDangerV2 = dangerCombo(getDanger(getAliveEnemies(),getLeek())); // V2, coute 3-4% de plus en solo, plus en team
+	var mapDangerV1 = getDangerMap(getReachableCells(getCell(), getMP()));
+	// pour visualiser la map : debugArrayMap(mapDangerV1)
+	var cell = getCellToGo(mapDangerV1);
 	moveTowardCell(cell);
 }
 

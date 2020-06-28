@@ -14,16 +14,23 @@ global ITEMS = (function() {
 	for (var i = 1; i < NUMBER_OF_INGAME_ITEMS; i++) {
 		tab[i] = [];
 		tab[i][NAME] = ALL_INGAME_TOOLS[i][TOOL_NAME] ;
-		
+
 		tab[i][RANGE] = [];
 		tab[i][RANGE][MIN] = ALL_INGAME_TOOLS[i][TOOL_MIN_RANGE] ;
 		tab[i][RANGE][MAX] = ALL_INGAME_TOOLS[i][TOOL_MAX_RANGE] ;
-		
+
 		var area = ALL_INGAME_TOOLS[i][TOOL_AOE_TYPE] ;
 		if(area==AREA_POINT || area==AREA_LASER_LINE) tab[i][MAX_AOE]=0;
 		if(area==AREA_CIRCLE_1) tab[i][MAX_AOE]=1;
 		if(area==AREA_CIRCLE_2) tab[i][MAX_AOE]=2;
 		if(area==AREA_CIRCLE_3) tab[i][MAX_AOE]=3;
+		// ajout des nouvelle area, pour le moment les aires ne sont pas pris en compte mais c'est pour éviter des divisions par 0
+		if (area==AREA_PLUS_1) tab[i][MAX_AOE]=1;
+		if (area==AREA_PLUS_2) tab[i][MAX_AOE]=2;
+		if (area==AREA_PLUS_3) tab[i][MAX_AOE]=3;
+		if(area==AREA_X_1) tab[i][MAX_AOE]=1;
+		if(area==AREA_X_2) tab[i][MAX_AOE]=2;
+		if(area==AREA_X_3) tab[i][MAX_AOE]=3;
 		tab[i][PT] = ALL_INGAME_TOOLS[i][TOOL_PT_COST] ;
 		tab[i][CD] = ALL_INGAME_TOOLS[i][TOOL_COOLDOWN_TIME] ;
 
@@ -31,6 +38,13 @@ global ITEMS = (function() {
 	return @tab;
 })();
 
+
+/**
+ * @auteur : Caneton
+ * Calcule le danger d'une case en fonction des actions possible des adversaires
+ * @danger : tableau de la forme : Tab[cell : [leek_ennemis_1 : [WEAPON_1 : VALUE_1]]]
+ * @return : tableau de la forme : Tab[cell : entier_danger]
+ */
 function dangerCombo(@danger) {
 	var Total_degat = [];
 	for(var cell : var dangerLeeks in danger) {
@@ -53,7 +67,7 @@ function dangerCombo(@danger) {
 				} else {
 					n = floor(TP / coutPT);
 				}
-				//ajouter le bon nombre de fois dans les actions 
+				//ajouter le bon nombre de fois dans les actions
 				for (var o = 1; o <= n; o++) {
 					cout[nb_action] = o * coutPT + change_weapon;
 					degat[nb_action] = o * value;
@@ -69,19 +83,21 @@ function dangerCombo(@danger) {
 	return @Total_degat;
 }
 
-
+/**
+ * Reccupere les tools de type EFFECT_DAMAGE, EFFECT_POISON
+ */
 function getTools(leek){
-	var tab_damage =[]; 
+	var tab_damage =[];
 	var c = 0;
 	for (var i in getWeapons(leek)) {
-		if (i != WEAPON_FLAME_THROWER && i != WEAPON_GAZOR && i != WEAPON_B_LASER) {
+		if (i != WEAPON_J_LASER && i != WEAPON_MYSTERIOUS_ELECTRISOR && i != WEAPON_B_LASER) {
 			tab_damage[c] = i;
 			c++;
 		}
 	}
-	for (var i in getChips(leek)) {// todo: vérifier les cooldowns
+	for (var i in getChips(leek)) {
 		var effet = ALL_INGAME_TOOLS[i][TOOL_ATTACK_EFFECTS] ;
-		if (effet[0][TOOL_EFFECT_TYPE] == EFFECT_DAMAGE && getCooldown(i, leek)<=1) {
+		if (inArray([EFFECT_DAMAGE, EFFECT_POISON], effet[0][TOOL_EFFECT_TYPE]) && getCooldown(i, leek)<=1) {
 			tab_damage[c] = i;
 			c++;
 		}
@@ -89,7 +105,11 @@ function getTools(leek){
 	return @tab_damage;
 }
 
-
+/**
+ * récupère les armes des adversaires et calcule le nombre de dégat que ça va faire sur le leek_id : ME
+ * @ennemis : tableau des adversaires
+ * @return : tableau de la forme : Tab[tool : [Distance_AOE : [Ennemis : degat_value]]]
+ */
 function getValueWeapons(ennemis) {
 	var ValueWeapons= [];
 	for (var ennemi in ennemis) {
@@ -106,6 +126,12 @@ function getValueWeapons(ennemis) {
 	return @ValueWeapons;
 }
 
+
+/**
+ * Recupere les cases accessible des adversaires
+ * @ennemis : tableau des adversaires
+ * @return : tableau de la forme : Tab[cell : [Leek_1, Leek_2, ...]]
+ */
 function getAccessibleCasesLeeks(ennemis) {
 	var accessibleCasesLeeks = [];
 	for(var ennemi in ennemis) {
@@ -118,6 +144,16 @@ function getAccessibleCasesLeeks(ennemis) {
 	return @accessibleCasesLeeks;
 }
 
+
+/**
+ * @auteur : Caneton
+ * Calcule le danger des armes des ennemis sur mes cases accessibles d'un leek
+ * @ennemis : tableau des ennemis
+ * @leek : id_leek ; limite le calcule sur les cases accessible
+ * return : Tab[cell : [leek_ennemis1 : [WEAPON_1 : VALUE_1]]]
+ *
+ * /!\ NOTE : Les AOE n'ont pas été prise en compte
+ */
 function getDanger(ennemis,leek) {
 	var danger = [];
 	var mesCells = getAccessibleCells(getCell(leek),getMP(leek));
@@ -146,23 +182,20 @@ function getDanger(ennemis,leek) {
 }
 
 
+/**
+ * Calcule le nombre de pv retirer si le tireur tire sur la cible avec l'arme tool
+ * @tireur et @cible sont des tableau ; sous-tableau de INFO_LEEKS cf fichier "globals"
+ * @dist : permet de faire le calcule en prenant en compte la réduction de l'AOE
+ * @return : Tab[MOYEN : degat_moyen, MIN : degat_min]
+ */
+function getValue(tool, tireur, cible, dist) {
 
-function getValue(tool, tireur, cible, dist) { //TODO faire le poison
-	/*	Tireur et cible sont des tableaux de la forme :*/
-	var Leek = 0;
-	var AbsoluteShield = 1;
-	var RelativeShield = 2;
-	var Strenght = 3;
-	var RenvoiDegat = 4;
-	var Magie = 5; 
-	/*								*/
-
-	var degat = [0, 0];
+	var degat = [MOYEN : 0, MIN : 0];
 	var degat_renvoyer = 0;
 	var volDeVie = 0;
 
 
-	var aoe = ITEMS[tool][MAX_AOE]==0 ? 1 : 1 - (dist / (2 * ITEMS[tool][MAX_AOE]));
+	var aoe = ITEMS[tool][MAX_AOE]==0 ? 1 : 1 - (dist / (2 * ITEMS[tool][MAX_AOE])); // TODO: la formule a changé
 	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS] ;
 	var area = ALL_INGAME_TOOLS[tool][TOOL_AOE_TYPE] ;
 	var degatMoyen = 0;
@@ -172,16 +205,26 @@ function getValue(tool, tireur, cible, dist) { //TODO faire le poison
 		if (effect[TOOL_EFFECT_TYPE] == EFFECT_DAMAGE) {
 			degatMoyen = effect[TOOL_AVERAGE_POWER] ;
 			degatMin = effect[TOOL_MIN_POWER] ;
-			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[Strenght] / 100);
-			var degatBrutMin = aoe * degatMin * (1 + tireur[Strenght] / 100);
+			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[STRENGTH] / 100);
+			var degatBrutMin = aoe * degatMin * (1 + tireur[STRENGTH] / 100);
 			var degatTmp = [0, 0];
-			degatTmp[MOYEN] = max(degatBrutMoyen * (1 - cible[RelativeShield] / 100) - cible[AbsoluteShield], 0);
-			degatTmp[MIN] = max(degatBrutMin * (1 - cible[RelativeShield] / 100) - cible[AbsoluteShield], 0);
+			degatTmp[MOYEN] = max(degatBrutMoyen * (1 - cible[RELATIVE_SHIELD] / 100) - cible[ABSOLUTE_SHIELD], 0);
+			degatTmp[MIN] = max(degatBrutMin * (1 - cible[RELATIVE_SHIELD] / 100) - cible[ABSOLUTE_SHIELD], 0);
 
 			degat[MOYEN] = degat[MOYEN] + degatTmp[MOYEN];
 			degat[MIN] = degat[MIN] + degatTmp[MIN];
-			//degat_renvoyer = degat_renvoyer + cible[RenvoiDegat] * degatTmp[MOYEN] / 100;
-			//volDeVie = volDeVie + getWisdom(tireur[Leek]) * degatTmp[MOYEN] / 1000;
+		}
+		if (effect[TOOL_EFFECT_TYPE] == EFFECT_POISON) {
+			degatMoyen = effect[TOOL_AVERAGE_POWER] ;
+			degatMin = effect[TOOL_MIN_POWER] ;
+			var degatBrutMoyen = aoe * degatMoyen * (1 + tireur[MAGIC] / 100);
+			var degatBrutMin = aoe * degatMin * (1 + tireur[MAGIC] / 100);
+			var degatTmp = [0, 0];
+			degatTmp[MOYEN] = degatBrutMoyen;
+			degatTmp[MIN] = degatBrutMin;
+
+			degat[MOYEN] = degat[MOYEN] + degatTmp[MOYEN];
+			degat[MIN] = degat[MIN] + degatTmp[MIN];
 		}
 	}
 	return @degat;
