@@ -45,7 +45,6 @@ while (continu) {// Pour l'instant on ne fait qu'une action
 		var isUseSucess = doAction(action);
 		if(!isUseSucess) {
 			debugEP('Action non effectué : ' + action + '\n Attention à la boucle infinie');
-			// TODO : mettre en place un mécanisme pour ne pas refaire la même action
 			ERROR_TOOLS[action[CHIP_WEAPON]] = true;
 		}
 	} else {
