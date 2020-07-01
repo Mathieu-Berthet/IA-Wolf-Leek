@@ -1,5 +1,55 @@
 include("GLOBALS");
 include("Debug");
+include("Utils");
+
+
+MINIMUM_TO_USE = (function(){
+	var tab = [];
+	tab[CHIP_REGENERATION] = 1 * (1 + getWisdom()/100) * getChipEffects(CHIP_REGENERATION)[0][MIN];
+	tab[CHIP_ANTIDOTE] = 300;
+	tab[CHIP_LIBERATION] = 200;
+	tab[CHIP_COVETOUSNESS] = ALL_INGAME_TOOLS[CHIP_COVETOUSNESS][TOOL_PT_COST] * ALL_EFFECTS[EFFECT_BUFF_TP][COEFF_EFFECT];
+	//TODO: rajouter
+
+	return @tab;
+})();
+
+
+NOT_USE_ON = (function() {
+	var tab = [];
+	tab[CHIP_REGENERATION] = [];
+	tab[CHIP_FORTRESS] = [];
+	tab[CHIP_RAMPART] = [];
+	tab[CHIP_INVERSION] = [];
+	tab[CHIP_LIBERATION] = [];
+	for(var leek in getAliveAllies() + getAliveEnemies()) {
+		if(isSummon(leek) && isAlly(leek)) {
+			tab[CHIP_REGENERATION][leek] = true;
+			tab[CHIP_FORTRESS][leek] = true;
+			if (getFightType() != FIGHT_TYPE_SOLO && countLeekAllie() > 1) {
+				tab[CHIP_RAMPART][leek] = true;
+			}
+		}
+
+
+		// Contrainte LW
+		if (isStatic(leek)) {
+			tab[CHIP_INVERSION][leek] = true;
+		}
+
+		if (TOUR == 1) { // Délai initial de 1 tour
+			tab[CHIP_INVERSION][leek] = true;
+			tab[CHIP_TELEPORTATION][leek] = true;
+		}
+
+	}
+	if (TURRET_ENNEMY !== null) {
+		tab[CHIP_LIBERATION][TURRET_ENNEMY] = true;
+		tab[CHIP_LIBERATION][TURRET_ALLY] = true;
+	}
+	return @tab;
+})();
+
 
 
 COEFF_LEEK_EFFECT = (function (){
@@ -39,29 +89,30 @@ COEFF_LEEK_EFFECT = (function (){
 	}
 })();
 
+
 // EFFECT_KILL
 // TODO: à améliorer (notament en fonction des effets qui on été lancé)
 (function () {
 	var leeks = getAliveAllies() + getAliveEnemies();
 	for(var leek in leeks) {
-		var value;
 		if(getFightType() == FIGHT_TYPE_SOLO) {
-			if (getType() == ENTITY_LEEK) {
+			if (getType(leek) == ENTITY_LEEK) {
 				COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = 10000;
 			} else {
-				COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = max(100, getLife(leek));
+				COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = max(100, getLife(leek) * COEFF_LEEK_EFFECT[leek][EFFECT_DAMAGE]);
 			}
 		} else {
-			 if (getType() == ENTITY_LEEK) {
+			 if (getType(leek) == ENTITY_LEEK) {
 			 	COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = getTotalLife(leek);
-			 } else if (getType() == ENTITY_TURRET) {
+			 } else if (getType(leek) == ENTITY_TURRET) {
 			 	COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = 10000;
 			 } else {
-			 	COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = max(100, getLife(leek));
+			 	COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = max(100, getLife(leek) * COEFF_LEEK_EFFECT[leek][EFFECT_DAMAGE]);
 			 }
 		}
 	}
 })();
+
 
 
 //SCORE POUR LES TOURELLES
@@ -194,13 +245,13 @@ function getOpponent(enemies) {
 		}
 		if (getCellDistance(getCell(), getCell(enemy)) < 8)
 		{
-			coeffDangereux *= 3;
+			coeffDangereux += 10; //*= 3;
 		}
 		if(degatPoisonPris >= getLife(enemy)) {
 			coeffDangereux *= 0.2; // j'évite le 0, si un poireau n'a rien a faire autant le kill avant qu'il reçoive un antidote
 		}
 		if (isSummon(enemy)) {
-			coeffDangereux *= 0.5;
+			//coeffDangereux *= 0.5;
 		}
 		if (isStatic(enemy)) {
 		     //debugP(getLeekName(enemy) + "is static");
@@ -246,6 +297,8 @@ function getOpponent(enemies) {
 	}
 	//getEchantillonCentre(SCORE, coeffAllies);
 }
+
+
 
 
 /**

@@ -25,7 +25,7 @@ global ORDONNANCEMENT_PERSONNALISE = [
 	ORDONNANCEMENT_SCIENCE : ORDONNANCEMENT_VULNERABILITE_FIRST,
 	ORDONNANCEMENT_VULNERABILITE_FIRST : ORDONNANCEMENT_SUMMON_LAST,
 	ORDONNANCEMENT_SUMMON_LAST : ORDONNANCEMENT_NEAREST_CELL_FIRST
-]; // en 1er la libé puis les boost de science puis les vulnérabilités puis les actions en commançant par les plus proches et en fin les bulbes
+]; // en 1er la libé puis les boost de science puis les actions en commançant par les plus proches et en fin les bulbes
 
 // Si on veut un ordre différent pour un poireau spécifique il suffit de changer le tableau
 if (getType() == ENTITY_LEEK) {
@@ -211,6 +211,8 @@ getActionFromCombo[ORDONNANCEMENT_SUMMON_LAST] = function(@combo) {
 	}
 };
 
+
+
 function getActionInComboByTool(@combo, tool) {
 	for (var i = 0; i < count(combo); i++) {
 		if (combo[i][CHIP_WEAPON] == tool) {
@@ -290,6 +292,9 @@ function doAction(attack) {
 				}
 				if (code_return_callback !== null) code_return &= 0 < code_return_callback;
 			}
+
+			if(ONLY_ONE_SHOOT) STOP_ACTION = true;
+
 		}
 		if (nbPeopleApres != nbPeopleAvant) { // On a tuer quelqu'un
 			updateInfoLeeks(); // on met à jour les infos car tout les effet qu'il a lancé sont supprimé

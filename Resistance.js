@@ -65,13 +65,15 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			var aTargetEffect = getTargetEffect(ME, tool, cellVise, true);
 			var valeur = getValueOfTargetEffect(aTargetEffect);
 			INFO_LEEKS[ME][CELL] = oldPosition;
-			if ((valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell[from]] < distanceBestAction))
-			{
-				bestAction[CELL_DEPLACE] = cell[from];
-				bestAction[CELL_VISE] = cell[from] + MIN_RANGE[tool]* orientation[cell[withOrientation]];
-				bestAction[VALEUR] = valeur;
-				valeurMax = valeur;
-				distanceBestAction = cellsAccessible[cell[from]];
+
+			if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= valeur) {
+				if ((valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell[from]] < distanceBestAction)) {
+					bestAction[CELL_DEPLACE] = cell[from];
+					bestAction[CELL_VISE] = cell[from] + MIN_RANGE[tool]* orientation[cell[withOrientation]];
+					bestAction[VALEUR] = valeur;
+					valeurMax = valeur;
+					distanceBestAction = cellsAccessible[cell[from]];
+				}
 			}
 		}
 	}
@@ -79,15 +81,6 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 	return @bestAction;
 }
 
-function haveffect(leek,tool) {
-	var effs = getEffects(leek);
-	for (var eff in effs) {
-		if(eff[ITEM_ID]==tool) {
-			return true;
-		}
-	}
-	return false;
-}
 
 
 function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield sans AOE
@@ -104,7 +97,7 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 		//if ((ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_SUMMONS] && isSummon(allie)) || (ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_NON_SUMMONS] && !isSummon(allie))) {
 			if (!(MIN_RANGE[tool] != 0 && allie == ME)) {
 				if(!NOT_USE_ON[tool][allie]) {
-					if(!haveffect(allie,tool)) {
+					if(!haveEffect(allie,tool)) {
 						cellAllie = getCell(allie);
 						cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
 						if (cell_deplace != -2) { //la cellule doit être atteignable

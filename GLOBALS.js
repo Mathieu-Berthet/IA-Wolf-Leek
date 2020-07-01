@@ -10,7 +10,8 @@ global ME; ME = getLeek();
 global PHRASE_A_DIRE = [];
 global STOP_ACTION;
 global ERROR_TOOLS;
-global USE_VIE_PREVISIONNEL = false; //TODO : vérification des kills ; mettre à true en solo ou si on joue poison
+global USE_VIE_PREVISIONNEL = false; // vérification des kills via les effets ; mettre à true en solo ou si on joue poison
+global ONLY_ONE_SHOOT = false; // ne tir qu'une seule fois dans le doAction ; conseillé si on utilise la vie prévisionnelle + la magie
 global COMBO = [];
 
 global INFO_LEEKS = [];
@@ -125,53 +126,10 @@ global MAX_RANGE = (function () {
 
 // Permet de ne pas utiliser une arme / puce si la valeur est trop faible
 // Note : le contrôle sur la vatiable MINIMUM_TO_USE n'est pas fait dans tout les fichiers
-global MINIMUM_TO_USE = (function(){
-	var tab = [];
-	tab[CHIP_REGENERATION] = 1 * (1 + getWisdom()/100) * getChipEffects(CHIP_REGENERATION)[0][MIN];
-
-	//TODO: rajouter
-
-	return @tab;
-})();
-
-
+global MINIMUM_TO_USE;
 // permet de ne pas utiliser une arme / chip sur une entitée précise
 // Note : le contrôle sur la vatiable NOT_USE_ON n'est pas fait dans tout les fichiers
 global NOT_USE_ON;
-NOT_USE_ON = (function() {
-	var tab = [];
-	tab[CHIP_REGENERATION] = [];
-	tab[CHIP_FORTRESS] = [];
-	tab[CHIP_RAMPART] = [];
-	tab[CHIP_INVERSION] = [];
-	tab[CHIP_LIBERATION] = [];
-	for(var leek in getAliveAllies() + getAliveEnemies()) {
-		if(isSummon(leek) && isAlly(leek)) {
-			tab[CHIP_REGENERATION][leek] = true;
-			tab[CHIP_FORTRESS][leek] = true;
-			if (getFightType() != FIGHT_TYPE_SOLO && countLeekAllie() > 1) {
-				tab[CHIP_RAMPART][leek] = true;
-			}
-		}
-
-
-		// Contrainte LW
-		if (isStatic(leek)) {
-			tab[CHIP_INVERSION][leek] = true;
-		}
-
-		if (TOUR == 1) { // Délai initial de 1 tour
-			tab[CHIP_INVERSION][leek] = true;
-			tab[CHIP_TELEPORTATION][leek] = true;
-		}
-
-	}
-	if (TURRET_ENNEMY !== null) {
-		tab[CHIP_LIBERATION][TURRET_ENNEMY] = true;
-		tab[CHIP_LIBERATION][TURRET_ALLY] = true;
-	}
-	return @tab;
-})();
 
 // compte le nombre d'entitées de type ENTITY_LEEK
 function countLeekAllie() {

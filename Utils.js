@@ -488,3 +488,18 @@ function getCibleToUseTool(tool) {
 	}
 	return cibles;
 }
+
+
+
+// ---------------------------------- Détection d'un effet d'une arme sur une entité----------------------------------------
+
+
+function haveEffect(leek,tool) {
+  var effs = getEffects(leek);
+  for (var eff in effs) {
+  	if(eff[ITEM_ID]==tool) {
+		return true;
+	}
+  }
+  return false;
+}

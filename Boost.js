@@ -65,18 +65,9 @@ function getBoostAction(@actions, @cellsAccessible, Allies, Ennemies, TPmax, @bo
 	}
 }
 
-function haveEffect(leek,tool) {
-  var effs = getEffects(leek);
-  for (var eff in effs) {
-  	if(eff[ITEM_ID]==tool) {
-		return true;
-	}
-  }
-  return false;
-}
 
-function Booster(tool, allies, @cellsAccessible)
-{
+
+function Booster(tool, allies, @cellsAccessible) {
 	// pour les puces de boost sans AOE.
 	var ope = getOperations();
 	var cell_deplace;
@@ -88,9 +79,8 @@ function Booster(tool, allies, @cellsAccessible)
 	var bestValeur = 0;
 	var distanceBestAction = 0;
 	for (var allie in allies) {
-		var eff = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0] ;
-		if ((eff[TOOL_TARGET_SUMMONS] && isSummon(allie)) || (eff[TOOL_TARGET_NON_SUMMONS] && !isSummon(allie))) {
-      if(!(MIN_RANGE[tool] != 0 && allie == ME)) {
+		if(!(MIN_RANGE[tool] != 0 && allie == ME)) {
+			if(!NOT_USE_ON[tool][allie]) {
 				if(!haveEffect(allie,tool)) {
 					cellAllie = getCell(allie);
 					cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
@@ -103,17 +93,19 @@ function Booster(tool, allies, @cellsAccessible)
 						valeur = getValueOfTargetEffect(aTargetEffect);
 						INFO_LEEKS[ME][CELL] = oldPosition;
 
-						if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
-							if(getLeekOnCell(cellAllie)==ME) {
-							  bestAction[CELL_DEPLACE] = -1;
-							  bestAction[CELL_VISE] = -1;
-							} else {
-							  bestAction[CELL_DEPLACE] = cell_deplace;
-							  bestAction[CELL_VISE] = cellAllie;
+						if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= valeur) {
+							if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
+								if(getLeekOnCell(cellAllie)==ME) {
+									bestAction[CELL_DEPLACE] = -1;
+									bestAction[CELL_VISE] = -1;
+								} else {
+									bestAction[CELL_DEPLACE] = cell_deplace;
+									bestAction[CELL_VISE] = cellAllie;
+								}
+								bestAction[VALEUR] = valeur;
+								distanceBestAction = cellsAccessible[cell_deplace];
+								bestValeur = valeur;
 							}
-							bestAction[VALEUR] = valeur;
-							distanceBestAction = cellsAccessible[cell_deplace];
-							bestValeur = valeur;
 						}
 					}
 				}
@@ -154,12 +146,15 @@ function boostTypeAOE(toutPoireau, tool, @cellsAccessible)
 								checkKill(aTargetEffect);
 								var valeur = getValueOfTargetEffect(aTargetEffect);
 								INFO_LEEKS[ME][CELL] = oldPosition;
-								if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
-									bestAction[CELL_DEPLACE] = cell_deplace;
-									bestAction[CELL_VISE] = cell;
-									bestAction[VALEUR] = valeur;
-									valeurMax = valeur;
-									distanceBestAction = cellsAccessible[cell_deplace];
+
+								if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= valeur) {
+									if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[cell_deplace] < distanceBestAction) {
+										bestAction[CELL_DEPLACE] = cell_deplace;
+										bestAction[CELL_VISE] = cell;
+										bestAction[VALEUR] = valeur;
+										valeurMax = valeur;
+										distanceBestAction = cellsAccessible[cell_deplace];
+									}
 								}
 							}
 						}

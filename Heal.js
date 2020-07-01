@@ -1,3 +1,4 @@
+
 include("getArea");
 include("getCellToUse");
 include("Debug");
@@ -72,10 +73,7 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 	var withOrientation = 1;
 
 	var orientation = [-17, 17, -18, 18];
-	//var tabResultat = [];
 
-	//var tireur = [getLeek(), null, null, getStrength(), null];
-	//var cible;
 	var heal = 0;
 	var degat = 0;
 	var boostMaxLife = 0;
@@ -128,34 +126,32 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 	var bestValeur = 0;
 	var distanceBestAction = 0;
 	for (var allie in allies) {
-		//if ((ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_SUMMONS] && isSummon(allie)) || (ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_TARGET_NON_SUMMONS] && !isSummon(allie))) {
-			if (!(MIN_RANGE[tool] != 0 && allie == ME)) {
-				if(!NOT_USE_ON[tool][allie]) {
-					cellAllie = getCell(allie);
-					cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
-					if (cell_deplace != -2) {
-						var oldPosition = INFO_LEEKS[ME][CELL];
-						INFO_LEEKS[ME][CELL] = cell_deplace; // on simule le déplacement
-						var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true);
-						valeur = getValueOfTargetEffect(aTargetEffect);
-						INFO_LEEKS[ME][CELL] = oldPosition;
-						if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= valeur) {
-							if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
-								if (getLeekOnCell(cellAllie) == ME) {
-									bestAction[CELL_DEPLACE] = -1;
-									bestAction[CELL_VISE] = -1;
-								} else {
-									bestAction[CELL_DEPLACE] = cell_deplace;
-									bestAction[CELL_VISE] = cellAllie;
-								}
-								bestAction[VALEUR] = valeur;
-								distanceBestAction = cellsAccessible[cell_deplace];
-								bestValeur = valeur;
+		if (!(MIN_RANGE[tool] != 0 && allie == ME)) {
+			if(!NOT_USE_ON[tool][allie] && !haveEffect(allie,tool)) {
+				cellAllie = getCell(allie);
+				cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
+				if (cell_deplace != -2) {
+					var oldPosition = INFO_LEEKS[ME][CELL];
+					INFO_LEEKS[ME][CELL] = cell_deplace; // on simule le déplacement
+					var aTargetEffect = getTargetEffect(ME, tool, cellAllie, true);
+					valeur = getValueOfTargetEffect(aTargetEffect);
+					INFO_LEEKS[ME][CELL] = oldPosition;
+					if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= valeur) {
+						if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
+							if (getLeekOnCell(cellAllie) == ME) {
+								bestAction[CELL_DEPLACE] = -1;
+								bestAction[CELL_VISE] = -1;
+							} else {
+								bestAction[CELL_DEPLACE] = cell_deplace;
+								bestAction[CELL_VISE] = cellAllie;
 							}
+							bestAction[VALEUR] = valeur;
+							distanceBestAction = cellsAccessible[cell_deplace];
+							bestValeur = valeur;
 						}
 					}
 				}
-			//}
+			}
 		}
 	}
 	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
@@ -166,8 +162,7 @@ function getTargetHeal(tool, cell) {
 	return (!ALL_INGAME_TOOLS[tool][TOOL_IS_WEAPON]) ? getChipTargets(tool, cell) : getWeaponTargets(tool, cell);
 }
 
-function healTypeAOE(toutPoireau, tool, @cellsAccessible)
-{
+function healTypeAOE(toutPoireau, tool, @cellsAccessible) {
 	var oper = getOperations();
 	var bestAction = [];
 	var distanceBestAction = 0;
