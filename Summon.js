@@ -109,7 +109,7 @@ function summonBulb(CHIP, IA, ennemie, @cellsAccessible) {
 	tir[EFFECT] = EFFECT_SUMMON;
 	tir[CALLBACK] = (function(param) { //param = [chip, IA, cellsAccessible]
 		// appeler la fonction cache-cache si on veux se cacher avant le summon !
-		if (getTP() - tir[PT_USE] < 4) { // alors on se cache
+		if (haveOrdonnancement(ORDONNANCEMENT_SUMMON_LAST)) { // alors on se cache
 			var tab = [];
 			for (var cell: var dist in cellsAccessible) push(tab, cell);
 			var cellCache = getCellToGo(getDangerMap(tab));
@@ -169,49 +169,56 @@ function addCoeffEffectLeek(leek) {
 	COEFF_LEEK_EFFECT[leek][EFFECT_KILL] = getTotalLife(leek);
 }
 
-//Si vous voyez d'autres situations à distinguer, dites le, j'en vois plus pour l'instant
+// TODO : Améliorer les coefficients en fonction des situations
 function getBulbValue(CHIP, ennemie) {
-	var absResistance = getAbsoluteShield(ennemie);
-	var relatResistance = getRelativeShield(ennemie);
-	var hp = getLife();
+	var absResistanceEnnemy = getAbsoluteShield(ennemie);
+	var relatResistanceEnnemy = getRelativeShield(ennemie);
+	var summonnerLife = getLife();
 	var hpEnnemie = getLife(ennemie);
+	var magieEnnemie = getMagic(ennemie);
+	var forceEnnemie = getStrength(ennemie);
+	var scienceEnnemie = getScience(ennemie);
 	var distance = getPathLength(getCell(), getCell(ennemie));
 	var value;
-	var Attaque = 0;
+	var isBulbeOffensif = false;
 	if (bulbeOffensif[CHIP] !== null) {
 		value = bulbeOffensif[CHIP];
-		Attaque = 1;
+		isBulbeOffensif = true;
 	} else {
 		value = bulbeDefensif[CHIP];
 	}
 	value += ALL_INGAME_TOOLS[CHIP][TOOL_PT_COST] * 15;
 	var countBulbe = compteurBulbe();
-	if (getFightType() !== FIGHT_TYPE_SOLO and getFightType() !== FIGHT_TYPE_BATTLE_ROYALE)
-	{
+	if (!inArray([FIGHT_TYPE_SOLO, FIGHT_TYPE_BATTLE_ROYALE], getFightType())) {
 		value /= 2;
 	}
-	if ((absResistance >= 100 or relatResistance >= 20) and Attaque == 1) {
+	if ((absResistanceEnnemy >= 100 || relatResistanceEnnemy >= 20) && isBulbeOffensif && CHIP != CHIP_WIZARD_BULB ) {
 		value /= 2;
 	}
-	if (hpEnnemie < 0.35 * getTotalLife(ennemie) and Attaque == 1) {
-		if (distance >= 10 and CHIP == CHIP_FIRE_BULB) {
+	if (hpEnnemie < 0.35 * getTotalLife(ennemie) && isBulbeOffensif) {
+		if (distance >= 10 && CHIP == CHIP_FIRE_BULB) {
 			value *= 3;
 		} else {
 			value *= 2;
 		}
 	}
-	if (getScience() >= 400 and countBulbe == 0) {
+	if (getScience() >= 400 && compteurBulbeCondition(function (bulbe_id) {
+		return inArray([NAME_FIRE_BULB, NAME_ICED_BULB, NAME_LIGHTING_BULB], getName(bulbe_id));
+	}) == 0) {
 		value *= 10;
 	}
-	if (hp <= 0.35 * getTotalLife() and Attaque == 0) {
+	if (summonnerLife <= 0.35 * getTotalLife() && !isBulbeOffensif) {
 		value *= 2;
 	}
-	if (distance >= 15 and Attaque == 0) {
+	if (distance >= 15 && !isBulbeOffensif) {
 		value *= 2;
 	} else {
 		value /= 2;
 	}
-	if (hp >= 0.90 * getTotalLife() and CHIP == CHIP_METALLIC_BULB) {
+	if (CHIP == CHIP_METALLIC_BULB && count(getEntities(true,  function (entity) {return isSummon(entity) && getName(entity) == NAME_METALLIC_BULB;})) <= 1 && (scienceEnnemie >= 200 || forceEnnemie >= 200 || count(getEntities(false,  function (entity) {return isSummon(entity) && inArray([NAME_FIRE_BULB, NAME_ICED_BULB, NAME_LIGHTING_BULB, NAME_ROCKY_BULB], getName(entity)) ;})) <= 1)  ) {
+		value *= 2;
+	}
+	if (CHIP == CHIP_HEALER_BULB && magieEnnemie >= 300 && count(getEntities(true,  function (entity) {return isSummon(entity) && getName(entity) == NAME_HEALER_BULB;})) <= 1) {
 		value *= 2;
 	}
 	value *= (1 / (countBulbe / 4 + 0.5));
@@ -226,4 +233,24 @@ function compteurBulbe() {
 		if (isSummon(allie)) nbBulbes++;
 	}
 	return nbBulbes;
+}
+
+
+
+function compteurBulbeCondition(condition_callback) {
+	var allies = getAliveAllies();
+	var nbBulbes = 0;
+	for (var allie in allies) {
+		if (isSummon(allie) && condition_callback(allie)) nbBulbes++;
+	}
+	return nbBulbes;
+}
+
+
+function getEntities(teamAllie, condition_callback) {
+	return arrayFilter(teamAllie ? getAliveAllies() : getAliveEnemies(), condition_callback);
+}
+
+function haveOrdonnancement(ordonancement) {
+	return inArray(ORDONNANCEMENT_PERSONNALISE, ordonancement);
 }
