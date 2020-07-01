@@ -80,7 +80,7 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
             var libere, antidote, invert, teleport;
 			tacticVal(tool, leek, null, libere, antidote, invert, teleport);
 
-            if(MINIMUM_TO_USE[tool] === null || MINIMUM_TO_USE[tool] <= libere)
+            if(MINIMUM_TO_USE[tool] === null || MINIMUM_TO_USE[tool] <= (antidote + libere + invert + teleport)))
             {
               valeur = SCORE_TACTIC[leek] * (antidote + libere + invert + teleport);
               if(valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction)
@@ -179,6 +179,9 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 			for(var unEffet in effect) {
 				var eff = unEffet[TYPE];
 				unEffet[VALUE] = round( unEffet[VALUE]*0.6 ) ;
+				if (eff == EFFECT_POISON){
+					libere -= unEffet[VALUE];
+				}
 				if(eff == EFFECT_BUFF_TP) {
 					libere += unEffet[VALUE] * 80;
 				}
