@@ -284,6 +284,15 @@ function getValueOfTargetEffect(aTargetEffect) {
 							// L'entité meurt déjà par le poison, donc en rajouter ne va rien changer (mis a part consommer des pf pour rien)
 						}
 					}
+					if (effect == EFFECT_PROPAGATION) {
+						if (!USE_VIE_PREVISIONNEL || INFO_LEEKS[leek][VIE_PREVISIONNEL] > 0) {
+							var coeffTeam = isAlly(leek) ? 1 : -1;
+							var coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
+							coeffReturned +=  coeffTeam * coeffHealthy * infoEffect[COEFF_EFFECT] * COEFF_LEEK_EFFECT[leek][effect];
+						} else {
+							// L'entité meurt déjà par le poison, donc en rajouter ne va rien changer (mis a part consommer des pf pour rien)
+						}
+					}
 				}
 			}
 		}
