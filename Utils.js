@@ -128,11 +128,11 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 					returnTab[cible][EFFECT_DAMAGE][0] = getLife(cible);
 				}
 				
-				if (effect[TOOL_EFFECT_TYPE] == EFFECT_PROPAGATION) {
+				/*if (effect[TOOL_EFFECT_TYPE] == EFFECT_PROPAGATION) {
 					if (returnTab[cible] == null) returnTab[cible] = [];
 					if (returnTab[cible][EFFECT_POISON] == null) returnTab[cible][EFFECT_POISON] = [];
 					returnTab[cible][EFFECT_POISON][0] = getLife(cible);
-				}
+				}*/
 			}
 		}
 	}
@@ -284,7 +284,7 @@ function getValueOfTargetEffect(aTargetEffect) {
 							// L'entité meurt déjà par le poison, donc en rajouter ne va rien changer (mis a part consommer des pf pour rien)
 						}
 					}
-					if (effect == EFFECT_PROPAGATION) {
+					/*if (effect == EFFECT_PROPAGATION) {
 						if (!USE_VIE_PREVISIONNEL || INFO_LEEKS[leek][VIE_PREVISIONNEL] > 0) {
 							var coeffTeam = isAlly(leek) ? 1 : -1;
 							var coeffHealthy = infoEffect[IS_HEALTHY] ? 1 : -1;
@@ -292,7 +292,7 @@ function getValueOfTargetEffect(aTargetEffect) {
 						} else {
 							// L'entité meurt déjà par le poison, donc en rajouter ne va rien changer (mis a part consommer des pf pour rien)
 						}
-					}
+					}*/
 				}
 			}
 		}

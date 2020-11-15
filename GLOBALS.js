@@ -769,7 +769,7 @@ global ALL_EFFECTS = [
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : true,
-		IS_HEALTHY : true,
+		IS_HEALTHY : false,
 		INTERACT_WITH : [
 			INTERACT_SHIELD : false,
 			INTERACT_STEAL_LIFE : false,
@@ -834,8 +834,8 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		var effectDebuffPM = getValeurEffect(Tools[i], EFFECT_SHACKLE_MP, ME,"moy");
 		var effectLifeDamage = getValeurEffect(Tools[i], EFFECT_LIFE_DAMAGE, ME, "moy");
 		var effectNovaDamage = getValeurEffect(Tools[i], EFFECT_NOVA_DAMAGE, ME, "moy");
-		var effectPropagation = getValeurEffect(Tools[i], EFFECT_PROPAGATION, ME, "moy");
-		var AllAttaque = effectPoison + effectDamage + effectDebuffMagic + effectDebuffStrength + effectDebuffPT + effectDebuffPM + effectLifeDamage + effectNovaDamage + effectPropagation;
+		//var effectPropagation = getValeurEffect(Tools[i], EFFECT_PROPAGATION, ME, "moy");
+		var AllAttaque = effectPoison + effectDamage + effectDebuffMagic + effectDebuffStrength + effectDebuffPT + effectDebuffPM + effectLifeDamage + effectNovaDamage /*+ effectPropagation*/;
 
 		//Pour les Shield + renvoie
 		var effRelaShield=getValeurEffect(Tools[i],EFFECT_RELATIVE_SHIELD, ME,"moy");
@@ -941,7 +941,7 @@ function getValeurEffect(tool, effectVoulu, leek, valeur){
 				if(effectVoulu == EFFECT_BUFF_STRENGTH || effectVoulu == EFFECT_BUFF_WISDOM || effectVoulu == EFFECT_BUFF_RESISTANCE || effectVoulu == EFFECT_BUFF_AGILITY||
 			 effectVoulu == EFFECT_BUFF_TP || effectVoulu == EFFECT_BUFF_MP || effectVoulu == EFFECT_NOVA_DAMAGE) amelioration = getScience(leek);
 				if(effectVoulu == EFFECT_DEBUFF || effectVoulu == EFFECT_ANTIDOTE || effectVoulu == EFFECT_INVERT || effectVoulu == EFFECT_TELEPORT) amelioration = 0;
-				if(effectVoulu == EFFECT_RAW_BUFF_TP || effectVoulu == EFFECT_RAW_BUFF_MP || effectVoulu == EFFECT_RAW_BUFF_WISDOM || /* effectVoulu == RAW_BUFF_RESISTANCE || */ effectVoulu == EFFECT_PROPAGATION) amelioration = 0;
+				if(effectVoulu == EFFECT_RAW_BUFF_TP || effectVoulu == EFFECT_RAW_BUFF_MP || effectVoulu == EFFECT_RAW_BUFF_WISDOM /*||  effectVoulu == RAW_BUFF_RESISTANCE || *effectVoulu == EFFECT_PROPAGATION*/) amelioration = 0;
 
 		  return Valeur*(1+amelioration/100) + 1;
 		}
