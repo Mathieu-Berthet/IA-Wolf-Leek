@@ -3,7 +3,7 @@
 include("Debug");
 
 /********************** Globals *********************************/
-global NUMBER_OF_INGAME_ITEMS = 150 ;
+global NUMBER_OF_INGAME_ITEMS = 160;
 global TOUR = 0; TOUR ++; // getTurn()
 global CACHER;
 global ME; ME = getLeek();
@@ -112,7 +112,7 @@ global MIN_RANGE = (function () {
 	min_range[CHIP_TOXIN] = 3;
 	min_range[CHIP_SOPORIFIC] = 4;
 	min_range[WEAPON_GAZOR] = 4;
-  min_range[CHIP_PLAGUE] = 4;
+    min_range[CHIP_PLAGUE] = 4;
 	return @min_range;
 })();
 
@@ -750,7 +750,46 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	]
+	],
+	EFFECT_RAW_BUFF_WISDOM : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		IS_HEALTHY : true,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_PROPAGATION : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		IS_HEALTHY : true,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false,
+		]
+	],
+	/*RAW_BUFF_RESISTANCE : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		IS_HEALTHY : true,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
+		]
+	]*/
 ];
 
 /******************************************************************/
@@ -795,7 +834,8 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		var effectDebuffPM = getValeurEffect(Tools[i], EFFECT_SHACKLE_MP, ME,"moy");
 		var effectLifeDamage = getValeurEffect(Tools[i], EFFECT_LIFE_DAMAGE, ME, "moy");
 		var effectNovaDamage = getValeurEffect(Tools[i], EFFECT_NOVA_DAMAGE, ME, "moy");
-		var AllAttaque = effectPoison + effectDamage + effectDebuffMagic + effectDebuffStrength + effectDebuffPT + effectDebuffPM + effectLifeDamage + effectNovaDamage;
+		var effectPropagation = getValeurEffect(Tools[i], EFFECT_PROPAGATION, ME, "moy");
+		var AllAttaque = effectPoison + effectDamage + effectDebuffMagic + effectDebuffStrength + effectDebuffPT + effectDebuffPM + effectLifeDamage + effectNovaDamage + effectPropagation;
 
 		//Pour les Shield + renvoie
 		var effRelaShield=getValeurEffect(Tools[i],EFFECT_RELATIVE_SHIELD, ME,"moy");
@@ -826,7 +866,9 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		var effectBuffWisdom = getValeurEffect(Tools[i], EFFECT_BUFF_WISDOM, ME,"moy");
 		var effectRawBuffTP = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_TP, ME,"moy");
 		var effectRawBuffMP = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_MP, ME,"moy");
-		var AllBoost = effectBuffStrength + effectBuffAgile + effectBuffResis + effectBuffMP + effectBuffTP + effectBuffWisdom + effectRawBuffTP + effectRawBuffMP;
+		var effectRawBuffWisdom = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_WISDOM, ME, "moy");
+		//var effectRawBuffResistance = getValeurEffect(Tools[i], RAW_BUFF_RESISTANCE, ME, "moy");
+		var AllBoost = effectBuffStrength + effectBuffAgile + effectBuffResis + effectBuffMP + effectBuffTP + effectBuffWisdom + effectRawBuffTP + effectRawBuffMP + effectRawBuffWisdom /*+  effectRawBuffResistance*/ ;
 
     //Les invocations
 		var effectSummon = getValeurEffect(Tools[i], EFFECT_SUMMON, ME, "moy");
@@ -892,18 +934,18 @@ function getValeurEffect(tool, effectVoulu, leek, valeur){
 				else debugEP("[error-getValeurEffect] arg valeur wrong");
 				var amelioration = 0;
 				if(effectVoulu == EFFECT_ABSOLUTE_SHIELD || effectVoulu == EFFECT_RELATIVE_SHIELD) amelioration = getResistance(leek);
-		  if(effectVoulu == EFFECT_DAMAGE_RETURN) amelioration = getAgility(leek);
+		  		if(effectVoulu == EFFECT_DAMAGE_RETURN) amelioration = getAgility(leek);
 				if(effectVoulu == EFFECT_HEAL || effectVoulu == EFFECT_BOOST_MAX_LIFE) amelioration = getWisdom(leek);
 				if(effectVoulu == EFFECT_DAMAGE)amelioration = getStrength(leek);
 				if(effectVoulu == EFFECT_POISON || effectVoulu == EFFECT_SHACKLE_STRENGTH || effectVoulu == EFFECT_SHACKLE_MAGIC || effectVoulu == EFFECT_SHACKLE_TP|| effectVoulu == EFFECT_SHACKLE_MP) amelioration = getMagic(leek);
 				if(effectVoulu == EFFECT_BUFF_STRENGTH || effectVoulu == EFFECT_BUFF_WISDOM || effectVoulu == EFFECT_BUFF_RESISTANCE || effectVoulu == EFFECT_BUFF_AGILITY||
-			 effectVoulu == EFFECT_BUFF_TP || effectVoulu == EFFECT_BUFF_MP || effectVoulu == EFFECT_RAW_BUFF_TP || effectVoulu == EFFECT_RAW_BUFF_MP ||
-			 effectVoulu == EFFECT_NOVA_DAMAGE) amelioration = getScience(leek);
+			 effectVoulu == EFFECT_BUFF_TP || effectVoulu == EFFECT_BUFF_MP || effectVoulu == EFFECT_NOVA_DAMAGE) amelioration = getScience(leek);
 				if(effectVoulu == EFFECT_DEBUFF || effectVoulu == EFFECT_ANTIDOTE || effectVoulu == EFFECT_INVERT || effectVoulu == EFFECT_TELEPORT) amelioration = 0;
+				if(effectVoulu == EFFECT_RAW_BUFF_TP || effectVoulu == EFFECT_RAW_BUFF_MP || effectVoulu == EFFECT_RAW_BUFF_WISDOM || /* effectVoulu == RAW_BUFF_RESISTANCE || */ effectVoulu == EFFECT_PROPAGATION) amelioration = 0;
 
 		  return Valeur*(1+amelioration/100) + 1;
-			}
 		}
+	}
 	return 0;// si pas de "effect" alors return null
 }
 
@@ -961,8 +1003,9 @@ if ( getTurn() == 1 ) // je n'ai pas ultra compris l'idée des globales fonction
 
 	// Modification pour les STEROID qui ne fonctionne pas comme dans la description
 	// cf https://leekwars.com/forum/category-3/topic-9790
-	ALL_INGAME_TOOLS[CHIP_STEROID][TOOL_ATTACK_EFFECTS][2] = ALL_INGAME_TOOLS[CHIP_STEROID][TOOL_ATTACK_EFFECTS][1];
-	ALL_INGAME_TOOLS[CHIP_STEROID][TOOL_ATTACK_EFFECTS][2][TOOL_NUMBER_TURN_EFFECT_LAST] = 0;
+	// Surement plus besoin de ça, vu que steroid a changer
+	/*ALL_INGAME_TOOLS[CHIP_STEROID][TOOL_ATTACK_EFFECTS][2] = ALL_INGAME_TOOLS[CHIP_STEROID][TOOL_ATTACK_EFFECTS][1];
+	ALL_INGAME_TOOLS[CHIP_STEROID][TOOL_ATTACK_EFFECTS][2][TOOL_NUMBER_TURN_EFFECT_LAST] = 0;*/
 
 }
 

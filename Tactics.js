@@ -80,7 +80,7 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
             var libere, antidote, invert, teleport;
 			tacticVal(tool, leek, null, libere, antidote, invert, teleport);
 
-            if(MINIMUM_TO_USE[tool] === null || MINIMUM_TO_USE[tool] <= (antidote + libere + invert + teleport)))
+            if(MINIMUM_TO_USE[tool] === null || MINIMUM_TO_USE[tool] <= (antidote + libere + invert + teleport))
             {
               valeur = SCORE_TACTIC[leek] * (antidote + libere + invert + teleport);
               if(valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction)

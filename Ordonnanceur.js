@@ -59,10 +59,10 @@ getActionFromCombo[ORDONNANCEMENT_BVF] = function(@combo) {
 
 getActionFromCombo[ORDONNANCEMENT_NEAREST_CELL_FIRST] = function(@combo) {
 	var best;
-	var pm = -1;
+	var pm = 1000000;
 	var valeur = 0;
 	for (var i = 0; i < count(combo); i++) {
-		if (combo[i][PM_USE] > pm || combo[i][PM_USE] == pm && combo[i][VALEUR] > valeur) {
+		if (combo[i][PM_USE] < pm || combo[i][PM_USE] == pm && combo[i][VALEUR] > valeur) {
 			best = i;
 			pm = combo[i][PM_USE];
 			valeur = combo[i][VALEUR];
