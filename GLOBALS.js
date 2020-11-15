@@ -768,7 +768,7 @@ global ALL_EFFECTS = [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
-		IS_SPECIAL : false,
+		IS_SPECIAL : true,
 		IS_HEALTHY : true,
 		INTERACT_WITH : [
 			INTERACT_SHIELD : false,

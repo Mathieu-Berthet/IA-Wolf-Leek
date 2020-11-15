@@ -127,6 +127,12 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 					if (returnTab[cible][EFFECT_DAMAGE] == null) returnTab[cible][EFFECT_DAMAGE] = [];
 					returnTab[cible][EFFECT_DAMAGE][0] = getLife(cible);
 				}
+				
+				if (effect[TOOL_EFFECT_TYPE] == EFFECT_PROPAGATION) {
+					if (returnTab[cible] == null) returnTab[cible] = [];
+					if (returnTab[cible][EFFECT_POISON] == null) returnTab[cible][EFFECT_POISON] = [];
+					returnTab[cible][EFFECT_POISON][0] = getLife(cible);
+				}
 			}
 		}
 	}
