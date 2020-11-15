@@ -777,7 +777,7 @@ global ALL_EFFECTS = [
 			INTERACT_NOVA_DAMAGE : false,
 		]
 	],
-	/*RAW_BUFF_RESISTANCE : [
+	EFFECT_RAW_BUFF_RESISTANCE : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
@@ -789,7 +789,7 @@ global ALL_EFFECTS = [
 			INTERACT_RETURN_DAMAGE : false,
 			INTERACT_NOVA_DAMAGE : false
 		]
-	]*/
+	]
 ];
 
 /******************************************************************/
@@ -867,8 +867,8 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		var effectRawBuffTP = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_TP, ME,"moy");
 		var effectRawBuffMP = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_MP, ME,"moy");
 		var effectRawBuffWisdom = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_WISDOM, ME, "moy");
-		//var effectRawBuffResistance = getValeurEffect(Tools[i], RAW_BUFF_RESISTANCE, ME, "moy");
-		var AllBoost = effectBuffStrength + effectBuffAgile + effectBuffResis + effectBuffMP + effectBuffTP + effectBuffWisdom + effectRawBuffTP + effectRawBuffMP + effectRawBuffWisdom /*+  effectRawBuffResistance*/ ;
+		var effectRawBuffResistance = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_RESISTANCE, ME, "moy");
+		var AllBoost = effectBuffStrength + effectBuffAgile + effectBuffResis + effectBuffMP + effectBuffTP + effectBuffWisdom + effectRawBuffTP + effectRawBuffMP + effectRawBuffWisdom + effectRawBuffResistance;
 
     //Les invocations
 		var effectSummon = getValeurEffect(Tools[i], EFFECT_SUMMON, ME, "moy");
