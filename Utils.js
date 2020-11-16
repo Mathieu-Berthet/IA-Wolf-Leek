@@ -31,6 +31,7 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 		nbCible = count(targets);
 		if (effect[TOOL_MODIFIER_ON_CASTER]) targets = [caster];
 		for(var cible in targets) {
+			if(effect[TOOL_MODIFIER_NOT_REPLACEABLE] && haveEffect(cibles, tool)) continue;
 			if (!ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][IS_SPECIAL]) {
 				var coeffAOE;
 				if (effect[TOOL_MODIFIER_ON_CASTER] || inArray([AREA_POINT, AREA_LASER_LINE], area) || cellVise === null) {

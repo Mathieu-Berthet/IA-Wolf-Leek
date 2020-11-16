@@ -982,6 +982,7 @@ global TOOL_TARGET_ENEMIES = "target enemies" ;
 global TOOL_TARGET_SUMMONS = "target summons" ;
 global TOOL_TARGET_NON_SUMMONS = "target non summons" ;
 global TOOL_TARGET_CASTER = "target caster" ;
+global TOOL_MODIFIER_NOT_REPLACEABLE = "target non remplaçable";
 
 if ( getTurn() == 1 ) // je n'ai pas ultra compris l'idée des globales fonctions pour qu'elle ne se lancent que le premier tour ^^'
 {
@@ -1083,4 +1084,5 @@ function stats_effects( @tab_effect , @effect )
 	tab_effect[TOOL_TARGET_SUMMONS] = (effect[4] & EFFECT_TARGET_SUMMONS) && true ;
 	tab_effect[TOOL_TARGET_NON_SUMMONS] = (effect[4] & EFFECT_TARGET_NON_SUMMONS) && true ;
 	tab_effect[TOOL_TARGET_CASTER] = (effect[4] & EFFECT_TARGET_CASTER) && true ;
+	tab_effect[TOOL_MODIFIER_NOT_REPLACEABLE] = (effect[5] & EFFECT_MODIFIER_NOT_REPLACEABLE) && true;
 }
