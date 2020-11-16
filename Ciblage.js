@@ -5,7 +5,7 @@ include("Utils");
 
 MINIMUM_TO_USE = (function(){
 	var tab = [];
-	tab[CHIP_REGENERATION] = 1 * (1 + getWisdom()/100) * getChipEffects(CHIP_REGENERATION)[0][MIN];
+	tab[CHIP_REGENERATION] = (1 * (1 + getWisdom()/100) * getChipEffects(CHIP_REGENERATION)[0][MIN]) /2;
 	tab[CHIP_ANTIDOTE] = 300;
 	tab[CHIP_LIBERATION] = 200;
 	tab[CHIP_COVETOUSNESS] = ALL_INGAME_TOOLS[CHIP_COVETOUSNESS][TOOL_PT_COST] * ALL_EFFECTS[EFFECT_BUFF_TP][COEFF_EFFECT];
@@ -170,6 +170,7 @@ function setBoostCoeff() { // Méthode du nombre de puce
 	for (var allie in getAliveAllies()) {
 		var tools = getChips(allie)+getWeapons(allie);
 		var nbDamageTool = compteurPuceEffect(tools, EFFECT_DAMAGE);
+		var nbPoisonTool = compteurPuceEffect(tools, EFFECT_POISON);
 		var nbHealTool = compteurPuceEffect(tools, EFFECT_HEAL);
 		var nbResiTool = compteurPuceEffect(tools, EFFECT_ABSOLUTE_SHIELD)+compteurPuceEffect(tools, EFFECT_RELATIVE_SHIELD);
 		var nbReturnDamageTool = compteurPuceEffect(tools, EFFECT_DAMAGE_RETURN);
@@ -178,14 +179,28 @@ function setBoostCoeff() { // Méthode du nombre de puce
 						+ compteurPuceEffect(tools, EFFECT_BUFF_RESISTANCE)
 						+ compteurPuceEffect(tools, EFFECT_BUFF_AGILITY)
 						+ compteurPuceEffect(tools, EFFECT_BUFF_TP)
-						+ compteurPuceEffect(tools, EFFECT_BUFF_MP);
+						+ compteurPuceEffect(tools, EFFECT_BUFF_MP)
+						+ compteurPuceEffect(tools, EFFECT_RAW_BUFF_AGILITY)
+						+ compteurPuceEffect(tools, EFFECT_RAW_BUFF_STRENGTH)
+						+ compteurPuceEffect(tools, EFFECT_RAW_BUFF_WISDOM)
+						+ compteurPuceEffect(tools, EFFECT_RAW_BUFF_RESISTANCE)
+						+ compteurPuceEffect(tools, EFFECT_RAW_BUFF_MAGIC)
+						+ compteurPuceEffect(tools, EFFECT_RAW_BUFF_TP)
+						+ compteurPuceEffect(tools, EFFECT_RAW_BUFF_MP);
 
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_STRENGTH] = nbDamageTool == 0 ? 0 : sqrt(nbDamageTool);
+		COEFF_LEEK_EFFECT[allie][EFFECT_RAW_BUFF_STRENGTH] = COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_STRENGTH];
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_WISDOM] = nbHealTool == 0 ? 0 : sqrt(nbHealTool);
+		COEFF_LEEK_EFFECT[allie][EFFECT_RAW_BUFF_WISDOM] = COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_WISDOM];
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_RESISTANCE] = nbResiTool == 0 ? 0 : sqrt(nbResiTool);
+		COEFF_LEEK_EFFECT[allie][EFFECT_RAW_BUFF_RESISTANCE] = COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_RESISTANCE];
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_AGILITY] = 1 + (nbReturnDamageTool == 0 ? 0 : sqrt(nbReturnDamageTool)) + (nbScienceTool == 0 ? 0 : sqrt(nbScienceTool));
+		COEFF_LEEK_EFFECT[allie][EFFECT_RAW_BUFF_AGILITY] = COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_AGILITY];
+		COEFF_LEEK_EFFECT[allie][EFFECT_RAW_BUFF_MAGIC] = nbPoisonTool == 0 ? 0 : sqrt(nbDamageTool);
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_TP] = 1.7;
 		COEFF_LEEK_EFFECT[allie][EFFECT_BUFF_MP] = 1.7;
+		COEFF_LEEK_EFFECT[allie][EFFECT_RAW_BUFF_TP] = 1.7;
+		COEFF_LEEK_EFFECT[allie][EFFECT_RAW_BUFF_MP] = 1.7;
 
 
 		if(isSummon(allie)) {
