@@ -148,22 +148,25 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 					{
 					libere += unEffet[VALUE] * 80;
 				}
-				if(eff == EFFECT_BUFF_TP) {
+				if(eff == EFFECT_BUFF_TP || eff == EFFECT_RAW_BUFF_TP) {
 					libere -= unEffet[VALUE] * 80;
 				}
-				if(eff == EFFECT_BUFF_MP) {
+				if(eff == EFFECT_BUFF_MP || eff == EFFECT_RAW_BUFF_MP) {
 					libere -= unEffet[VALUE] * 60;
 				}
-				if(eff == EFFECT_BUFF_STRENGTH) {
+				if(eff == EFFECT_BUFF_STRENGTH || eff == EFFECT_RAW_BUFF_STRENGTH) {
 					libere -= unEffet[VALUE] * 1;
 				}
-				if(eff == EFFECT_BUFF_AGILITY) {
+				if(eff == EFFECT_RAW_BUFF_MAGIC) {
+					libere -= unEffet[VALUE] * 1;
+				}
+				if(eff == EFFECT_BUFF_AGILITY || eff == EFFECT_RAW_BUFF_AGILITY) {
 					libere -= unEffet[VALUE] * 0.7;
 				}
-				if(eff == EFFECT_BUFF_RESISTANCE) {
+				if(eff == EFFECT_BUFF_RESISTANCE || eff == EFFECT_RAW_BUFF_RESISTANCE) {
 					libere -= unEffet[VALUE] * 0.7;
 				}
-				if(eff == EFFECT_BUFF_WISDOM) {
+				if(eff == EFFECT_BUFF_WISDOM || eff == EFFECT_RAW_BUFF_WISDOM) {
 					libere -= unEffet[VALUE] * 0.7;
 				}
 				if(eff == EFFECT_ABSOLUTE_SHIELD) {
@@ -182,22 +185,25 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 				if (eff == EFFECT_POISON){
 					libere -= unEffet[VALUE];
 				}
-				if(eff == EFFECT_BUFF_TP) {
+				if(eff == EFFECT_BUFF_TP || eff == EFFECT_RAW_BUFF_TP) {
 					libere += unEffet[VALUE] * 80;
 				}
-				if(eff == EFFECT_BUFF_MP) {
+				if(eff == EFFECT_BUFF_MP || eff == EFFECT_RAW_BUFF_MP) {
 					libere += unEffet[VALUE] * 60;
 				}
-				if(eff == EFFECT_BUFF_STRENGTH) {
+				if(eff == EFFECT_BUFF_STRENGTH || eff == EFFECT_RAW_BUFF_STRENGTH) {
 					libere += unEffet[VALUE] * 1;
 				}
-				if(eff == EFFECT_BUFF_AGILITY) {
+				if(eff == EFFECT_RAW_BUFF_MAGIC) {
+					libere += unEffet[VALUE] * 1;
+				}
+				if(eff == EFFECT_BUFF_AGILITY || eff == EFFECT_RAW_BUFF_AGILITY) {
 					libere += unEffet[VALUE] * 0.7;
 				}
-				if(eff == EFFECT_BUFF_RESISTANCE) {
+				if(eff == EFFECT_BUFF_RESISTANCE || eff == EFFECT_RAW_BUFF_RESISTANCE) {
 					libere += unEffet[VALUE] * 0.7;
 				}
-				if(eff == EFFECT_BUFF_WISDOM) {
+				if(eff == EFFECT_BUFF_WISDOM || eff == EFFECT_RAW_BUFF_WISDOM) {
 					libere += unEffet[VALUE] * 0.7;
 				}
 				if(eff == EFFECT_ABSOLUTE_SHIELD) {
