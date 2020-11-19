@@ -1,4 +1,3 @@
-
 include("getArea");
 include("getCellToUse");
 include("Debug");
