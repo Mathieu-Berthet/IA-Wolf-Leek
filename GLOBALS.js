@@ -143,7 +143,7 @@ function countLeekAllie() {
  }
 
 
-
+//A changer. La science n'as plus autant d'influence donc moins prioritaire. 
 global _RESU_PRIORITY = [
 	"science": 3,
     "strength": 2,
@@ -700,7 +700,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_RAW_BUFF_MP : [
-		COEFF_EFFECT : 60,
+		COEFF_EFFECT : 80,
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -859,7 +859,9 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 
     //Pour les boosts
 		var effectBuffStrength = getValeurEffect(Tools[i],  EFFECT_BUFF_STRENGTH,  ME,  "moy");
+		var effectRawBuffStrength = getValeurEffect(Tools[i],  EFFECT_RAW_BUFF_STRENGTH,  ME,  "moy");
 		var effectBuffAgile = getValeurEffect(Tools[i], EFFECT_BUFF_AGILITY, ME,"moy");
+		var effectRawBuffAgile = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_AGILITY, ME,"moy");
 		var effectBuffResis = getValeurEffect(Tools[i], EFFECT_BUFF_RESISTANCE, ME,"moy");
 		var effectBuffMP = getValeurEffect(Tools[i], EFFECT_BUFF_MP, ME,"moy");
 		var effectBuffTP = getValeurEffect(Tools[i], EFFECT_BUFF_TP, ME,"moy");
@@ -868,7 +870,7 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		var effectRawBuffMP = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_MP, ME,"moy");
 		var effectRawBuffWisdom = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_WISDOM, ME, "moy");
 		var effectRawBuffResistance = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_RESISTANCE, ME, "moy");
-		var AllBoost = effectBuffStrength + effectBuffAgile + effectBuffResis + effectBuffMP + effectBuffTP + effectBuffWisdom + effectRawBuffTP + effectRawBuffMP + effectRawBuffWisdom + effectRawBuffResistance;
+		var AllBoost = effectBuffStrength + effectRawBuffStrength + effectBuffAgile + effectRawBuffAgile + effectBuffResis + effectBuffMP + effectBuffTP + effectBuffWisdom + effectRawBuffTP + effectRawBuffMP + effectRawBuffWisdom + effectRawBuffResistance;
 
     //Les invocations
 		var effectSummon = getValeurEffect(Tools[i], EFFECT_SUMMON, ME, "moy");
