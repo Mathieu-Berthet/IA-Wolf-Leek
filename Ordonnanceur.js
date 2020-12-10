@@ -114,7 +114,7 @@ getActionFromCombo[ORDONNANCEMENT_SCIENCE] = function(@combo) {
 
 getActionFromCombo[ORDONNANCEMENT_VULNERABILITE_FIRST] = function(@combo) {
 	var action = getActionInComboByTool(combo, CHIP_INVERSION);
-	if (action != null && isEnemy(getLeekOnCell(action[CELL_VISE]))) {
+	if (action != null && isEnemy(getEntityOnCell(action[CELL_VISE]))) {
 		return @action;
 	}
 
@@ -255,7 +255,7 @@ function getBestCombo(@actions, TP) {
 
 
 function doAction(attack) {
-	debugP(attack);
+	//debugP(attack);
 	var code_return = USE_SUCCESS; // note : les codes d'erreurs sont négatifs
 	var code_return_callback = USE_SUCCESS;
 	if (attack != [] && attack != null) {

@@ -6,7 +6,7 @@ include("Deplacements");
 // A ameliorer pour le comportement d'equipe ( rajouter un parametre distance par rapport au centre de gravité... )
 //===============================
 function getDangerMap(cells_accessibles) {
-	var leek = getLeek();
+	var leek = getEntity();
 	var myRC = cells_accessibles;
 	var enemyRC;
 	var tab_scores = [];

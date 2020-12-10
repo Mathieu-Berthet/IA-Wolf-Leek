@@ -6,7 +6,7 @@ include("Debug");
 global NUMBER_OF_INGAME_ITEMS = 160;
 global TOUR = 0; TOUR ++; // getTurn()
 global CACHER;
-global ME; ME = getLeek();
+global ME; ME = getEntity();
 global PHRASE_A_DIRE = [];
 global STOP_ACTION;
 global ERROR_TOOLS;
@@ -870,7 +870,8 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		var effectRawBuffMP = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_MP, ME,"moy");
 		var effectRawBuffWisdom = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_WISDOM, ME, "moy");
 		var effectRawBuffResistance = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_RESISTANCE, ME, "moy");
-		var AllBoost = effectBuffStrength + effectRawBuffStrength + effectBuffAgile + effectRawBuffAgile + effectBuffResis + effectBuffMP + effectBuffTP + effectBuffWisdom + effectRawBuffTP + effectRawBuffMP + effectRawBuffWisdom + effectRawBuffResistance;
+		var effectRawBuffMagic = getValeurEffect(Tools[i], EFFECT_RAW_BUFF_MAGIC, ME, "moy");
+		var AllBoost = effectBuffStrength + effectRawBuffStrength + effectBuffAgile + effectRawBuffAgile + effectBuffResis + effectBuffMP + effectBuffTP + effectBuffWisdom + effectRawBuffTP + effectRawBuffMP + effectRawBuffWisdom + effectRawBuffResistance + effectRawBuffMagic;
 
     //Les invocations
 		var effectSummon = getValeurEffect(Tools[i], EFFECT_SUMMON, ME, "moy");

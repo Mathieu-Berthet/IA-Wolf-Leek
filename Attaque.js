@@ -78,7 +78,7 @@ function getAttackAction(@actions, @cellsAccessible, toutEnnemis, TPmax, @attack
 					tir[EFFECT] = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS][0][TOOL_EFFECT_TYPE];
 					tir[CALLBACK] = (function (params) {
 						updateInfoLeeks();
-						var cible = getLeekOnCell(params[CELL_VISE]);
+						var cible = getEntityOnCell(params[CELL_VISE]);
 						if (cible && isAlreadyShackle(cible, params[EFFECT])) {
 							STOP_ACTION = true;
 						}
@@ -142,7 +142,7 @@ function attaqueTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			}
 		}
 	}
-	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -190,7 +190,7 @@ function frappeDuDemon(toutEnnemis, @cellsAccessible) {
 			}
 		}
 	}
-	debugP("Frappe du demon : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP("Frappe du demon : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -248,7 +248,7 @@ function attaqueTypeAOE(toutEnnemis, tool, @cellsAccessible) {
 			}
 		}
 	}
-	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -302,6 +302,6 @@ function attaqueTypePoint(toutEnnemis, tool, @cellsAccessible) {
 			}
 		}
 	}
-	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }

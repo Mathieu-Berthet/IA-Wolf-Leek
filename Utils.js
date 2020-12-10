@@ -13,7 +13,7 @@ include('getArea');
  */
 function getTargetEffect(caster, tool, cellVise, multiTarget) {
 
-	var cibles = multiTarget ? getCibles(tool, cellVise) : [getLeekOnCell(cellVise)]; // leeks se trouvant dans l'AOE de l'arme
+	var cibles = multiTarget ? getCibles(tool, cellVise) : [getEntityOnCell(cellVise)]; // leeks se trouvant dans l'AOE de l'arme
 
 	if(typeOf(cellVise) == TYPE_ARRAY){
 		cellVise = cellVise['cell'];
@@ -193,7 +193,7 @@ function getCibles(tool, cellVise){ // leek se trouvant dans la L'AOE de l'arme
 
 	var cibles = [];
 	for(var cell in cell_AOE) {
-		var leek = getLeekOnCell(cell);
+		var leek = getEntityOnCell(cell);
 		if(leek != -1 && leek != ME) {
 			push(cibles, leek);
 		}
@@ -428,7 +428,7 @@ function setViePrevisionel() {
 		}
 		INFO_LEEKS[entity][VIE_PREVISIONNEL] = vie_previsionel;
 		if(vie_previsionel <= 0) {
-			debugCP("DEAD : " + getName(entity) + " => Il faudrait faire quelque chose pour le pas lui lancer des boosts autre que antidote et du heal", COLOR_RED);
+			//debugCP("DEAD : " + getName(entity) + " => Il faudrait faire quelque chose pour le pas lui lancer des boosts autre que antidote et du heal", COLOR_RED);
 		}
 	}
 }
