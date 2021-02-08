@@ -3,7 +3,7 @@
 include("Debug");
 
 /********************** Globals *********************************/
-global NUMBER_OF_INGAME_ITEMS = 160;
+global INGAME_ITEMS = getAllChips() + getAllWeapons();
 global TOUR = 0; TOUR ++; // getTurn()
 global CACHER;
 global ME; ME = getEntity();
@@ -16,7 +16,7 @@ global COMBO = [];
 
 global INFO_LEEKS = [];
 
-global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7, CELL = 8, LIFE = 9, MAX_LIFE = 10, SAGESSE = 11, VIE_PREVISIONNEL = 99;
+global ID = 0, ABSOLUTE_SHIELD = 1, RELATIVE_SHIELD = 2, STRENGTH = 3, DAMAGE_RETURN = 4, MAGIC = 5, PT = 6, MP = 7, CELL = 8, LIFE = 9, MAX_LIFE = 10, WISDOM = 11, AGILITY = 12, VIE_PREVISIONNEL = 99;
 
 
 function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des constantes associées
@@ -35,7 +35,8 @@ function updateInfoLeeks() {//TODO : mettre d'autres caractéristiques avec des 
 			CELL			 : getCell(leek),
 			LIFE			 : getLife(leek),
 			MAX_LIFE		 : getTotalLife(leek),
-			SAGESSE		 : getWisdom(leek)
+			WISDOM		 : getWisdom(leek),
+			AGILITY		 : getAgility(leek)
 		];
 	}
 	INFO_LEEKS = @tab;
@@ -105,7 +106,7 @@ if(getFightType() == FIGHT_TYPE_TEAM && TOUR == 1) {
 // Permet de ne pas se faire prendre sois même dans l'AOE
 global MIN_RANGE = (function () {
 	var min_range = [];
-	for (var i=1; i< NUMBER_OF_INGAME_ITEMS; i++) {
+	for (var i in INGAME_ITEMS) {
 		min_range[i] = (isChip(i)) ? getChipMinRange(i) : getWeaponMinRange(i);
 	}
 	min_range[CHIP_TRANQUILIZER] = 2;
@@ -118,7 +119,7 @@ global MIN_RANGE = (function () {
 
 global MAX_RANGE = (function () {
 	var max_range = [];
-	for (var i=1; i< NUMBER_OF_INGAME_ITEMS; i++) {
+	for (var i in INGAME_ITEMS) {
 		max_range[i] = (isChip(i)) ? getChipMaxRange(i) : getWeaponMaxRange(i);
 	}
 	return @max_range;
@@ -322,6 +323,32 @@ global ALL_EFFECTS = [
 			INTERACT_NOVA_DAMAGE : false
 		]
 	],
+	EFFECT_SHACKLE_AGILITY : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_MAGIC,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		IS_HEALTHY : false,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_SHACKLE_WISDOM : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_MAGIC,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		IS_HEALTHY : false,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
+		]
+	],
 	// EFFECT BUFF
 	EFFECT_BUFF_TP : [
 		COEFF_EFFECT : 80,
@@ -442,6 +469,19 @@ global ALL_EFFECTS = [
 			INTERACT_NOVA_DAMAGE : false,
 		]
 	],
+	EFFECT_NOVA_VITALITY : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		IS_HEALTHY : true,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false,
+		]
+	],
 	// RESISTANCE
 	EFFECT_RELATIVE_SHIELD : [
 		COEFF_EFFECT : 3,
@@ -549,6 +589,19 @@ global ALL_EFFECTS = [
 			INTERACT_NOVA_DAMAGE : false
 		]
 	],
+	EFFECT_REMOVE_SHACKLES : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : true,
+		IS_HEALTHY : true,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
+		]
+	],
 	EFFECT_DEBUFF : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : null,
@@ -576,6 +629,32 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_INVERT : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : true,
+		IS_HEALTHY : null,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_ATTRACT : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : true,
+		IS_HEALTHY : null,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
+		]
+	],
+	EFFECT_PUSH : [
 		COEFF_EFFECT : 1,
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
@@ -738,6 +817,19 @@ global ALL_EFFECTS = [
 			INTERACT_NOVA_DAMAGE : false
 		]
 	],
+	EFFECT_RAW_BUFF_AGILITY : [
+		COEFF_EFFECT : 1,
+		BOOSTED_BY : null,
+		IS_RELATIF : false,
+		IS_SPECIAL : false,
+		IS_HEALTHY : true,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
+		]
+	],
 	EFFECT_RAW_BUFF_TP : [
 		COEFF_EFFECT : 80,
 		BOOSTED_BY : null,
@@ -830,12 +922,14 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		var effectDamage = getValeurEffect(Tools[i], EFFECT_DAMAGE, ME,"moy");
 		var effectDebuffMagic = getValeurEffect(Tools[i], EFFECT_SHACKLE_MAGIC, ME,"moy");
 		var effectDebuffStrength = getValeurEffect(Tools[i], EFFECT_SHACKLE_STRENGTH, ME,"moy");
+		var effectDebuffAgility = getValeurEffect(Tools[i], EFFECT_SHACKLE_AGILITY, ME,"moy");
+		var effectDebuffWisdom = getValeurEffect(Tools[i], EFFECT_SHACKLE_WISDOM, ME,"moy");
 		var effectDebuffPT = getValeurEffect(Tools[i], EFFECT_SHACKLE_TP, ME,"moy");
 		var effectDebuffPM = getValeurEffect(Tools[i], EFFECT_SHACKLE_MP, ME,"moy");
 		var effectLifeDamage = getValeurEffect(Tools[i], EFFECT_LIFE_DAMAGE, ME, "moy");
 		var effectNovaDamage = getValeurEffect(Tools[i], EFFECT_NOVA_DAMAGE, ME, "moy");
 		//var effectPropagation = getValeurEffect(Tools[i], EFFECT_PROPAGATION, ME, "moy");
-		var AllAttaque = effectPoison + effectDamage + effectDebuffMagic + effectDebuffStrength + effectDebuffPT + effectDebuffPM + effectLifeDamage + effectNovaDamage /*+ effectPropagation*/;
+		var AllAttaque = effectPoison + effectDamage + effectDebuffMagic + effectDebuffStrength + effectDebuffAgility + effectDebuffWisdom + effectDebuffPT + effectDebuffPM + effectLifeDamage + effectNovaDamage /*+ effectPropagation*/;
 
 		//Pour les Shield + renvoie
 		var effRelaShield=getValeurEffect(Tools[i],EFFECT_RELATIVE_SHIELD, ME,"moy");
@@ -848,14 +942,17 @@ function SetupTools( @attack_tools , @shield_tools , @heal_tools , @boost_tools 
 		//Pour les soins
 		var effectSoin = getValeurEffect(Tools[i],EFFECT_HEAL, ME,"moy"); // Prend en compte l'inversion
 		var effectBoostLife = getValeurEffect(Tools[i],EFFECT_BOOST_MAX_LIFE, ME,"moy");
-		var AllSoin = effectSoin + effectBoostLife;
+		var effectNovaVitality = getValeurEffect(Tools[i], EFFECT_NOVA_VITALITY, ME, "moy");
+		var AllSoin = effectSoin + effectBoostLife + effectNovaVitality;
 
 		//Pour les puces tactiques
 		var effectLibe = getValeurEffect(Tools[i],EFFECT_DEBUFF, ME,"moy");
 		var effectAntidote = getValeurEffect(Tools[i],EFFECT_ANTIDOTE, ME,"moy");
-		// var effectInvert = getValeurEffect(Tools[i],EFFECT_INVERT, ME,"moy"); // Déjà compris dans heal & resistance (pour les allies et les enemmis)
 		var effectTeleport = getValeurEffect(Tools[i],EFFECT_TELEPORT, ME,"moy");
-		var AllTatics = effectLibe + effectAntidote /*+ effectInvert*/ + effectTeleport;
+		var effectAttract = getValeurEffect(Tools[i],EFFECT_ATTRACT, ME,"moy");
+		var effectPush = getValeurEffect(Tools[i],EFFECT_PUSH, ME,"moy");
+		var effectRemoveShackle = getValeurEffect(Tools[i],EFFECT_REMOVE_SHACKLES, ME,"moy");
+		var AllTatics = effectLibe + effectAntidote + effectTeleport + effectAttract + effectPush + effectRemoveShackle;
 
     //Pour les boosts
 		var effectBuffStrength = getValeurEffect(Tools[i],  EFFECT_BUFF_STRENGTH,  ME,  "moy");
@@ -938,14 +1035,13 @@ function getValeurEffect(tool, effectVoulu, leek, valeur){
 				var amelioration = 0;
 				if(effectVoulu == EFFECT_ABSOLUTE_SHIELD || effectVoulu == EFFECT_RELATIVE_SHIELD) amelioration = getResistance(leek);
 		  		if(effectVoulu == EFFECT_DAMAGE_RETURN) amelioration = getAgility(leek);
-				if(effectVoulu == EFFECT_HEAL || effectVoulu == EFFECT_BOOST_MAX_LIFE) amelioration = getWisdom(leek);
+				if(effectVoulu == EFFECT_HEAL || effectVoulu == EFFECT_BOOST_MAX_LIFE || effectVoulu == EFFECT_NOVA_VITALITY) amelioration = getWisdom(leek);
 				if(effectVoulu == EFFECT_DAMAGE)amelioration = getStrength(leek);
-				if(effectVoulu == EFFECT_POISON || effectVoulu == EFFECT_SHACKLE_STRENGTH || effectVoulu == EFFECT_SHACKLE_MAGIC || effectVoulu == EFFECT_SHACKLE_TP|| effectVoulu == EFFECT_SHACKLE_MP) amelioration = getMagic(leek);
+				if(effectVoulu == EFFECT_POISON || effectVoulu == EFFECT_SHACKLE_STRENGTH || effectVoulu == EFFECT_SHACKLE_MAGIC || effectVoulu == EFFECT_SHACKLE_TP|| effectVoulu == EFFECT_SHACKLE_MP || effectVoulu == EFFECT_SHACKLE_AGILITY || effectVoulu == EFFECT_SHACKLE_WISDOM) amelioration = getMagic(leek);
 				if(effectVoulu == EFFECT_BUFF_STRENGTH || effectVoulu == EFFECT_BUFF_WISDOM || effectVoulu == EFFECT_BUFF_RESISTANCE || effectVoulu == EFFECT_BUFF_AGILITY||
 			 effectVoulu == EFFECT_BUFF_TP || effectVoulu == EFFECT_BUFF_MP || effectVoulu == EFFECT_NOVA_DAMAGE) amelioration = getScience(leek);
-				if(effectVoulu == EFFECT_DEBUFF || effectVoulu == EFFECT_ANTIDOTE || effectVoulu == EFFECT_INVERT || effectVoulu == EFFECT_TELEPORT) amelioration = 0;
+				if(effectVoulu == EFFECT_DEBUFF || effectVoulu == EFFECT_ANTIDOTE || effectVoulu == EFFECT_INVERT || effectVoulu == EFFECT_TELEPORT || effectVoulu == EFFECT_REMOVE_SHACKLES || effectVoulu == EFFECT_ATTRACT || effectVoulu == EFFECT_PUSH) amelioration = 0;
 				if(effectVoulu == EFFECT_RAW_BUFF_TP || effectVoulu == EFFECT_RAW_BUFF_MP || effectVoulu == EFFECT_RAW_BUFF_WISDOM /*||  effectVoulu == RAW_BUFF_RESISTANCE || *effectVoulu == EFFECT_PROPAGATION*/) amelioration = 0;
-
 		  return Valeur*(1+amelioration/100) + 1;
 		}
 	}
@@ -1015,7 +1111,7 @@ if ( getTurn() == 1 ) // je n'ai pas ultra compris l'idée des globales fonction
 
 function create_all_tools_tab()
 {
-	for ( var id_item = 0 ; id_item < NUMBER_OF_INGAME_ITEMS ; id_item++ )
+	for (var id_item in INGAME_ITEMS)
 	{
 		if ( isChip( id_item ) == true ) // je suis habitué à voir les true/false, c'est juste plus lisible pour moi
 		{

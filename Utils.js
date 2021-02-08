@@ -360,6 +360,12 @@ function isAlreadyShackle(leek, effect) {
 	if (effect == EFFECT_SHACKLE_STRENGTH) {
 		return INFO_LEEKS[leek][STRENGTH] <= 0;
 	}
+	if (effect == EFFECT_SHACKLE_WISDOM) {
+		return INFO_LEEKS[leek][WISDOM] <= 0;
+	}
+	if (effect == EFFECT_SHACKLE_AGILITY) {
+		return INFO_LEEKS[leek][AGILITY] <= 0;
+	}
 	if (effect == EFFECT_SHACKLE_MP) {
 		return INFO_LEEKS[leek][MP] <= 0;
 	}

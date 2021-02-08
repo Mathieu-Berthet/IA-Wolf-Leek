@@ -12,6 +12,9 @@ function getResistanceAction(@actions, @cellsAccessible, Allies, TPmax, @shield_
 			if(tool == WEAPON_J_LASER) {
 				var cellToCheck = getCellsToCheckForLaser(cellsAccessible, Allies + getAliveEnemies());
 				tir = shieldTypeLigne(tool, cellToCheck, cellsAccessible);
+			} 
+			else if (tool == CHIP_DOME) {
+				tir = Dome(Allies,cellsAccessible);
 			} else {
 				tir = proteger(tool, Allies, cellsAccessible);
 			}
@@ -77,7 +80,7 @@ function shieldTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			}
 		}
 	}
-	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -124,6 +127,41 @@ function proteger(tool, allies, @cellsAccessible) {// pour les puces de shield s
 			//}
 		}
 	}
-	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	return @bestAction;
+}
+
+
+function Dome(toutAllies, @cellsAccessible) {
+	var oper = getOperations();
+	var bestAction = [];
+	var distanceBestAction = 0;
+	var valeurMax = 0;
+	var deja_fait = [];
+	var protect = getTargetEffect(ME, CHIP_DOME, getCell(), false)[ME][EFFECT_RELATIVE_SHIELD][0]; // pas besoin de simuler le déplacement car le dernier paramètre est à false
+	for (var i = 0; i < count(toutAllies); i++) {
+		var cellE = getCell(toutAllies[i]);
+		var zone = getEffectiveArea(CHIP_DOME, cellE);
+		for (var j in zone) {
+			if(!deja_fait[j] && (isEmptyCell(j) || j==getCell())) {
+				deja_fait[j]=true;
+				if (cellsAccessible[j] !== null) {
+					var oldPosition = INFO_LEEKS[ME][CELL];
+					INFO_LEEKS[ME][CELL] = cellsAccessible[j]; // on simule le déplacement
+					var aTargetEffect = getTargetEffect(ME, CHIP_DOME, j, true);
+					var valeur = getValueOfTargetEffect(aTargetEffect);
+					INFO_LEEKS[ME][CELL] = oldPosition;
+					if (valeur > valeurMax || valeur == valeurMax && cellsAccessible[j] < distanceBestAction) {
+						bestAction[CELL_DEPLACE] = j;
+						bestAction[CELL_VISE] = j;
+						bestAction[VALEUR] = valeur;
+						valeurMax = valeur;
+						distanceBestAction = cellsAccessible[j];
+					}
+				}
+			}
+		}
+	}
+	//debugP("Dome : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }

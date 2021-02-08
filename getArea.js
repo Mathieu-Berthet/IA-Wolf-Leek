@@ -7,6 +7,7 @@ include("Debug");
 global tabAOE = [];
 global tabPlus = [];
 global tabCroix = [];
+global tabCarre = [];
 
 global OBSTACLE = [];
 global AREA_LASER;
@@ -49,6 +50,7 @@ function getEffectiveArea(arme, cell) {
 	var tailleAOE;
 	var tailleCroixAOE;
 	var taillePlusAOE;
+	var tailleCarreAOE;
 	if(typeArea == AREA_CIRCLE_1 || typeArea == AREA_CIRCLE_2 || typeArea == AREA_CIRCLE_3)
 	{
 		if (typeArea == AREA_CIRCLE_1) {
@@ -94,6 +96,18 @@ function getEffectiveArea(arme, cell) {
 		}
 		return tabCroix[cell][tailleCroixAOE];
 	}
+	if(typeArea == AREA_SQUARE_1 || typeArea == AREA_SQUARE_2)
+	{
+		if(typeArea == AREA_SQUARE_1)
+		{
+			tailleCarreAOE = 1;
+		}
+		if(typeArea == AREA_SQUARE_2)
+		{
+			tailleCarreAOE = 2;
+		}
+		return tabCarre[cell][tailleCarreAOE];
+	}
 }
 
 
@@ -105,6 +119,7 @@ if (getTurn() == 1) {
 	initgetAOE();
 	initgetAOECroix();
 	initgetAOEPlus();
+	initgetAOECarre();
   	init_AreaLine();
 	//debugP(getOperations() / OPERATIONS_LIMIT * 100 + " %");
 }
@@ -223,6 +238,16 @@ function initgetAOEPlus() {
 	}
 }
 
+function initgetAOECarre() {
+	for (var i = 0; i < 613; i++) {
+		tabCarre[i] = [];
+		if (!OBSTACLE[i]) {
+			for (var j = 1; j < 4; j++) {
+				tabCarre[i][j] = getAOECarre(j, i);
+			}
+		}
+	}
+}
 
 function getAOE(taille, centre) {
 	var Voisin;
@@ -273,6 +298,27 @@ function getAOEPlus(taille, centre)
 	if(taille == 1) Voisin = [-17, -18, 17, 18];
 	if(taille == 2) Voisin = [-17, -18, 17, 18, -34, 34, -36, 36];
 	if(taille == 3) Voisin = [-17, -18, 17, 18, -34, 34, -36, 36, 51, -51, 54, -54];
+
+	for (var i in Voisin) {
+
+		if (centre + i >= 0 && centre + i < 613 && !OBSTACLE[centre + i]) {
+			if (getCellDistance(centre, centre + i) <= taille) {
+				aoe[t] = centre + i;
+				t++;
+			}
+		}
+	}
+	return aoe;
+}
+
+function getAOECarre(taille, centre)
+{
+	var Voisin;
+	var aoe = [centre];
+	var t = 1;
+	if(taille == 1) Voisin = [-17, -18, 17, 18, -1, -35, 1, 35];
+    if(taille == 2) Voisin = [-17, -18, 17, 18, -1, -35, 1, 35, 36, -36, 34, -34, 19, -19, 16, -16, 53, -53, 52, -52, -70, 70, 2, -2 ];
+
 
 	for (var i in Voisin) {
 

@@ -11,7 +11,7 @@ global DEGAT = 0, VOL = 1; //, DAMAGE_RETURN = 2;
 // voir pour fusionner items avec mon tableau ?
 global ITEMS = (function() {
 	var tab = [];
-	for (var i = 1; i < NUMBER_OF_INGAME_ITEMS; i++) {
+	for (var i in INGAME_ITEMS) {
 		tab[i] = [];
 		tab[i][NAME] = ALL_INGAME_TOOLS[i][TOOL_NAME] ;
 

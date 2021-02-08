@@ -110,7 +110,7 @@ function healTypeLigne(tool, @cellToCheck, @cellsAccessible) {
 			}
 		}
 	}
-	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -137,7 +137,7 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 					INFO_LEEKS[ME][CELL] = oldPosition;
 					if(MINIMUM_TO_USE[tool]===null || MINIMUM_TO_USE[tool]<= valeur) {
 						if (valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction) {
-							if (getLeekOnCell(cellAllie) == ME) {
+							if (getEntityOnCell(cellAllie) == ME) {
 								bestAction[CELL_DEPLACE] = -1;
 								bestAction[CELL_VISE] = -1;
 							} else {
@@ -153,7 +153,7 @@ function soigner(tool, allies, @cellsAccessible) { // pour les puces de soins sa
 			}
 		}
 	}
-	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - ope) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
 
@@ -202,6 +202,6 @@ function healTypeAOE(toutPoireau, tool, @cellsAccessible) {
 			}
 		}
 	}
-	debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
+	//debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " : " + bestAction + " => " + ((getOperations() - oper) / OPERATIONS_LIMIT * 100) + "%");
 	return @bestAction;
 }
