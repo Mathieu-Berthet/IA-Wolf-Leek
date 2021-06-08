@@ -1,3 +1,4 @@
+
 /**
  * Auteur : Caneton
  * getCenterOfGravity => retourne le centre de gravité d'un goupe de poireau
@@ -35,8 +36,8 @@ function getCenterOfGravity(leeks) {
 		var s2primY = somme2Y/(nb-1);
 		var ecartTypeX = sqrt(s2primX);
 		var ecartTypeY = sqrt(s2primY);
-		debugP("ecartTypeX = " + ecartTypeX);
-		debugP("ecartTypeY = " + ecartTypeY);
+		/*debugP("ecartTypeX = " + ecartTypeX);
+		debugP("ecartTypeY = " + ecartTypeY);*/
 	}
 
 	return centre;

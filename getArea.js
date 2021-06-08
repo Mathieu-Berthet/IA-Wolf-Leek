@@ -313,7 +313,7 @@ function getAOEPlus(taille, centre)
 
 function getAOECarre(taille, centre)
 {
-	var Voisin;
+	var Voisin = [];
 	var aoe = [centre];
 	var t = 1;
 	if(taille == 1) Voisin = [-17, -18, 17, 18, -1, -35, 1, 35];

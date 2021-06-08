@@ -192,28 +192,28 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 					libere += unEffet[VALUE] * 60;
 				}
 				if(eff == EFFECT_BUFF_STRENGTH || eff == EFFECT_RAW_BUFF_STRENGTH) {
-					libere += unEffet[VALUE] * 1;
+					libere += unEffet[VALUE];
 				}
 				if(eff == EFFECT_RAW_BUFF_MAGIC) {
-					libere += unEffet[VALUE] * 1;
+					libere += unEffet[VALUE];
 				}
 				if(eff == EFFECT_BUFF_AGILITY || eff == EFFECT_RAW_BUFF_AGILITY) {
-					libere += unEffet[VALUE] * 0.7;
+					libere += unEffet[VALUE];
 				}
 				if(eff == EFFECT_BUFF_RESISTANCE || eff == EFFECT_RAW_BUFF_RESISTANCE) {
-					libere += unEffet[VALUE] * 0.7;
+					libere += unEffet[VALUE];
 				}
 				if(eff == EFFECT_BUFF_WISDOM || eff == EFFECT_RAW_BUFF_WISDOM) {
-					libere += unEffet[VALUE] * 0.7;
+					libere += unEffet[VALUE];
 				}
 				if(eff == EFFECT_ABSOLUTE_SHIELD) {
-					libere += unEffet[VALUE];
+					libere += unEffet[VALUE] * 2;
 				}
 				if(eff == EFFECT_RELATIVE_SHIELD) {
 					libere += 3 * unEffet[VALUE];
 				}
 				if(eff == EFFECT_RAW_ABSOLUTE_SHIELD) {
-					libere += 4*unEffet[VALUE];
+					libere += 4 * unEffet[VALUE];
 				}
 			}
 			return libere;

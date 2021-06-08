@@ -12,7 +12,7 @@ include("Debug");
 
 
 function IA_Collective() {
-	ME = getLeek();
+	ME = getEntity();
 
 
 	var bulb_attack_tools = [] ;

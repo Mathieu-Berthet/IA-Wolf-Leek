@@ -241,11 +241,11 @@ function getOpponent(enemies) {
 		science = getScience(enemy);
 		agile = getAgility(enemy);
 		coeffDangereux = // revoir le calcul, difficile de repositionner la tourelle avec un bon coeff
-			  science * 5 * getLevel(enemy) / 100
-			+ strength * 4 * getLevel(enemy) / 100
-			+ heal * 3 * getLevel(enemy) / 100
-			+ res * 2 * getLevel(enemy) / 100
+			  strength * 5 * getLevel(enemy) / 100
 			+ poison * 4 * getLevel(enemy) / 100
+			+ heal * 3 * getLevel(enemy) / 100
+			+ science * 2.5 * getLevel(enemy) / 100
+			+ res * 2 * getLevel(enemy) / 100
 			+ agile * 2 * getLevel(enemy) / 100;
 		for(var effect in getEffects(enemy))
 		{
@@ -258,7 +258,7 @@ function getOpponent(enemies) {
 				degatPoisonPris -= effect[1];
 			}
 		}
-		if (getCellDistance(getCell(), getCell(enemy)) < 8)
+		if (getCellDistance(getCell(), getCell(enemy)) < 10)
 		{
 			coeffDangereux += 10; //*= 3;
 		}
@@ -339,7 +339,7 @@ function getEchantillonCentre(@resultat, tab) {
 	} else {
 		ecartType = 0;
 	}
-	debugP("ecart-type = " + ecartType);
+	//debugP("ecart-type = " + ecartType);
 	for(var cle : var valeur in tab) {
 		resultat[cle] = (ecartType==0) ? 1 : ((valeur - moy) / ecartType) + 1;
 		if (resultat[cle] <= 0) {

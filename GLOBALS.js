@@ -86,6 +86,8 @@ global
 	NAME_ICED_BULB 		= "iced_bulb",
 	NAME_FIRE_BULB 		= "fire_bulb",
 	NAME_WIZARD_BULB 	= "wizard_bulb";
+	/*NAME_TACTICIAN_BULB = "tactician_bulb";*/
+	/*NAME_SAVANT_BULB    = "savant_bulb";*/
 
 
 global TURRET_ALLY;
@@ -444,7 +446,7 @@ global ALL_EFFECTS = [
 	],
 	// HEAL
 	EFFECT_HEAL : [
-		COEFF_EFFECT : 1,
+		COEFF_EFFECT : 1.75,
 		BOOSTED_BY : CHARACTERISTIC_WISDOM,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -457,7 +459,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_BOOST_MAX_LIFE : [
-		COEFF_EFFECT : 1,
+		COEFF_EFFECT : 1.5,
 		BOOSTED_BY : CHARACTERISTIC_WISDOM,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -603,7 +605,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_DEBUFF : [
-		COEFF_EFFECT : 1,
+		COEFF_EFFECT : 1.5,
 		BOOSTED_BY : null,
 		IS_RELATIF : true,
 		IS_SPECIAL : true,
@@ -1035,11 +1037,11 @@ function getValeurEffect(tool, effectVoulu, leek, valeur){
 				var amelioration = 0;
 				if(effectVoulu == EFFECT_ABSOLUTE_SHIELD || effectVoulu == EFFECT_RELATIVE_SHIELD) amelioration = getResistance(leek);
 		  		if(effectVoulu == EFFECT_DAMAGE_RETURN) amelioration = getAgility(leek);
-				if(effectVoulu == EFFECT_HEAL || effectVoulu == EFFECT_BOOST_MAX_LIFE || effectVoulu == EFFECT_NOVA_VITALITY) amelioration = getWisdom(leek);
+				if(effectVoulu == EFFECT_HEAL || effectVoulu == EFFECT_BOOST_MAX_LIFE) amelioration = getWisdom(leek);
 				if(effectVoulu == EFFECT_DAMAGE)amelioration = getStrength(leek);
 				if(effectVoulu == EFFECT_POISON || effectVoulu == EFFECT_SHACKLE_STRENGTH || effectVoulu == EFFECT_SHACKLE_MAGIC || effectVoulu == EFFECT_SHACKLE_TP|| effectVoulu == EFFECT_SHACKLE_MP || effectVoulu == EFFECT_SHACKLE_AGILITY || effectVoulu == EFFECT_SHACKLE_WISDOM) amelioration = getMagic(leek);
 				if(effectVoulu == EFFECT_BUFF_STRENGTH || effectVoulu == EFFECT_BUFF_WISDOM || effectVoulu == EFFECT_BUFF_RESISTANCE || effectVoulu == EFFECT_BUFF_AGILITY||
-			 effectVoulu == EFFECT_BUFF_TP || effectVoulu == EFFECT_BUFF_MP || effectVoulu == EFFECT_NOVA_DAMAGE) amelioration = getScience(leek);
+			 effectVoulu == EFFECT_BUFF_TP || effectVoulu == EFFECT_BUFF_MP || effectVoulu == EFFECT_NOVA_DAMAGE || effectVoulu == EFFECT_NOVA_VITALITY) amelioration = getScience(leek);
 				if(effectVoulu == EFFECT_DEBUFF || effectVoulu == EFFECT_ANTIDOTE || effectVoulu == EFFECT_INVERT || effectVoulu == EFFECT_TELEPORT || effectVoulu == EFFECT_REMOVE_SHACKLES || effectVoulu == EFFECT_ATTRACT || effectVoulu == EFFECT_PUSH) amelioration = 0;
 				if(effectVoulu == EFFECT_RAW_BUFF_TP || effectVoulu == EFFECT_RAW_BUFF_MP || effectVoulu == EFFECT_RAW_BUFF_WISDOM /*||  effectVoulu == RAW_BUFF_RESISTANCE || *effectVoulu == EFFECT_PROPAGATION*/) amelioration = 0;
 		  return Valeur*(1+amelioration/100) + 1;

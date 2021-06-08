@@ -24,7 +24,7 @@ function getSummonAction(@actions, @cellsAccessible, TPmax, @summon_tools) {
 				actions[nb_action] = tir;
 				nb_action++;
 			}
-			debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " => " + tir);
+			//debugP(ALL_INGAME_TOOLS[tool][TOOL_NAME] + " => " + tir);
 		}
 	}
 }
@@ -134,7 +134,7 @@ function summonBulb(CHIP, IA, ennemie, @cellsAccessible) {
 		}
 		var code_return = summon(param[0], cellOuSummon, param[1]);
   	/* Mise à jour des variables globales pour pouvoir booster et ne pas kill le bulbe */
-		var bulbe = getLeekOnCell(cellOuSummon);
+		var bulbe = getEntityOnCell(cellOuSummon);
 		addCoeffEffectBulbe(bulbe);
 		updateInfoLeeks();
 		getOpponent(getAliveEnemies());

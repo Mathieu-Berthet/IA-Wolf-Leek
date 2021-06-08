@@ -15,7 +15,7 @@ include("Territoire");
 include("Debug");
 
 // clearMap();
-debugTerritoires(getTerritoires(getAliveAllies(), getAliveEnemies()));
+//debugTerritoires(getTerritoires(getAliveAllies(), getAliveEnemies()));
 
 COMBO = [];
 CACHER = false;
@@ -24,13 +24,13 @@ ERROR_TOOLS = [];
 getOpponent(getAliveEnemies());
 SetupAll();
 
-debugP("SCORE_DAMAGE :");
+/*debugP("SCORE_DAMAGE :");
 for (var leek: var effects in COEFF_LEEK_EFFECT) {
 	debugP(getName(leek) + " => " + effects[EFFECT_DAMAGE]);
 }
-debugP("");
+debugP("");*/
 
-//setBoostCoeff(); //A decommenter si votre poireau joue science
+setBoostCoeff(); //A decommenter si votre poireau joue science
 
 if (inArray([FIGHT_TYPE_SOLO, FIGHT_TYPE_BATTLE_ROYALE], getFightType()) || getMagic() > 300 && getStrength()  < 200) {
 	USE_VIE_PREVISIONNEL = true; // Pour prendre en compte si une entité va mourir par le poison ()

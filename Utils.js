@@ -21,7 +21,8 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 
 	var nbCible;
 	var infoTool = ALL_INGAME_TOOLS[tool];
-	var effects = infoTool[TOOL_ATTACK_EFFECTS];
+	var effects = [];
+	effects = infoTool[TOOL_ATTACK_EFFECTS];
 	var area = infoTool[TOOL_AOE_TYPE];
 
 	var returnTab = [];
@@ -516,12 +517,16 @@ function getCibleToUseTool(tool) {
 // ---------------------------------- Détection d'un effet d'une arme sur une entité----------------------------------------
 
 
-function haveEffect(leek,tool) {
-  var effs = getEffects(leek);
-  for (var eff in effs) {
-  	if(eff[ITEM_ID]==tool) {
-		return true;
-	}
-  }
-  return false;
+function haveEffect(leek,tool) 
+{
+	var effs = getEffects(leek);
+	//debug(effs);
+	for (var eff in effs) 
+	{
+  		if(eff[ITEM_ID]==tool) 
+		{
+			return true;
+		}
+  	}
+	return false;
 }

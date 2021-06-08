@@ -6,7 +6,7 @@
 include("GLOBALS");
 include("Debug");
 
-							/*						Fonction Publique							*/
+		/*						Fonction Publique							*/
 
 /**
 * @auteur: Caneton
@@ -17,7 +17,7 @@ include("Debug");
 function getCellToUseToolsOnCell(tool, cellVisee, @cellsAccessible) {
 	var cells = [];
 	CellsToUseTool (tool, cellVisee, cells);
-	var me = getLeek();
+	var me = getEntity();
 	var cellMin = -2;
 	var min = 100;
 	for (var cell in cells) {
@@ -122,12 +122,10 @@ function getCellsToCheckForLaser(@pathLengh, leeks) {
 global obstacle = [];
 global _initCellToUse = [];
 global _initInLineCell = [];
+global celltouse = [];
 
-
-global celltouse = [0: [0], 1 : [18, 17, -17, -18], 2 : [36, 35, 34, 1, -1, -34, -35, -36], 3 : [54, 53, 52, 51, 19, 16, -16, -19, -51, -52, -53, -54], 4 : [72, 71, 70, 69, 68, 37, 33, 2, -2, -33, -37, -68, -69, -70, -71, -72], 5 : [90, 89, 88, 87, 86, 85, 55, 50, 20, 15, -15, -20, -50, -55, -85, -86, -87, -88, -89, -90], 6 : [108, 107, 106, 105, 104, 103, 102, 73, 67, 38, 32, 3, -3, -32, -38, -67, -73, -102, -103, -104, -105, -106, -107, -108], 7 : [126, 125, 124, 123, 122, 121, 120, 119, 91, 84, 56, 49, 21, 14, -14, -21, -49, -56, -84, -91, -119, -120, -121, -122, -123, -124, -125, -126], 8 : [144, 143, 142, 141, 140, 139, 138, 137, 136, 109, 101, 74, 66, 39, 31, 4, -4, -31, -39, -66, -74, -101, -109, -136, -137, -138, -139, -140, -141, -142, -143, -144], 9 : [162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 127, 118, 92, 83, 57, 48, 22, 13, -13, -22, -48, -57, -83, -92, -118, -127, -153, -154, -155, -156, -157, -158, -159, -160, -161, -162], 10 : [180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 145, 135, 110, 100, 75, 65, 40, 30, 5, -5, -30, -40, -65, -75, -100, -110, -135, -145, -170, -171, -172, -173, -174, -175, -176, -177, -178, -179, -180]] ;
+celltouse = [0: [0], 1 : [18, 17, -17, -18], 2 : [36, 35, 34, 1, -1, -34, -35, -36], 3 : [54, 53, 52, 51, 19, 16, -16, -19, -51, -52, -53, -54], 4 : [72, 71, 70, 69, 68, 37, 33, 2, -2, -33, -37, -68, -69, -70, -71, -72], 5 : [90, 89, 88, 87, 86, 85, 55, 50, 20, 15, -15, -20, -50, -55, -85, -86, -87, -88, -89, -90], 6 : [108, 107, 106, 105, 104, 103, 102, 73, 67, 38, 32, 3, -3, -32, -38, -67, -73, -102, -103, -104, -105, -106, -107, -108], 7 : [126, 125, 124, 123, 122, 121, 120, 119, 91, 84, 56, 49, 21, 14, -14, -21, -49, -56, -84, -91, -119, -120, -121, -122, -123, -124, -125, -126], 8 : [144, 143, 142, 141, 140, 139, 138, 137, 136, 109, 101, 74, 66, 39, 31, 4, -4, -31, -39, -66, -74, -101, -109, -136, -137, -138, -139, -140, -141, -142, -143, -144], 9 : [162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 127, 118, 92, 83, 57, 48, 22, 13, -13, -22, -48, -57, -83, -92, -118, -127, -153, -154, -155, -156, -157, -158, -159, -160, -161, -162], 10 : [180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 145, 135, 110, 100, 75, 65, 40, 30, 5, -5, -30, -40, -65, -75, -100, -110, -135, -145, -170, -171, -172, -173, -174, -175, -176, -177, -178, -179, -180]] ;
 // tableau tout moche qui donne les offset des cases se situant à une distante présise
-
-
 
 init_obstacle();
 initialisationCellToUse();
@@ -240,17 +238,16 @@ function initialisationInLineCell() {
 				}
 			}
 		}
-		debugP("initialisationInLineCell :"+((getOperations()-ope)/OPERATIONS_LIMIT *100));
+		//debugP("initialisationInLineCell :"+((getOperations()-ope)/OPERATIONS_LIMIT *100));
 	}
 }
 function initialisationCellToUse(){
 	if (getTurn()==1) {
 		var av = getOperations();
 		var all = getAliveAllies()+getAliveEnemies();
-
 		for (var i = 0; i < 613; i++) {
 			_initCellToUse[i] = [];
-			for (var j = 0; j <=12; j++) {
+			for (var j = 0; j <=10; j++) {
 				var sstab = [];
 				for (var b in celltouse[j]) {
 					var c = b+i;
@@ -261,6 +258,6 @@ function initialisationCellToUse(){
 				_initCellToUse[i][j] = sstab;
 			}
 		}
-		debugP("initialisationCellToUse :"+((getOperations()-av)/OPERATIONS_LIMIT *100));
+		//debugP("initialisationCellToUse :"+((getOperations()-av)/OPERATIONS_LIMIT *100));
 	}
 }
