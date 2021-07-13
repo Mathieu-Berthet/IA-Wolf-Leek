@@ -16,7 +16,7 @@ function getTacticAction(@actions, @cellsAccessible, Allies, Ennemies, @tactics_
 		{
 			var effect = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS] ;
 			var tir;
-			if(inArray([CHIP_LIBERATION, CHIP_ANTIDOTE, CHIP_INVERSION, CHIP_TELEPORTATION], tool)) {
+			if(inArray([CHIP_LIBERATION, CHIP_ANTIDOTE, CHIP_INVERSION, CHIP_TELEPORTATION, CHIP_MANUMISSION], tool)) {
 				tir = tactic(tool, Allies, Ennemies, cellsAccessible);
 			}
 			if((tir != [] || tir != null) && tir[VALEUR] > 15) // A Vérifier
@@ -77,15 +77,15 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
           cell_deplace = getCellToUseToolsOnCell(tool, cellAllie, cellsAccessible);
           if(cell_deplace != -2)
           {
-            var libere, antidote, invert, teleport;
-			tacticVal(tool, leek, null, libere, antidote, invert, teleport);
+            var libere, antidote, invert, teleport, affranchi;
+			tacticVal(tool, leek, null, libere, antidote, invert, teleport, affranchi);
 
             if(MINIMUM_TO_USE[tool] === null || MINIMUM_TO_USE[tool] <= (antidote + libere + invert + teleport))
             {
-              valeur = SCORE_TACTIC[leek] * (antidote + libere + invert + teleport);
+              valeur = SCORE_TACTIC[leek] * (antidote + libere + invert + teleport + affranchi);
               if(valeur > bestValeur || valeur == bestValeur && cellsAccessible[cell_deplace] < distanceBestAction)
               {
-                if(getLeekOnCell(cellAllie) == ME)
+                if(getEntityOnCell(cellAllie) == ME)
                 {
                   bestAction[CELL_DEPLACE] = -1;
                   bestAction[CELL_VISE] = -1;
@@ -109,9 +109,9 @@ function tactic(tool, allies, ennemies, @cellsAccessible)
 	return @bestAction;
 }
 
-function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @teleport)
+function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @teleport, @affranchi)
 {
-	libere = 0; antidote = 0; invert = 0;
+	libere = 0; antidote = 0; invert = 0; affranchi = 0;
 	var effects = ALL_INGAME_TOOLS[tool][TOOL_ATTACK_EFFECTS];
 	//if(coeffReduction === null || coeffReduction < 1 || coeffRedcution < 0) coeffReduction = 1;
 	if(tool == CHIP_ANTIDOTE && isAlly(leek))
@@ -219,7 +219,40 @@ function tacticVal(tool, leek, coeffReduction, @libere, @antidote, @invert, @tel
 			return libere;
 		}
 	}
-
+	
+	if(tool == CHIP_MANUMISSION && isAlly(leek))
+	{
+		var effectEntrave = getEffects(leek);
+		for(var unEffet in effectEntrave)
+		{
+			var eff = unEffet[TYPE];
+			if (eff == EFFECT_SHACKLE_AGILITY)
+			{
+				affranchi += unEffet[VALUE];
+			}
+			if (eff == EFFECT_SHACKLE_WISDOM)
+			{
+				affranchi += unEffet[VALUE];
+			}
+			if (eff == EFFECT_SHACKLE_STRENGTH)
+			{
+				affranchi += unEffet[VALUE];
+			}
+			if (eff == EFFECT_SHACKLE_MAGIC)
+			{
+				affranchi += unEffet[VALUE];
+			}
+			if (eff == EFFECT_SHACKLE_MP)
+			{
+				affranchi += unEffet[VALUE] * 60;
+			}
+			if (eff == EFFECT_SHACKLE_TP)
+			{
+				affranchi += unEffet[VALUE] * 80;
+			}
+		}
+		return affranchi;
+	}
 	if(tool == CHIP_INVERSION)
 	{
 		if(isAlly(leek))
