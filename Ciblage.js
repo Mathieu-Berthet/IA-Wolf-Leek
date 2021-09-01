@@ -229,6 +229,7 @@ function getOpponent(enemies) {
 	var poison = -1;
 	var science = -1;
 	var agile = -1;
+	var power = -1;
 	var coeffDangereux = 0;
 	var coeffAllie = 0;
 	var degatPoisonPris = 0;
@@ -240,8 +241,10 @@ function getOpponent(enemies) {
 		poison = getMagic(enemy);
 		science = getScience(enemy);
 		agile = getAgility(enemy);
+		getFightType() == FIGHT_TYPE_BATTLE_ROYALE ? power = getPower(enemy) : power = 0;
 		coeffDangereux = // revoir le calcul, difficile de repositionner la tourelle avec un bon coeff
 			  strength * 5 * getLevel(enemy) / 100
+			+ power * 5 * getLevel(enemy) / 100
 			+ poison * 4 * getLevel(enemy) / 100
 			+ heal * 3 * getLevel(enemy) / 100
 			+ science * 2.5 * getLevel(enemy) / 100

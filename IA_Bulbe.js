@@ -22,7 +22,7 @@ function IA_Collective() {
 	var bulb_tactics_tools = [] ;
 	var bulb_summon_tools = [] ; // cette variable sert juste pour faire marcher la fonction setuptools, un bulbe ne pourra jamais invoquer un autre bulbe... sauf si pilow devient fou x)
 	SetupTools( bulb_attack_tools , bulb_shield_tools , bulb_heal_tools , bulb_boost_tools , bulb_tactics_tools , bulb_summon_tools ) ;
-	if (false && getName() == 'healer_bulb') {			// bulbe guerisseur
+	if (getName() == 'healer_bulb') {			// bulbe guerisseur
 		var combo = [CHIP_DRIP, CHIP_VACCINE, CHIP_CURE, CHIP_BANDAGE];
 		for (var action in combo) {
 			var ally = getAllyToHeal();
@@ -32,8 +32,8 @@ function IA_Collective() {
 				useChip(action, ally);
 			}
 		}
-	} else if (false && getName() == 'metallic_bulb') {	// bulbe metallique
-		var combo = [CHIP_ARMOR, CHIP_SHIELD, CHIP_WALL, CHIP_SEVEN_LEAGUE_BOOTS];
+	} else if (getName() == 'metallic_bulb') {	// bulbe metallique
+		var combo = [CHIP_ARMOR, CHIP_SHIELD, CHIP_WALL, CHIP_WINGED_BOOTS];
 		for (var action in combo) {
 			var ally = getAllyToProtect();
 			var accessibles_cells = getReachableCells(getCell(), getMP());
@@ -151,7 +151,7 @@ function getAllyToProtect() {
 		}
 		if (inArray(accessibles_cells, getCellToUseChip(CHIP_SHIELD, ally))) {scores[i] = scores[i] + 3;}
 		if (inArray(accessibles_cells, getCellToUseChip(CHIP_WALL, ally))) {scores[i] = scores[i] + 2;}
-		if (ally == getLeek()) {scores[i] = scores[i] - 1;}
+		if (ally == getEntity()) {scores[i] = scores[i] - 1;}
 		scores[i] = scores[i] - (getAbsoluteShield(ally) + getRelativeShield(ally)) / 70;
 		scores[i] = scores[i] + 1 - (getLife(ally) / getTotalLife(ally)) * 6;
 		scores[i] = scores[i] - (getDistance(getCell(ally), getCell(getNearestEnemy()))/3);

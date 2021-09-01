@@ -3,7 +3,7 @@ include("IA_Bulbe");
 include("Debug");
 
 
-global bulbeOffensif = [CHIP_ROCKY_BULB: 90, CHIP_ICED_BULB: 120, CHIP_FIRE_BULB: 225, CHIP_LIGHTNING_BULB: 240, CHIP_WIZARD_BULB: 180];
+global bulbeOffensif = [CHIP_ROCKY_BULB: 90, CHIP_ICED_BULB: 120, CHIP_FIRE_BULB: 225, CHIP_LIGHTNING_BULB: 240, CHIP_WIZARD_BULB: 180, CHIP_SAVANT_BULB: 210];
 global bulbeDefensif = [CHIP_HEALER_BULB: 300, CHIP_METALLIC_BULB: 270, CHIP_PUNY_BULB: 60];
 
 
@@ -41,17 +41,27 @@ function resu(@cellsAccessible) {
 	var isScience = [];
 	var isStrength = [];
 	var isMagic = [];
+	var isHeal = [];
+	var isAgile = [];
+	var isResistance = [];
 	var priority = [];
 	if (allieDead == null || !count(allieDead)) return null;
 	for (var leek in allieDead)
 	{
 		priority[leek] = 0;
-		if(getScience(leek) > 300) isScience[leek] = true;
 		if(getStrength(leek) > 200) isStrength[leek] = true;
+		if(getWisdom(leek) > 200) isHeal[leek]= true;
 		if(getMagic(leek) > 200) isMagic[leek]= true;
-		if(isScience[leek]) priority[leek] += _RESU_PRIORITY["science"];
+		if(getScience(leek) > 200) isScience[leek] = true;
+		if(getAgility(leek) > 200) isAgile[leek]= true;
+		if(getResistance(leek) > 200) isResistance[leek]= true;
 		if(isStrength[leek]) priority[leek] += _RESU_PRIORITY["strength"];
+		if(isHeal[leek]) priority[leek] += _RESU_PRIORITY["heal"];
 		if(isMagic[leek]) priority[leek] += _RESU_PRIORITY["magic"];
+		if(isScience[leek]) priority[leek] += _RESU_PRIORITY["science"];
+		if(isAgile[leek]) priority[leek] += _RESU_PRIORITY["agile"];
+		if(isResistance[leek]) priority[leek] += _RESU_PRIORITY["resistance"];
+		
 	}
 	var allieToResurrect = allieDead[0];
 	for (var allie = 1; allie < count(allieDead); allie++)

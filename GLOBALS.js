@@ -85,9 +85,10 @@ global
 	NAME_ROCKY_BULB 	= "rocky_bulb",
 	NAME_ICED_BULB 		= "iced_bulb",
 	NAME_FIRE_BULB 		= "fire_bulb",
-	NAME_WIZARD_BULB 	= "wizard_bulb";
+	NAME_WIZARD_BULB 	= "wizard_bulb",
+	NAME_SAVANT_BULB    = "savant_bulb";
 	/*NAME_TACTICIAN_BULB = "tactician_bulb";*/
-	/*NAME_SAVANT_BULB    = "savant_bulb";*/
+	
 
 
 global TURRET_ALLY;
@@ -148,9 +149,12 @@ function countLeekAllie() {
 
 //A changer. La science n'as plus autant d'influence donc moins prioritaire. 
 global _RESU_PRIORITY = [
-	"science": 3,
-    "strength": 2,
-    "magic": 1
+	"strength": 5,
+	"heal":4,
+    "magic": 3,
+    "science": 2.5,
+	"resistance": 2,
+	"agile": 2
 ];
 
 global LEEK_VALUE = 3;
@@ -392,7 +396,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_BUFF_AGILITY :  [
-		COEFF_EFFECT : 0.7,
+		COEFF_EFFECT : 1,
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -405,7 +409,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_BUFF_RESISTANCE : [
-		COEFF_EFFECT : 0.7,
+		COEFF_EFFECT : 1,
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -459,7 +463,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_BOOST_MAX_LIFE : [
-		COEFF_EFFECT : 1.5,
+		COEFF_EFFECT : 1.75,
 		BOOSTED_BY : CHARACTERISTIC_WISDOM,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -755,7 +759,7 @@ global ALL_EFFECTS = [
 
 	// EFFECT_RAW
 	EFFECT_RAW_ABSOLUTE_SHIELD : [
-		COEFF_EFFECT : 3,
+		COEFF_EFFECT : 2,
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -820,7 +824,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_RAW_BUFF_AGILITY : [
-		COEFF_EFFECT : 1,
+		COEFF_EFFECT : 2,
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -846,7 +850,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_RAW_BUFF_WISDOM : [
-		COEFF_EFFECT : 1,
+		COEFF_EFFECT : 1.75,
 		BOOSTED_BY : null,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,

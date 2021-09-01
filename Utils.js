@@ -20,9 +20,10 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 	}
 
 	var nbCible;
+	//infoTool = [];
 	var infoTool = ALL_INGAME_TOOLS[tool];
-	var effects = [];
-	effects = infoTool[TOOL_ATTACK_EFFECTS];
+	//effects = [];
+	var effects = infoTool[TOOL_ATTACK_EFFECTS];
 	var area = infoTool[TOOL_AOE_TYPE];
 
 	var returnTab = [];
@@ -32,7 +33,7 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 		nbCible = count(targets);
 		if (effect[TOOL_MODIFIER_ON_CASTER]) targets = [caster];
 		for(var cible in targets) {
-			if(effect[TOOL_MODIFIER_NOT_REPLACEABLE] && haveEffect(cibles, tool)) continue;
+			if(effect[TOOL_MODIFIER_NOT_REPLACEABLE] && haveEffect(cible, tool)) continue;
 			if (!ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][IS_SPECIAL]) {
 				var coeffAOE;
 				if (effect[TOOL_MODIFIER_ON_CASTER] || inArray([AREA_POINT, AREA_LASER_LINE], area) || cellVise === null) {
@@ -64,8 +65,14 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 						coeffCharacteristic = 1 + (getCharacteristiqueFunction(characteristic))(caster) / 100;
 					}
 				}
+				
+				var coeff_power = 1;
+				if(getFightType() == FIGHT_TYPE_BATTLE_ROYALE)
+				{
+					coeff_power = 1 + getPower() / 100;
+				}
 
-				var value = round(coeffMoyen * coeffCharacteristic * coeffAOE * coeffNbCible);
+				var value = round(coeffMoyen * coeffCharacteristic * coeffAOE * coeffNbCible * coeff_power);
 
 				if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_SHIELD]) {
 					value = max(0, value * (1 - INFO_LEEKS[cible][RELATIVE_SHIELD] / 100) - INFO_LEEKS[cible][ABSOLUTE_SHIELD]);
@@ -519,6 +526,7 @@ function getCibleToUseTool(tool) {
 
 function haveEffect(leek,tool) 
 {
+	//var effs = [];
 	var effs = getEffects(leek);
 	//debug(effs);
 	for (var eff in effs) 
