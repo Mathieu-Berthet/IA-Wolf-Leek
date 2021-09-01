@@ -69,7 +69,10 @@ function getTargetEffect(caster, tool, cellVise, multiTarget) {
 				var coeff_power = 1;
 				if(getFightType() == FIGHT_TYPE_BATTLE_ROYALE)
 				{
-					coeff_power = 1 + getPower() / 100;
+					if(ALL_EFFECTS[effect[TOOL_EFFECT_TYPE]][INTERACT_WITH][INTERACT_POWER])
+					{
+						coeff_power = 1 + getPower(caster) / 100;
+					}
 				}
 
 				var value = round(coeffMoyen * coeffCharacteristic * coeffAOE * coeffNbCible * coeff_power);
