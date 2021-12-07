@@ -254,7 +254,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_NOVA_DAMAGE : [
-		COEFF_EFFECT : 1,
+		COEFF_EFFECT : 1.5,
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -480,7 +480,7 @@ global ALL_EFFECTS = [
 		]
 	],
 	EFFECT_NOVA_VITALITY : [
-		COEFF_EFFECT : 1,
+		COEFF_EFFECT : 1.5,
 		BOOSTED_BY : CHARACTERISTIC_SCIENCE,
 		IS_RELATIF : false,
 		IS_SPECIAL : false,
@@ -708,6 +708,20 @@ global ALL_EFFECTS = [
 	// Pour l'instant l'IA ne les prends pas en compte les effets passif
 	// Mettre un EFFET dans le boosted by ?
 	// Je mets is_special à 1 pour l'intant => faudrait peut être mets un is_passif
+	EFFECT_ALLY_KILLED_TO_AGILITY : [ 
+		COEFF_EFFECT : 0,
+		BOOSTED_BY : null,
+		IS_RELATIF : true,
+		IS_SPECIAL : true,
+		IS_HEALTHY : true,
+		INTERACT_WITH : [
+			INTERACT_SHIELD : false,
+			INTERACT_STEAL_LIFE : false,
+			INTERACT_RETURN_DAMAGE : false,
+			INTERACT_NOVA_DAMAGE : false
+		]
+	],
+		
 	EFFECT_DAMAGE_TO_ABSOLUTE_SHIELD : [
 		COEFF_EFFECT : 0,
 		BOOSTED_BY : null,
@@ -1080,6 +1094,7 @@ global TOOL_MAX_RANGE = "max range" ;
 global TOOL_PT_COST = "pt cost" ;
 global TOOL_NEED_LINE_OF_SIGHT = "need line of sight" ;
 global TOOL_IS_INLINE = "is inline" ;
+global TOOL_LAUNCH_TYPE = "launch type"
 global TOOL_AOE_TYPE = "aoe type" ;
 global TOOL_COOLDOWN_TIME = "cooldown time" ;
 global TOOL_NUMBER_TURN_EFFECT_LAST = "number turn effect last" ;
@@ -1146,7 +1161,7 @@ function get_weapon_stats( @weapon_tab , id_arme )
 	weapon_tab[TOOL_MAX_RANGE] = getWeaponMaxRange( id_arme ) ;
 	weapon_tab[TOOL_PT_COST] = getWeaponCost( id_arme ) ;
 	weapon_tab[TOOL_NEED_LINE_OF_SIGHT] = weaponNeedLos( id_arme ) ;
-	weapon_tab[TOOL_IS_INLINE] = isInlineWeapon( id_arme ) ;
+	weapon_tab[TOOL_LAUNCH_TYPE] = getWeaponLaunchType( id_arme ) ;
 	weapon_tab[TOOL_AOE_TYPE] = getWeaponArea( id_arme ) ;
 	weapon_tab[TOOL_COOLDOWN_TIME] = 0 ;
 }
@@ -1161,7 +1176,7 @@ function get_chip_stats( @chip_tab , id_puce )
 	chip_tab[TOOL_MAX_RANGE] = getChipMaxRange( id_puce ) ;
 	chip_tab[TOOL_PT_COST] = getChipCost( id_puce ) ;
 	chip_tab[TOOL_NEED_LINE_OF_SIGHT] = chipNeedLos( id_puce ) ;
-	chip_tab[TOOL_IS_INLINE] = isInlineChip( id_puce ) ;
+	chip_tab[TOOL_LAUNCH_TYPE] = getChipLaunchType( id_puce ) ;
 	chip_tab[TOOL_AOE_TYPE] = getChipArea( id_puce ) ;
 	chip_tab[TOOL_COOLDOWN_TIME] = getChipCooldown( id_puce ) ;
 }

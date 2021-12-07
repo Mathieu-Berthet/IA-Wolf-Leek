@@ -5,6 +5,7 @@
 
 include("GLOBALS");
 include("Debug");
+include("Launch");
 
 		/*						Fonction Publique							*/
 
@@ -40,23 +41,35 @@ function getCellToUseToolsOnCell(tool, cellVisee, @cellsAccessible) {
  **/
 function CellsToUseTool (tool, cellVisee, @allCells) {
 	var mini = MIN_RANGE[tool];
-	var maxi;
-	var inLine;
-	//mini = ALL_INGAME_TOOLS[tool][TOOL_MIN_RANGE] ;
-	maxi = ALL_INGAME_TOOLS[tool][TOOL_MAX_RANGE] ;
-	inLine = ALL_INGAME_TOOLS[tool][TOOL_IS_INLINE] ;
-	if (!inLine) {
-		for (var i = mini; i <= maxi ; i++) {
-			allCells = allCells + _initCellToUse[cellVisee][i];
+	var maxi = ALL_INGAME_TOOLS[tool][TOOL_MAX_RANGE] ;
+	//var inLine = ALL_INGAME_TOOLS[tool][TOOL_IS_INLINE] ;
+	var launch_type = ALL_INGAME_TOOLS[tool][TOOL_LAUNCH_TYPE];
+	var needLos = ALL_INGAME_TOOLS[tool][TOOL_NEED_LINE_OF_SIGHT];
+	if (launch_type == LAUNCH_TYPE_CIRCLE) {
+		if (needLos) 
+		{
+			for (var i = mini; i <= maxi ; i++) 
+			{
+				allCells = allCells + _initCellToUse[cellVisee][i];
+			}
+		} 
+		else 
+		{
+			for (var i = mini; i <= maxi ; i++) 
+			{
+				allCells = allCells + _initNoLosCell[cellVisee][i];
+			}
 		}
-	}
-	if (inLine) {
+	} else if (launch_type == LAUNCH_TYPE_LINE) {
 		for (var i = mini; i <= maxi ; i++) {
 			if(_initInLineCell[cellVisee][i] !== null) {
 				allCells = allCells + _initInLineCell[cellVisee][i];
 			}
 		}
+	} else {
+		allCells = getCellsToUseTool(tool, cellVisee, getAliveAllies()+getAliveEnemies());
 	}
+		
 }
 
 /**
@@ -122,6 +135,7 @@ function getCellsToCheckForLaser(@pathLengh, leeks) {
 global obstacle = [];
 global _initCellToUse = [];
 global _initInLineCell = [];
+global _initNoLosCell = [];
 global celltouse = [];
 
 celltouse = [0: [0], 1 : [18, 17, -17, -18], 2 : [36, 35, 34, 1, -1, -34, -35, -36], 3 : [54, 53, 52, 51, 19, 16, -16, -19, -51, -52, -53, -54], 4 : [72, 71, 70, 69, 68, 37, 33, 2, -2, -33, -37, -68, -69, -70, -71, -72], 5 : [90, 89, 88, 87, 86, 85, 55, 50, 20, 15, -15, -20, -50, -55, -85, -86, -87, -88, -89, -90], 6 : [108, 107, 106, 105, 104, 103, 102, 73, 67, 38, 32, 3, -3, -32, -38, -67, -73, -102, -103, -104, -105, -106, -107, -108], 7 : [126, 125, 124, 123, 122, 121, 120, 119, 91, 84, 56, 49, 21, 14, -14, -21, -49, -56, -84, -91, -119, -120, -121, -122, -123, -124, -125, -126], 8 : [144, 143, 142, 141, 140, 139, 138, 137, 136, 109, 101, 74, 66, 39, 31, 4, -4, -31, -39, -66, -74, -101, -109, -136, -137, -138, -139, -140, -141, -142, -143, -144], 9 : [162, 161, 160, 159, 158, 157, 156, 155, 154, 153, 127, 118, 92, 83, 57, 48, 22, 13, -13, -22, -48, -57, -83, -92, -118, -127, -153, -154, -155, -156, -157, -158, -159, -160, -161, -162], 10 : [180, 179, 178, 177, 176, 175, 174, 173, 172, 171, 170, 145, 135, 110, 100, 75, 65, 40, 30, 5, -5, -30, -40, -65, -75, -100, -110, -135, -145, -170, -171, -172, -173, -174, -175, -176, -177, -178, -179, -180], 11 : [198, 197, 196, 195, 194, 193, 192, 191, 190, 189, 188, 187, 163, 152, 128, 117, 93, 82, 58, 47, 23, 12, -12, -23, -47, -58, -82, -93, -117, -128, -152, -163, -187, -188, -189, -190, -191, -192, -193, -194, -195, -196, -197, -198], 12 : [216, 215, 214, 213, 212, 211, 210, 209, 208, 207, 206, 205, 204, 181, 169, 146, 134, 111, 99, 76, 64, 41, 29, 6, -6, -29, -41, -64, -76, -99, -111, -134, -146, -169, -181, -204, -205, -206, -207, -208, -209, -210, -211, -212, -213, -214, -215, -216]] ;
@@ -247,15 +261,22 @@ function initialisationCellToUse(){
 		var all = getAliveAllies()+getAliveEnemies();
 		for (var i = 0; i < 613; i++) {
 			_initCellToUse[i] = [];
+			_initNoLosCell[i] = [];
 			for (var j = 0; j <=12; j++) {
 				var sstab = [];
+				var sstabNoLoss = [];
 				for (var b in celltouse[j]) {
 					var c = b+i;
-					if (!obstacle[c] && getCellDistance(i, c)==j && lineOfSight(i, c, all)) {
-						push(sstab, c);
+					if (!obstacle[c] && getCellDistance(i, c)==j) 
+					{
+						if (lineOfSight(i, c, all)) {
+							push(sstab, c);
+						}
+						push(sstabNoLoss, c);
 					}
 				}
-				_initCellToUse[i][j] = sstab;
+				_initCellToUse[i][j] = clone(sstab);
+				_initNoLosCell[i][j] = clone(sstabNoLoss);
 			}
 		}
 		//debugP("initialisationCellToUse :"+((getOperations()-av)/OPERATIONS_LIMIT *100));
